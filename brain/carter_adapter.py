@@ -140,12 +140,17 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
         mid_y = round(gy0 + gh * 0.45, 1)
         room_coords["Kitchen"] = {
             "x0": mid_x, "y0": gy0, "x1": gx1, "y1": mid_y,
-            "sf": round((gx1 - mid_x) * (mid_y - gy0)), "zone": "living", "adjacencies": []
+            "sf": round((gx1 - mid_x) * (mid_y - gy0)), "zone": "living",
+            "adjacencies": ["Great Room", "Dining Room"]
         }
         room_coords["Dining Room"] = {
             "x0": mid_x, "y0": mid_y, "x1": gx1, "y1": gy1,
-            "sf": round((gx1 - mid_x) * (gy1 - mid_y)), "zone": "living", "adjacencies": []
+            "sf": round((gx1 - mid_x) * (gy1 - mid_y)), "zone": "living",
+            "adjacencies": ["Great Room", "Kitchen"]
         }
+        # Also add Kitchen/Dining to GR's adjacency list
+        room_coords["Great Room"].setdefault("adjacencies", [])
+        room_coords["Great Room"]["adjacencies"] += ["Kitchen", "Dining Room"]
         # Shrink GR to left half only
         room_coords["Great Room"]["x1"] = mid_x
         room_coords["Great Room"]["sf"] = round((mid_x - gx0) * gh)

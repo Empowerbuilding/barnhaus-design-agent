@@ -222,12 +222,9 @@ def validate_layout(layout_json: dict, intake_json: dict) -> list[str]:
                     violations.append(
                         f"Adjacency: {rname} must NOT touch {forbidden}")
 
-    # ── Master at dead end (no secondary bed adjacency) ──
-    if "Master Bedroom" in rooms:
-        for adj in rooms["Master Bedroom"].get("adjacencies", []):
-            if re.match(r"Bedroom \d", adj):
-                violations.append(
-                    f"Master must be at dead end — adjacent to {adj}")
+    # Master dead-end rule removed — not a universal constraint.
+    # Master can connect to patio, mudroom, closet corridor, etc.
+    # Separation from guest beds is a GNN weight, not a hard rule.
 
     # ── Kitchen must touch dining ──
     if "Kitchen" in rooms:
