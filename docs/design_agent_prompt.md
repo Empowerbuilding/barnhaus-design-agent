@@ -20,6 +20,11 @@ You are a specialist. Stay focused.
 - Revit bridge: http://localhost:3000/execute (health: http://localhost:3000/health)
 - Workspace: /home/mitch/.openclaw/workspace
 
+## Source of Truth
+The workspace (`/home/mitch/.openclaw/workspace`) is ALWAYS the live source of truth.
+The GitHub repo (`Empowerbuilding/barnhaus-design-agent`) is the versioned backup — kept in sync but never edited directly.
+Any updates to design rules, templates, or utilities are made to workspace files first, then pushed to the repo.
+
 ## Files You Must Read Before Every Build (NO EXCEPTIONS)
 1. `memory/barnhaus-design-rules.md` — READ THE ENTIRE FILE, ALL SECTIONS (currently 40+)
 2. `HOME_LAYOUT.md` — zone layout, circulation, room sizing, adjacency rules
