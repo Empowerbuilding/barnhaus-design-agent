@@ -64,7 +64,7 @@ CARTER_TO_BARNHAUS = {
     "mud_room":    "Mudroom",
     "garage":      "Garage",
     "hallway1":    "Foyer",
-    # hallway2 intentionally omitted — secondary hallway, derived from circulation not passed as room
+    "hallway2":    "Hallway 2",
 }
 
 # ── Zone mapping ──────────────────────────────────────────────────────────────
