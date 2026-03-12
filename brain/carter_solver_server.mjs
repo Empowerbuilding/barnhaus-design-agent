@@ -23,6 +23,7 @@ if (fs.existsSync(envPath)) {
 }
 
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+const OPENAI_KEY = process.env.OPENAI_API_KEY;
 const PORT = 3747;
 
 // ─── V4 Reference Box Positions (ground truth) ───────────────────────────────
@@ -148,27 +149,48 @@ TASK:
 5. Return ONLY a valid JSON array. Each entry: { "id": "<room_id>", "x": <int>, "y": <int>, "w": <int>, "h": <int> }
 No markdown, no explanation, just the JSON array.`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 2048,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Anthropic API error ${response.status}: ${err}`);
+  // Use OpenAI if available, fall back to Anthropic
+  let text;
+  if (OPENAI_KEY) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        max_tokens: 2048,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`OpenAI API error ${response.status}: ${err}`);
+    }
+    const data = await response.json();
+    text = data.choices?.[0]?.message?.content || '';
+  } else {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 2048,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`Anthropic API error ${response.status}: ${err}`);
+    }
+    const data = await response.json();
+    text = data.content?.[0]?.text || '';
   }
-
-  const data = await response.json();
-  const text = data.content?.[0]?.text || '';
 
   // Parse JSON from response (strip any accidental markdown)
   const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
