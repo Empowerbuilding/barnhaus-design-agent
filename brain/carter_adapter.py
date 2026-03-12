@@ -107,6 +107,22 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
             "zone": zone,
         }
 
+    # Compute adjacencies geometrically — rooms are adjacent if edges within 1.5ft
+    names = list(room_coords.keys())
+    for name in names:
+        room_coords[name]["adjacencies"] = []
+    for i, a in enumerate(names):
+        for b in names[i+1:]:
+            ra, rb = room_coords[a], room_coords[b]
+            # Check horizontal overlap + vertical edge proximity
+            h_overlap = ra["x0"] < rb["x1"] and ra["x1"] > rb["x0"]
+            v_overlap = ra["y0"] < rb["y1"] and ra["y1"] > rb["y0"]
+            v_edge = min(abs(ra["y1"] - rb["y0"]), abs(rb["y1"] - ra["y0"])) < 1.5
+            h_edge = min(abs(ra["x1"] - rb["x0"]), abs(rb["x1"] - ra["x0"])) < 1.5
+            if (h_overlap and v_edge) or (v_overlap and h_edge):
+                room_coords[a]["adjacencies"].append(b)
+                room_coords[b]["adjacencies"].append(a)
+
     # Sub-room correction: subtract Office SF from Great Room if both present
     # (Office is a sub-bubble inside GR on Carter canvas)
     SUB_ROOMS = {"Office": "Great Room"}
