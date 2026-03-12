@@ -49,7 +49,7 @@ CARTER_TO_BARNHAUS = {
     "mud_room":    "Mudroom",
     "garage":      "Garage",
     "hallway1":    "Foyer",
-    "hallway2":    "Foyer",
+    # hallway2 intentionally omitted — secondary hallway, derived from circulation not passed as room
 }
 
 # ── Zone mapping ──────────────────────────────────────────────────────────────
@@ -59,7 +59,13 @@ ZONE_MAP = {
     1: "beds",
     2: "living",
     3: "service",
-    4: "service",  # garage
+    4: "service",  # garage — kept as service so Barnhaus zone logic handles it
+}
+
+# Override zones for specific rooms regardless of bubble zone
+ROOM_ZONE_OVERRIDES = {
+    "Garage": "service",
+    "Mudroom": "service",
 }
 
 
@@ -91,7 +97,7 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
         name = CARTER_TO_BARNHAUS.get(bid)
         if name is None:
             continue  # omit unmapped rooms (e.g. mech)
-        zone = bubble_zones.get(bid) or ZONE_MAP.get(box.get("zone", 2), "living")
+        zone = ROOM_ZONE_OVERRIDES.get(name) or bubble_zones.get(bid) or ZONE_MAP.get(box.get("zone", 2), "living")
         room_coords[name] = {
             "x0": round(box["x"] / scale, 1),
             "y0": round(box["y"] / scale, 1),
