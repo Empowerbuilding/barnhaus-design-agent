@@ -103,7 +103,9 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
     room_coords = {}
     boxes = carter_export.get("boxes", [])
     h1 = carter_export.get("hallway1")
-    if h1 and isinstance(h1, dict) and h1.get("id"):
+    if h1 and isinstance(h1, dict):
+        if not h1.get("id"):
+            h1 = {**h1, "id": "hallway1"}
         boxes = boxes + [h1]
     for box in boxes:
         bid = box.get("id")
