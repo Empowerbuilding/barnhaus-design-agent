@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Carter — Spatial Pipeline v3</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; font-family: 'Segoe UI', sans-serif; color: #eee; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+/* ── Toolbar ── */
+#toolbar { display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: #1a1a2e; border-bottom: 1px solid #2a2a4e; flex-shrink: 0; flex-wrap: wrap; }
+#toolbar h1 { font-size: 14px; font-weight: 700; color: #e94560; margin-right: 4px; white-space: nowrap; }
+.sep { width: 1px; height: 22px; background: #2a2a4e; margin: 0 2px; }
+/* Phase pills */
+#phase-bar { display: flex; gap: 4px; align-items: center; }
+.phase-btn { padding: 3px 10px; border-radius: 20px; border: 1px solid #333; background: #222; color: #888; cursor: pointer; font-size: 11px; white-space: nowrap; transition: all 0.15s; }
+.phase-btn:hover { border-color: #e94560; color: #eee; }
+.phase-btn.active { background: #e94560; border-color: #e94560; color: white; font-weight: 700; }
+/* Action buttons */
+.btn { padding: 4px 10px; border-radius: 5px; border: 1px solid #2a2a4e; background: #0f3460; color: #eee; cursor: pointer; font-size: 11px; white-space: nowrap; transition: all 0.15s; }
+.btn:hover { background: #e94560; border-color: #e94560; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+#status-bar { margin-left: auto; font-size: 10px; color: #666; white-space: nowrap; }
+#ai-spinner { font-size: 10px; color: #4fc3f7; display: none; }
+/* ── Canvas wrap ── */
+#canvas-wrap { flex: 1; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 12px; background: #111; }
+canvas { background: #fafafa; cursor: default; box-shadow: 0 4px 40px rgba(0,0,0,0.6); display: block; }
+/* ── Info panel ── */
+#info { position: fixed; right: 12px; top: 52px; width: 200px; background: #1a1a2e; border: 1px solid #2a2a4e; border-radius: 8px; padding: 10px; font-size: 11px; display: none; z-index: 100; }
+#info h3 { font-size: 12px; color: #e94560; margin-bottom: 8px; }
+#info .row { display: flex; justify-content: space-between; margin-bottom: 3px; color: #888; }
+#info .row span:last-child { color: #4fc3f7; font-weight: bold; }
+/* ── Section legend ── */
+#section-legend { position: fixed; left: 12px; bottom: 12px; font-size: 10px; color: #555; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <h1>🦞 Carter Pipeline</h1>
+  <div class="sep"></div>
+  <div id="phase-bar">
+    <span style="font-size:10px;color:#555;margin-right:2px;">PHASE:</span>
+    <button class="phase-btn active" data-phase="1" onclick="setPhase(1)">① Bubbles</button>
+    <button class="phase-btn" data-phase="2" onclick="setPhase(2)">② Sections</button>
+    <button class="phase-btn" data-phase="3" onclick="setPhase(3)">③ Boxes</button>
+    <button class="phase-btn" data-phase="4" onclick="setPhase(4)">④ Envelope</button>
+    <button class="phase-btn" data-phase="5" onclick="setPhase(5)">⑤ All</button>
+  </div>
+  <div class="sep"></div>
+  <button class="btn" id="btn-solve" onclick="aiSolve()">🧠 AI Solve</button>
+  <button class="btn" onclick="resetAll()">↩ Reset</button>
+  <button class="btn" onclick="startPhysics()">⚡ Shake</button>
+  <button class="btn" onclick="exportPair()">💾 Export Pair</button>
+  <div class="sep"></div>
+  <span id="ai-spinner">⏳ Claude thinking...</span>
+  <span id="status-bar">Drag bubbles → Phase 2 shows derived sections → AI Solve → Phase 3 shows boxes</span>
+</div>
+<div id="canvas-wrap">
+  <canvas id="canvas" width="1300" height="940"></canvas>
+</div>
+<div id="info">
+  <h3 id="info-name">—</h3>
+  <div class="row"><span>Zone</span><span id="i-zone">—</span></div>
+  <div class="row"><span>Position</span><span id="i-pos">—</span></div>
+  <div class="row"><span>Radius</span><span id="i-r">—</span></div>
+  <div class="row"><span>Box W×H</span><span id="i-box">—</span></div>
+  <div class="row"><span>Section Bay</span><span id="i-bay">—</span></div>
+</div>
+<div id="section-legend">
+  <div id="leg-sections">Section lines: derived from bubble zones</div>
+</div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+let phase = 1;
+let dragging = null;
+let dragOff = {x:0, y:0};
+let envelope = null;
+
+const ZONE_NAMES = ['Master Wing','Bed Wing','Great Room','Service','Garage'];
+const ZONE_COLORS = ['#e8f5e9','#f3e5f5','#fffde7','#eceff1','#e3f2fd'];
+const ZONE_TEXT = ['#2e7d32','#6a1b9a','#f57f17','#455a64','#1565c0'];
+
+const DEFAULTS = [
+  { id:'master_bed', label:'MASTER BED', zone:0, bx:262,by:484,br:85, fill:'#a5d6a7', box:{x:180,y:390,w:165,h:223} },
+  { id:'m_bath', label:'M. BATH', zone:0, bx:160,by:529,br:55, fill:'#c8e6c9', box:{x:100,y:445,w:120,h:168} },
+  { id:'his_closet', label:'HIS CLOSET', zone:0, bx:140,by:417,br:36, fill:'#c8e6c9', box:{x:100,y:390,w:80, h:55} },
+  { id:'hers_closet', label:'HERS CLOSET', zone:0, bx:150,by:655,br:36, fill:'#c8e6c9', box:{x:100,y:618,w:100,h:68} },
+  { id:'bed2', label:'BED 2', zone:1, bx:462,by:518,br:52, fill:'#ce93d8', box:{x:404,y:458,w:116,h:120} },
+  { id:'bath2', label:'BATH 2', zone:1, bx:372,by:498,br:36, fill:'#e1bee7', box:{x:340,y:458,w:64, h:80} },
+  { id:'wic2', label:'WIC 2', zone:1, bx:372,by:558,br:28, fill:'#e1bee7', box:{x:340,y:538,w:64, h:40} },
+  { id:'bed1', label:'BED 1', zone:1, bx:270,by:665,br:58, fill:'#ce93d8', box:{x:200,y:613,w:140,h:105} },
+  { id:'wic1', label:'WIC 1', zone:1, bx:356,by:634,br:28, fill:'#e1bee7', box:{x:340,y:613,w:80, h:43} },
+  { id:'half_bath', label:'½ BATH', zone:1, bx:470,by:634,br:28, fill:'#e1bee7', box:{x:420,y:613,w:100,h:43} },
+  { id:'bath1', label:'BATH 1', zone:1, bx:430,by:688,br:38, fill:'#e1bee7', box:{x:340,y:658,w:180,h:60} },
+  { id:'great_room', label:'GREAT ROOM', zone:2, bx:700,by:580,br:160, fill:'#fff9c4', box:{x:520,y:370,w:360,h:440} },
+  { id:'office', label:'OFFICE', zone:2, bx:590,by:755,br:52, fill:'#ffecb3', box:{x:525,y:700,w:130,h:110} },
+  { id:'hallway2', label:'HALL 2', zone:3, bx:920,by:447,br:28, fill:'#e0e0e0', box:{x:875,y:420,w:90, h:55} },
+  { id:'pantry', label:'PANTRY', zone:3, bx:925,by:542,br:42, fill:'#b0bec5', box:{x:875,y:475,w:100,h:135} },
+  { id:'mech', label:'MECH', zone:3, bx:920,by:675,br:38, fill:'#b0bec5', box:{x:875,y:610,w:90, h:130} },
+  { id:'mud_room', label:'MUD ROOM', zone:4, bx:1050,by:435,br:52, fill:'#ffcc80', box:{x:980,y:390,w:140,h:90} },
+  { id:'garage', label:'3-CAR GARAGE', zone:4, bx:1110,by:670,br:108,fill:'#90caf9', box:{x:980,y:480,w:260,h:380} },
+];
+
+const GR_LABELS = [
+  {id:'living', label:'LIVING', cx:630, cy:545, br:58, fill:'#fff9c4'},
+  {id:'kitchen', label:'KITCHEN', cx:790, cy:490, br:52, fill:'#fff9c4'},
+  {id:'dining', label:'DINING', cx:790, cy:660, br:48, fill:'#fff9c4'},
+];
+
+let rooms = DEFAULTS.map(d => ({...d, bx:d.bx, by:d.by, br:d.br, box:{...d.box}}));
+let hallway1 = { x:220, y:578, w:300, h:35 };
+
+function deriveSections() {
+  const groups = [0,1,2,3,4].map(z => rooms.filter(r => r.zone === z));
+  if (phase >= 3) {
+    function boxLeft(z) { return groups[z].length ? Math.min(...groups[z].map(r => r.box.x)) : null; }
+    function boxRight(z) { return groups[z].length ? Math.max(...groups[z].map(r => r.box.x + r.box.w)) : null; }
+    function mid(a,b) { return a!==null && b!==null ? Math.round((a+b)/2) : null; }
+    const s1 = Math.max(60, boxLeft(0) ?? 100);
+    const s2 = mid(boxRight(0), boxLeft(1)) ?? 340;
+    const s3 = mid(boxRight(1), boxLeft(2)) ?? 520;
+    const s4 = mid(boxRight(2), boxLeft(3)) ?? 880;
+    const s5 = mid(boxRight(3), boxLeft(4)) ?? 980;
+    const s6 = Math.min(W-20, boxRight(4) ?? 1240);
+    return [
+      { x:s1, label:'S1', major:true }, { x:s2, label:'S2', major:false },
+      { x:s3, label:'S3', major:true }, { x:s4, label:'S4', major:true },
+      { x:s5, label:'S5', major:false }, { x:s6, label:'S6', major:true },
+    ];
+  }
+  function zoneLeft(z) { return groups[z].length ? Math.min(...groups[z].map(r => r.bx - r.br)) : null; }
+  function zoneRight(z) { return groups[z].length ? Math.max(...groups[z].map(r => r.bx + r.br)) : null; }
+  function midpoint(a,b){ return a!==null && b!==null ? Math.round((a+b)/2) : null; }
+  const s1 = Math.max(60, zoneLeft(0) ?? 100);
+  const s2 = midpoint(zoneRight(0), zoneLeft(1)) ?? 340;
+  const s3 = midpoint(zoneRight(1), zoneLeft(2)) ?? 520;
+  const s4 = midpoint(zoneRight(2), zoneLeft(3)) ?? 880;
+  const s5 = midpoint(zoneRight(3), zoneLeft(4)) ?? 980;
+  const s6 = Math.min(W-30, zoneRight(4) ?? 1240);
+  return [
+    { x:s1, label:'S1', major:true }, { x:s2, label:'S2', major:false },
+    { x:s3, label:'S3', major:true }, { x:s4, label:'S4', major:true },
+    { x:s5, label:'S5', major:false }, { x:s6, label:'S6', major:true },
+  ];
+}
+
+function deriveEnvelope() {
+  const xs = rooms.flatMap(r => [r.box.x, r.box.x + r.box.w]);
+  const ys = rooms.flatMap(r => [r.box.y, r.box.y + r.box.h]);
+  return { x: Math.min(...xs) - 5, y: Math.min(...ys) - 5, w: Math.max(...xs) - Math.min(...xs) + 10, h: Math.max(...ys) - Math.min(...ys) + 10 };
+}
+
+function hexRgb(hex) { return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)]; }
+
+function dashedLine(x1,y1,x2,y2,color,w=2,d=16,g=8) {
+  const len = Math.hypot(x2-x1,y2-y1);
+  if (!len) return;
+  const ux=(x2-x1)/len, uy=(y2-y1)/len;
+  let p=0, on=true;
+  while(p<len) {
+    const e=Math.min(p+(on?d:g),len);
+    if(on) { ctx.beginPath(); ctx.moveTo(x1+ux*p,y1+uy*p); ctx.lineTo(x1+ux*e,y1+uy*e); ctx.strokeStyle=color; ctx.lineWidth=w; ctx.stroke(); }
+    p=e; on=!on;
+  }
+}
+
+function drawZoneBands(sections) {
+  const bounds = [sections[0].x, sections[1].x, sections[2].x, sections[3].x, sections[4].x, sections[5].x];
+  for (let i=0; i<5; i++) {
+    const [r,g,b] = hexRgb(ZONE_COLORS[i]);
+    ctx.fillStyle = `rgba(${r},${g},${b},0.12)`;
+    ctx.fillRect(bounds[i], 70, bounds[i+1]-bounds[i], H-90);
+    ctx.font = 'bold 9px Arial'; ctx.fillStyle = ZONE_TEXT[i];
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(ZONE_NAMES[i].toUpperCase(), (bounds[i]+bounds[i+1])/2, H-8);
+  }
+}
+
+function drawSections(sections) {
+  sections.forEach(s => {
+    dashedLine(s.x, 65, s.x, H-22, s.major ? '#1565c0' : '#42a5f5', s.major ? 3 : 1.5);
+    ctx.font = `bold ${s.major ? 12 : 10}px monospace`; ctx.fillStyle = '#1565c0';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText(s.label, s.x, 62);
+    ctx.font = '9px monospace'; ctx.fillStyle = '#90a4ae';
+    ctx.fillText(Math.round(s.x), s.x, 73);
+  });
+  const leg = sections.map(s => `${s.label}=${Math.round(s.x)}`).join(' ');
+  document.getElementById('leg-sections').textContent = leg;
+}
+
+function drawBox(room, alpha=0.85) {
+  const {x,y,w,h} = room.box;
+  const [r,g,b] = hexRgb(room.fill);
+  ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+  ctx.fillRect(x,y,w,h);
+  const isActive = dragging?.id === room.id;
+  ctx.strokeStyle = isActive ? '#e94560' : '#546e7a';
+  ctx.lineWidth = isActive ? 2.5 : 1.5;
+  ctx.strokeRect(x,y,w,h);
+  const fs = w<60?7 : w<100?9 : 11;
+  ctx.font = `bold ${fs}px Arial`; ctx.fillStyle = '#1a237e';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const words = room.label.split(' ');
+  if (words.length>1 && w<120) {
+    const m = Math.ceil(words.length/2);
+    ctx.fillText(words.slice(0,m).join(' '), x+w/2, y+h/2-fs/2-1);
+    ctx.fillText(words.slice(m).join(' '), x+w/2, y+h/2+fs/2+1);
+  } else { ctx.fillText(room.label, x+w/2, y+h/2); }
+}
+
+function drawHallway1() {
+  const {x,y,w,h} = hallway1;
+  ctx.fillStyle = 'rgba(224,224,224,0.9)'; ctx.fillRect(x,y,w,h);
+  ctx.strokeStyle = '#9e9e9e'; ctx.lineWidth = 1; ctx.strokeRect(x,y,w,h);
+  ctx.font = 'bold 9px Arial'; ctx.fillStyle = '#616161';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('HALLWAY 1', x+w/2, y+h/2);
+}
+
+function drawBubble(room) {
+  const {bx,by,br,fill} = room;
+  const [r,g,b] = hexRgb(fill);
+  const isActive = dragging?.id === room.id;
+  if (isActive) { ctx.shadowColor='#e94560'; ctx.shadowBlur=18; }
+  ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2);
+  ctx.fillStyle = `rgba(${r},${g},${b},0.5)`; ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = isActive ? '#e94560' : 'rgba(60,60,60,0.6)';
+  ctx.lineWidth = isActive ? 3 : 1.5;
+  ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2); ctx.stroke();
+  const fs = br<30?7 : br<50?9 : br<85?11 : 13;
+  ctx.font = `bold ${fs}px Arial`; ctx.fillStyle='#1a237e';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  const words = room.label.split(' ');
+  if(words.length>1 && br<60) {
+    const m=Math.ceil(words.length/2);
+    ctx.fillText(words.slice(0,m).join(' '), bx, by-fs/2-1);
+    ctx.fillText(words.slice(m).join(' '), bx, by+fs/2+1);
+  } else { ctx.fillText(room.label, bx, by); }
+  const [zr,zg,zb] = hexRgb(ZONE_COLORS[room.zone]);
+  ctx.beginPath(); ctx.arc(bx+br*0.6, by-br*0.6, 5, 0, Math.PI*2);
+  ctx.fillStyle = `rgba(${zr},${zg},${zb},0.9)`; ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function drawShell() {
+  const cell = 4, pad = 5;
+  const cols = Math.ceil(W / cell) + 2, rows = Math.ceil(H / cell) + 2;
+  const grid = new Uint8Array(cols * rows);
+  const allBoxes = [...rooms.map(r => r.box), hallway1];
+  allBoxes.forEach(b => {
+    if (!b) return;
+    const x1=Math.max(0,Math.floor((b.x-pad)/cell)), y1=Math.max(0,Math.floor((b.y-pad)/cell));
+    const x2=Math.min(cols-1,Math.ceil((b.x+b.w+pad)/cell)), y2=Math.min(rows-1,Math.ceil((b.y+b.h+pad)/cell));
+    for(let gy=y1;gy<=y2;gy++) for(let gx=x1;gx<=x2;gx++) grid[gy*cols+gx]=1;
+  });
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=7; ctx.setLineDash([]);
+  for(let gy=1;gy<rows-1;gy++) {
+    for(let gx=1;gx<cols-1;gx++) {
+      if(!grid[gy*cols+gx]) continue;
+      const px=gx*cell, py=gy*cell;
+      if(!grid[gy*cols+gx-1]) {ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+cell);ctx.stroke();}
+      if(!grid[gy*cols+gx+1]) {ctx.beginPath();ctx.moveTo(px+cell,py);ctx.lineTo(px+cell,py+cell);ctx.stroke();}
+      if(!grid[(gy-1)*cols+gx]) {ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+cell,py);ctx.stroke();}
+      if(!grid[(gy+1)*cols+gx]) {ctx.beginPath();ctx.moveTo(px,py+cell);ctx.lineTo(px+cell,py+cell);ctx.stroke();}
+    }
+  }
+}
+
+function drawPatios() {
+  const gr = rooms.find(r => r.id === 'great_room');
+  if (!gr) return;
+  ctx.strokeStyle = '#d32f2f'; ctx.lineWidth = 2; ctx.setLineDash([8,4]);
+  ctx.font = 'bold 11px Arial'; ctx.fillStyle = '#d32f2f';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const rpX = gr.box.x, rpY = gr.box.y - 82, rpW = gr.box.w, rpH = 76;
+  ctx.fillStyle = 'rgba(227,242,253,0.25)'; ctx.fillRect(rpX, rpY, rpW, rpH);
+  ctx.strokeRect(rpX, rpY, rpW, rpH);
+  ctx.fillStyle = '#d32f2f'; ctx.fillText('REAR PATIO', rpX + rpW/2, rpY + rpH/2);
+  const grBottom = gr.box.y + gr.box.h, grRight = gr.box.x + gr.box.w;
+  const patioTop = grBottom + 5, patioBot = patioTop + 62;
+  const legTop = gr.box.y + gr.box.h * 0.54, legW = 68;
+  ctx.fillStyle = 'rgba(227,242,253,0.25)';
+  ctx.fillRect(gr.box.x, patioTop, gr.box.w, patioBot - patioTop);
+  ctx.fillRect(grRight, legTop, legW, patioBot - legTop);
+  ctx.beginPath();
+  ctx.moveTo(gr.box.x, patioTop); ctx.lineTo(grRight, patioTop);
+  ctx.lineTo(grRight, legTop); ctx.lineTo(grRight + legW, legTop);
+  ctx.lineTo(grRight + legW, patioBot); ctx.lineTo(gr.box.x, patioBot);
+  ctx.closePath(); ctx.stroke();
+  ctx.fillStyle = '#d32f2f';
+  ctx.fillText('FRONT PATIO', gr.box.x + gr.box.w/2, patioTop + (patioBot-patioTop)/2);
+  ctx.setLineDash([]);
+}
+
+function drawGRLabels() {
+  const gr = rooms.find(r => r.id === 'great_room');
+  if (!gr) return;
+  GR_LABELS.forEach(l => {
+    if (phase <= 2) {
+      ctx.beginPath(); ctx.arc(l.cx, l.cy, l.br, 0, Math.PI*2);
+      ctx.fillStyle='rgba(255,249,196,0.4)'; ctx.fill();
+      ctx.strokeStyle='#f57f17'; ctx.lineWidth=1.5; ctx.setLineDash([5,3]); ctx.stroke(); ctx.setLineDash([]);
+      ctx.font='bold 9px Arial'; ctx.fillStyle='#e65100';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(l.label, l.cx, l.cy);
+    } else {
+      ctx.font='italic 11px Arial'; ctx.fillStyle='rgba(120,100,0,0.7)';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(l.label, l.cx, l.cy);
+    }
+  });
+}
+
+function drawTitle() {
+  ctx.font = 'bold 16px Arial'; ctx.fillStyle = '#333';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('Carter — Spatial Pipeline', W/2, 8);
+  const phaseLabels = ['', 'Phase 1: Bubbles', 'Phase 2: Sections', 'Phase 3: Boxes', 'Phase 4: Envelope', 'Phase 5: Full Plan'];
+  ctx.font = '11px Arial'; ctx.fillStyle = '#999';
+  ctx.fillText(phaseLabels[phase], W/2, 28);
+}
+
+function render() {
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='white'; ctx.fillRect(0,0,W,H);
+  const sections = deriveSections();
+  drawTitle(); drawZoneBands(sections);
+  if (phase >= 2) drawSections(sections);
+  if (phase >= 3) { rooms.forEach(r => drawBox(r, phase===5 ? 0.75 : 0.85)); drawHallway1(); if (phase >= 3) drawPatios(); }
+  if (phase >= 4) drawShell();
+  if (phase === 1 || phase === 2 || phase === 5) { rooms.forEach(drawBubble); }
+  drawGRLabels();
+  if (phase === 3) {
+    rooms.forEach(r => {
+      ctx.beginPath(); ctx.arc(r.bx,r.by,r.br,0,Math.PI*2);
+      ctx.strokeStyle='rgba(150,150,150,0.25)'; ctx.lineWidth=1; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]);
+    });
+  }
+}
+
+function getPos(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+
+function hitBubble(pos) {
+  if (phase <= 2) {
+    for (let i=GR_LABELS.length-1; i>=0; i--) {
+      const l=GR_LABELS[i];
+      if(Math.hypot(pos.x-l.cx, pos.y-l.cy) <= l.br+4) return {_grLabel:true, ...l, bx:l.cx, by:l.cy, label:l.label};
+    }
+  }
+  for (let i=rooms.length-1; i>=0; i--) { const r=rooms[i]; if(Math.hypot(pos.x-r.bx, pos.y-r.by) <= r.br+4) return r; }
+  return null;
+}
+
+function getZoneForX(x, sections) {
+  for(let i=0; i<5; i++) { if(x >= sections[i].x && x <= sections[i+1].x) return i; }
+  return x < sections[0].x ? 0 : 4;
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (phase === 3 || phase === 4) return;
+  const pos = getPos(e); const hit = hitBubble(pos);
+  if(hit) { dragging = hit; const cx = hit._grLabel ? hit.cx : hit.bx; const cy = hit._grLabel ? hit.cy : hit.by; dragOff = { x: pos.x - cx, y: pos.y - cy }; canvas.style.cursor = 'grabbing'; if(!hit._grLabel) showInfo(hit); }
+});
+
+canvas.addEventListener('mousemove', e => {
+  const pos = getPos(e);
+  if(dragging) {
+    if(dragging._grLabel) {
+      const gr = rooms.find(r=>r.id==='great_room');
+      const newX = pos.x - dragOff.x, newY = pos.y - dragOff.y;
+      if(gr) {
+        const grCx = gr.bx, grCy = gr.by, grR = gr.br - dragging.br - 4;
+        const dx = newX - grCx, dy = newY - grCy, dist = Math.hypot(dx, dy);
+        if(dist <= grR) { dragging.cx = newX; dragging.cy = newY; }
+        else { dragging.cx = grCx + dx/dist*grR; dragging.cy = grCy + dy/dist*grR; }
+        const idx = GR_LABELS.findIndex(l=>l.id===dragging.id);
+        if(idx>=0) { GR_LABELS[idx].cx = dragging.cx; GR_LABELS[idx].cy = dragging.cy; }
+      }
+      setStatus(`${dragging.label} → (${Math.round(dragging.cx)}, ${Math.round(dragging.cy)})`);
+      render(); return;
+    }
+    dragging.bx = Math.max(dragging.br+5, Math.min(W-dragging.br-5, pos.x - dragOff.x));
+    dragging.by = Math.max(dragging.br+70, Math.min(H-dragging.br-5, pos.y - dragOff.y));
+    const secs = deriveSections(); const newZone = getZoneForX(dragging.bx, secs);
+    if(newZone !== dragging.zone) { dragging.zone = newZone; setStatus(`${dragging.label} → moved to ${ZONE_NAMES[newZone]}`); }
+    envelope = null; updateInfo(dragging); render(); return;
+  }
+  const hit = hitBubble(pos);
+  canvas.style.cursor = (hit && phase !== 3 && phase !== 4) ? 'grab' : 'default';
+});
+
+canvas.addEventListener('mouseup', () => { if(dragging) { setStatus(`${dragging.label} placed — hit 🧠 AI Solve to update boxes`); dragging = null; canvas.style.cursor='default'; render(); } });
+canvas.addEventListener('mouseleave', () => { if(dragging) { dragging=null; render(); } });
+
+function showInfo(r) { document.getElementById('info').style.display='block'; updateInfo(r); }
+function updateInfo(r) {
+  const secs = deriveSections();
+  document.getElementById('info-name').textContent = r.label;
+  document.getElementById('i-zone').textContent = ZONE_NAMES[r.zone];
+  document.getElementById('i-pos').textContent = `(${Math.round(r.bx)}, ${Math.round(r.by)})`;
+  document.getElementById('i-r').textContent = r.br + 'px';
+  document.getElementById('i-box').textContent = `${r.box.w}×${r.box.h}`;
+  const bay = secs.findIndex((s,i) => i<5 && r.bx>=s.x && r.bx<=secs[i+1]?.x);
+  document.getElementById('i-bay').textContent = bay>=0 ? `${secs[bay].label}–${secs[bay+1].label}` : '—';
+}
+
+function setPhase(p) {
+  const prev = phase; phase = p;
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.toggle('active', +b.dataset.phase===p));
+  const hints = ['','Drag bubbles to set spatial intent','Watch sections derive from bubble positions','Boxes push/pull into position along section rails','Envelope derived from boxes','Full plan — all layers visible'];
+  setStatus(hints[p]);
+  if ((p === 3 || p === 5) && prev !== p) { stopPhysics(); startPhysics(); }
+  else if (p !== 3 && p !== 5) { stopPhysics(); }
+  render();
+}
+
+function setStatus(msg) { document.getElementById('status-bar').textContent = msg; }
+
+function resetAll() {
+  stopPhysics();
+  DEFAULTS.forEach(d => { const r = rooms.find(x=>x.id===d.id); if(r) { r.bx=d.bx; r.by=d.by; r.br=d.br; r.zone=d.zone; r.box={...d.box}; r._vx=0; r._vy=0; } });
+  hallway1 = { x:220, y:578, w:300, h:35 };
+  envelope = null;
+  document.getElementById('info').style.display='none';
+  setStatus('Reset to Carter defaults'); render();
+}
+
+async function aiSolve() {
+  const btn = document.getElementById('btn-solve'); const spinner = document.getElementById('ai-spinner');
+  btn.disabled = true; spinner.style.display='inline';
+  setStatus('Claude is solving boxes from your bubble positions...');
+  const sections = deriveSections();
+  const payload = {
+    bubbles: rooms.map(r=>({ id:r.id, label:r.label, cx:Math.round(r.bx), cy:Math.round(r.by), r:r.br, zone:r.zone, zoneName:ZONE_NAMES[r.zone] })),
+    sections: sections.map(s=>({ label:s.label, x:Math.round(s.x) }))
+  };
+  try {
+    const resp = await fetch('http://localhost:3747/solve', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    if(!resp.ok) throw new Error('Server '+resp.status);
+    const data = await resp.json();
+    if(!data.ok) throw new Error(data.error);
+    let applied=0;
+    data.boxes.forEach(box => {
+      if(box.id==='hallway1') { hallway1=box; return; }
+      const r=rooms.find(x=>x.id===box.id);
+      if(r) { r.box={x:box.x,y:box.y,w:box.w,h:box.h}; applied++; }
+    });
+    envelope = null; setPhase(3);
+    setStatus(`✅ AI solved ${applied} rooms — physics settling...`);
+    startPhysics();
+  } catch(err) { setStatus(`❌ ${err.message} — is carter_solver_server.mjs running?`); }
+  finally { btn.disabled=false; spinner.style.display='none'; }
+}
+
+function exportPair() {
+  const sections = deriveSections();
+  const pair = {
+    version: 2, project: 'Carter', timestamp: new Date().toISOString(),
+    phase_pipeline: ['bubbles','sections','boxes','envelope','button_up'],
+    bubbles: rooms.map(r=>({ id:r.id, label:r.label, cx:Math.round(r.bx), cy:Math.round(r.by), r:r.br, zone:r.zone, zoneName:ZONE_NAMES[r.zone] })),
+    sections: sections.map(s=>({ label:s.label, x:Math.round(s.x), major:s.major })),
+    boxes: rooms.map(r=>({ id:r.id, label:r.label, ...r.box })),
+    hallway1, envelope: deriveEnvelope(),
+  };
+  const blob = new Blob([JSON.stringify(pair,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `carter_v2_pair_${Date.now()}.json`; a.click();
+  setStatus('✅ Training pair exported (v2 format with derived sections + envelope)');
+}
+
+let physicsRunning = false; let animFrame = null;
+const PHYSICS = { springK: 0.032, sectionK: 0.012, damping: 0.88, maxVel: 6, snapDist: 40, settleThr: 0.15, sepIter: 3 };
+
+function initPhysics() { rooms.forEach(r => { r._vx = 0; r._vy = 0; }); }
+function startPhysics() { initPhysics(); physicsRunning = true; if (animFrame) cancelAnimationFrame(animFrame); animFrame = requestAnimationFrame(physicsLoop); }
+function stopPhysics() { physicsRunning = false; if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; } }
+
+function physicsLoop() {
+  if (!physicsRunning) return;
+  const sections = deriveSections(); let totalEnergy = 0;
+  rooms.forEach(r => {
+    if (!r._vx) r._vx = 0; if (!r._vy) r._vy = 0;
+    const targetX = r.bx - r.box.w / 2, targetY = r.by - r.box.h / 2;
+    r._vx += (targetX - r.box.x) * PHYSICS.springK;
+    r._vy += (targetY - r.box.y) * PHYSICS.springK;
+    sections.forEach(s => {
+      const dLeft = s.x - r.box.x, dRight = s.x - (r.box.x + r.box.w);
+      if (Math.abs(dLeft) < PHYSICS.snapDist) r._vx += dLeft * PHYSICS.sectionK;
+      if (Math.abs(dRight) < PHYSICS.snapDist) r._vx += dRight * PHYSICS.sectionK;
+    });
+    const zonemates = rooms.filter(o => o.zone === r.zone && o.id !== r.id);
+    if (zonemates.length) {
+      const avgY = zonemates.reduce((s,o) => s + o.box.y + o.box.h/2, 0) / zonemates.length;
+      const avgX = zonemates.reduce((s,o) => s + o.box.x + o.box.w/2, 0) / zonemates.length;
+      r._vy += (avgY - (r.box.y + r.box.h/2)) * 0.008;
+      r._vx += (avgX - (r.box.x + r.box.w/2)) * 0.004;
+    }
+    const zone = r.zone;
+    if (zone < 5) {
+      const zLeft = sections[zone].x, zRight = sections[zone + 1]?.x ?? (W - 20);
+      if (r.box.x < zLeft - 30) r._vx += (zLeft - r.box.x) * 0.12;
+      if (r.box.x + r.box.w > zRight + 30) r._vx -= (r.box.x + r.box.w - zRight) * 0.12;
+    }
+    r._vx *= PHYSICS.damping; r._vy *= PHYSICS.damping;
+    r._vx = Math.max(-PHYSICS.maxVel, Math.min(PHYSICS.maxVel, r._vx));
+    r._vy = Math.max(-PHYSICS.maxVel, Math.min(PHYSICS.maxVel, r._vy));
+    totalEnergy += Math.abs(r._vx) + Math.abs(r._vy);
+    r.box.x = Math.round(r.box.x + r._vx); r.box.y = Math.round(r.box.y + r._vy);
+    r.box.x = Math.max(10, Math.min(W - r.box.w - 10, r.box.x));
+    r.box.y = Math.max(75, Math.min(H - r.box.h - 10, r.box.y));
+  });
+  for (let iter = 0; iter < PHYSICS.sepIter; iter++) {
+    for (let i = 0; i < rooms.length; i++) {
+      for (let j = i + 1; j < rooms.length; j++) {
+        const a = rooms[i], b = rooms[j];
+        const overlapX = Math.min(a.box.x+a.box.w, b.box.x+b.box.w) - Math.max(a.box.x, b.box.x);
+        const overlapY = Math.min(a.box.y+a.box.h, b.box.y+b.box.h) - Math.max(a.box.y, b.box.y);
+        if (overlapX > 0 && overlapY > 0) {
+          const half = 0.5;
+          if (overlapX < overlapY) {
+            const acx = a.box.x + a.box.w/2, bcx = b.box.x + b.box.w/2;
+            const dir = acx > bcx ? 1 : -1;
+            a.box.x += dir * overlapX * half; b.box.x -= dir * overlapX * half;
+          } else {
+            const acy = a.box.y + a.box.h/2, bcy = b.box.y + b.box.h/2;
+            const dir = acy > bcy ? 1 : -1;
+            a.box.y += dir * overlapY * half; b.box.y -= dir * overlapY * half;
+          }
+        }
+      }
+    }
+  }
+  envelope = null; render();
+  if (totalEnergy < PHYSICS.settleThr) { stopPhysics(); setStatus('✅ Layout settled — export or keep exploring'); return; }
+  animFrame = requestAnimationFrame(physicsLoop);
+}
+
+render();
+</script>
+</body>
+</html>
