@@ -16,7 +16,7 @@ Example:
 import sys, os, json, textwrap
 from openai import OpenAI
 
-OPENAI_KEY = "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"
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
 
 DIFF_PROMPT = """
 You are comparing two images of the same building:

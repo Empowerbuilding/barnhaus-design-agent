@@ -19,7 +19,7 @@ import urllib.error
 # ─────────────────────────────────────────────
 # CONFIG
 # ─────────────────────────────────────────────
-OPENAI_KEY = "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"
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY")
 SUPABASE_URL = "https://hbfjdfxephlczkfgpceg.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiZmpkZnhlcGhsY3prZmdwY2VnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTMzNzcxMCwiZXhwIjoyMDU0OTEzNzEwfQ.weXk7CqDqR8XkEpi4kaI_GmHWlkqh6snOMQm-hk48RM"
 
