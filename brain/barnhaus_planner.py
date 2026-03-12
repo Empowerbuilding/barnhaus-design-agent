@@ -30,7 +30,7 @@ ROOM_NORMS = {
     "Bedroom":             {"min": 110, "target_lo": 130, "target_hi": 180, "max": 220},
     "Bathroom":            {"min": 40,  "target_lo": 90,  "target_hi": 120, "max": 160},
     "Great Room":          {"min": 280, "target_lo": 400, "target_hi": 700, "max": 1400},
-    "Kitchen":             {"min": 180, "target_lo": 220, "target_hi": 320, "max": 420},
+    "Kitchen":             {"min": 88, "target_lo": 180, "target_hi": 280, "max": 420},
     "Dining Room":         {"min": 100, "target_lo": 150, "target_hi": 280, "max": 400},
     "Dining":              {"min": 100, "target_lo": 150, "target_hi": 280, "max": 400},
     "Office":              {"min": 100, "target_lo": 160, "target_hi": 220, "max": 300},

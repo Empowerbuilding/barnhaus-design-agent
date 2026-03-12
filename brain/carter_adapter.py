@@ -181,23 +181,62 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
         gr_labels = carter_export.get("gr_labels", [])
         label_map = {l["id"]: l for l in gr_labels}
         if label_map:
+            # Use cx/cy as position guides to proportionally partition the GR box
+            # Bubble radius is spatial intent, not dimension — partition by centroid position
             GR_LABEL_NAMES = {"kitchen": "Kitchen", "dining": "Dining Room", "living": "Living Room"}
-            for lid, bname in GR_LABEL_NAMES.items():
-                if lid in label_map:
-                    lb = label_map[lid]
-                    room_coords[bname] = {
-                        "x0": round(lb["x"] / scale, 1),
-                        "y0": round(lb["y"] / scale, 1),
-                        "x1": round((lb["x"] + lb["w"]) / scale, 1),
-                        "y1": round((lb["y"] + lb["h"]) / scale, 1),
-                        "sf": round((lb["w"] / scale) * (lb["h"] / scale)),
-                        "zone": "living",
-                        "adjacencies": ["Great Room"]
+            # Determine split axes from centroids relative to GR box (in px)
+            # Strategy: find median cx to split left/right, median cy to split top/bottom
+            labels_present = {lid: label_map[lid] for lid in GR_LABEL_NAMES if lid in label_map}
+            if labels_present:
+                # Get GR box in px
+                gr_px_x0 = gr["x0"] * scale
+                gr_px_y0 = gr["y0"] * scale
+                gr_px_x1 = gr["x1"] * scale
+                gr_px_y1 = gr["y1"] * scale
+                gr_pw = gr_px_x1 - gr_px_x0
+                gr_ph = gr_px_y1 - gr_px_y0
+                # Sort labels by cx to find left/right split
+                sorted_by_x = sorted(labels_present.values(), key=lambda l: l["cx"])
+                # If 3 labels: living=left, kitchen=upper-right, dining=lower-right
+                # Use cx of rightmost label group vs leftmost as split
+                if len(sorted_by_x) >= 2:
+                    split_x_px = (sorted_by_x[0]["cx"] + sorted_by_x[1]["cx"]) / 2
+                    split_x = round(split_x_px / scale, 1)
+                else:
+                    split_x = round(gr["x0"] + (gr["x1"] - gr["x0"]) * 0.5, 1)
+                # For kitchen/dining vertical split: use their cy midpoint
+                k = labels_present.get("kitchen")
+                d = labels_present.get("dining")
+                if k and d:
+                    split_y = round(((k["cy"] + d["cy"]) / 2) / scale, 1)
+                else:
+                    split_y = round(gr["y0"] + (gr["y1"] - gr["y0"]) * 0.45, 1)
+                # Assign boxes: living = left half, kitchen = upper-right, dining = lower-right
+                if "living" in labels_present:
+                    room_coords["Living Room"] = {
+                        "x0": gr["x0"], "y0": gr["y0"], "x1": split_x, "y1": gr["y1"],
+                        "sf": round((split_x - gr["x0"]) * (gr["y1"] - gr["y0"])),
+                        "zone": "living", "adjacencies": ["Great Room", "Kitchen", "Dining Room"]
                     }
-            room_coords["Great Room"].setdefault("adjacencies", [])
-            room_coords["Great Room"]["adjacencies"] += [
-                n for lid, n in GR_LABEL_NAMES.items() if lid in label_map
-            ]
+                if "kitchen" in labels_present:
+                    room_coords["Kitchen"] = {
+                        "x0": split_x, "y0": gr["y0"], "x1": gr["x1"], "y1": split_y,
+                        "sf": round((gr["x1"] - split_x) * (split_y - gr["y0"])),
+                        "zone": "living", "adjacencies": ["Great Room", "Dining Room", "Living Room"]
+                    }
+                if "dining" in labels_present:
+                    room_coords["Dining Room"] = {
+                        "x0": split_x, "y0": split_y, "x1": gr["x1"], "y1": gr["y1"],
+                        "sf": round((gr["x1"] - split_x) * (gr["y1"] - split_y)),
+                        "zone": "living", "adjacencies": ["Great Room", "Kitchen", "Living Room"]
+                    }
+                room_coords["Great Room"].setdefault("adjacencies", [])
+                room_coords["Great Room"]["adjacencies"] += [
+                    n for lid, n in GR_LABEL_NAMES.items() if lid in label_map
+                ]
+                # Shrink GR to left portion only (living zone)
+                room_coords["Great Room"]["x1"] = split_x
+                room_coords["Great Room"]["sf"] = round((split_x - gr["x0"]) * (gr["y1"] - gr["y0"]))
         else:
             # Fallback: proportional split from GR box
             mid_x = round(gx0 + gw * 0.5, 1)
