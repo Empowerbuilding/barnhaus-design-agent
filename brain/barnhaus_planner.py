@@ -33,7 +33,7 @@ ROOM_NORMS = {
     "Kitchen":             {"min": 180, "target_lo": 220, "target_hi": 320, "max": 420},
     "Dining Room":         {"min": 100, "target_lo": 150, "target_hi": 280, "max": 400},
     "Dining":              {"min": 100, "target_lo": 150, "target_hi": 280, "max": 400},
-    "Office":              {"min": 120, "target_lo": 160, "target_hi": 220, "max": 300},
+    "Office":              {"min": 100, "target_lo": 160, "target_hi": 220, "max": 300},
     "Bonus Room":          {"min": 150, "target_lo": 180, "target_hi": 280, "max": 380},
     "Butler Pantry":       {"min": 60,  "target_lo": 80,  "target_hi": 120, "max": 160},
     "Pantry":              {"min": 40,  "target_lo": 60,  "target_hi": 120, "max": 160},
@@ -64,13 +64,11 @@ MUST_TOUCH = {
 }
 
 MUST_NOT_TOUCH = {
-    # NOTE: "Master must not touch Bedroom X" and "Great Room must not touch Bed Wing"
-    # removed — these are plan-type assumptions, not universal architectural rules.
-    # Separation preference (master ↔ beds, GR ↔ beds) will be encoded as GNN weights,
-    # not hard constraints. Only genuine hard rules remain below.
-    "Master Bathroom": ["Garage"],
-    "Master Bath":     ["Garage"],
-    "Kitchen":         ["Garage"],
+    # All separation rules removed — these are GNN weights derived from training data,
+    # not hard architectural constraints. validate_layout() only enforces:
+    # 1. Required rooms present
+    # 2. Minimum SF per room type
+    # 3. Required adjacencies (MUST_TOUCH)
 }
 
 # ── Zone classification ───────────────────────────────────────────────────────

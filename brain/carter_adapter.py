@@ -111,15 +111,20 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
     names = list(room_coords.keys())
     for name in names:
         room_coords[name]["adjacencies"] = []
+    EDGE_THRESHOLD = 2.0  # ft — rooms within this distance count as adjacent
     for i, a in enumerate(names):
         for b in names[i+1:]:
             ra, rb = room_coords[a], room_coords[b]
-            # Check horizontal overlap + vertical edge proximity
             h_overlap = ra["x0"] < rb["x1"] and ra["x1"] > rb["x0"]
             v_overlap = ra["y0"] < rb["y1"] and ra["y1"] > rb["y0"]
-            v_edge = min(abs(ra["y1"] - rb["y0"]), abs(rb["y1"] - ra["y0"])) < 1.5
-            h_edge = min(abs(ra["x1"] - rb["x0"]), abs(rb["x1"] - ra["x0"])) < 1.5
-            if (h_overlap and v_edge) or (v_overlap and h_edge):
+            v_edge = min(abs(ra["y1"] - rb["y0"]), abs(rb["y1"] - ra["y0"])) < EDGE_THRESHOLD
+            h_edge = min(abs(ra["x1"] - rb["x0"]), abs(rb["x1"] - ra["x0"])) < EDGE_THRESHOLD
+            # Containment check: if one room is fully inside the other, treat as adjacent
+            a_inside_b = (rb["x0"] <= ra["x0"] and ra["x1"] <= rb["x1"] and
+                          rb["y0"] <= ra["y0"] and ra["y1"] <= rb["y1"])
+            b_inside_a = (ra["x0"] <= rb["x0"] and rb["x1"] <= ra["x1"] and
+                          ra["y0"] <= rb["y0"] and rb["y1"] <= ra["y1"])
+            if (h_overlap and v_edge) or (v_overlap and h_edge) or a_inside_b or b_inside_a:
                 room_coords[a]["adjacencies"].append(b)
                 room_coords[b]["adjacencies"].append(a)
 
