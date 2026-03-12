@@ -45,7 +45,7 @@ CARTER_TO_BARNHAUS = {
     "great_room":  "Great Room",
     "office":      "Office",
     "pantry":      "Pantry",
-    "mech":        "Laundry Room", # HVAC/utility — won't trigger validation error
+    # "mech" intentionally omitted — HVAC/utility has no Barnhaus equivalent
     "mud_room":    "Mudroom",
     "garage":      "Garage",
     "hallway1":    "Foyer",
@@ -65,24 +65,40 @@ ZONE_MAP = {
 
 # ── Adapter ───────────────────────────────────────────────────────────────────
 
+def _build_bubble_zone_map(carter_export: dict) -> dict:
+    """Build id → zone string lookup from bubbles (zone lives on bubbles, not boxes)."""
+    result = {}
+    for b in carter_export.get("bubbles", []):
+        bid = b.get("id")
+        zone_int = b.get("zone", 2)
+        if bid:
+            result[bid] = ZONE_MAP.get(zone_int, "living")
+    return result
+
+
 def _coords_with_scale(carter_export: dict, scale: float) -> dict:
     """Internal: convert Carter export using a pre-computed scale."""
+    bubble_zones = _build_bubble_zone_map(carter_export)
     room_coords = {}
     boxes = carter_export.get("boxes", [])
     h1 = carter_export.get("hallway1")
     if h1 and isinstance(h1, dict) and h1.get("id"):
         boxes = boxes + [h1]
     for box in boxes:
-        if not box.get("id"):
+        bid = box.get("id")
+        if not bid:
             continue
-        name = CARTER_TO_BARNHAUS.get(box["id"], box["id"])
+        name = CARTER_TO_BARNHAUS.get(bid)
+        if name is None:
+            continue  # omit unmapped rooms (e.g. mech)
+        zone = bubble_zones.get(bid) or ZONE_MAP.get(box.get("zone", 2), "living")
         room_coords[name] = {
             "x0": round(box["x"] / scale, 1),
             "y0": round(box["y"] / scale, 1),
             "x1": round((box["x"] + box["w"]) / scale, 1),
             "y1": round((box["y"] + box["h"]) / scale, 1),
             "sf": round((box["w"] / scale) * (box["h"] / scale)),
-            "zone": ZONE_MAP.get(box.get("zone", 2), "living"),
+            "zone": zone,
         }
     return room_coords
 
