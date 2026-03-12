@@ -77,12 +77,11 @@ CANVAS: 1300 wide x 920 tall. No rooms above y=80.
 SECTION LINES — S1=100, S2=340, S3=520, S4=880, S5=980, S6=1240
 SECTION LINES ARE SOFT GUIDES ONLY. Only snap a room edge to a section line if that edge is already within 30px of it. Do NOT pull rooms across the canvas to reach a section line. Sections define zone boundaries, not magnets.
 
-ZONES (rooms belong in their zone unless a bubble explicitly crossed into another):
-- Master Wing  (x 100–340): master_bed, m_bath, his_closet, hers_closet
-- Bed Wing     (x 340–520): bed1, bed2, bath1, bath2, wic1, wic2, half_bath
-- Great Room   (x 520–880): great_room, office (office is INSIDE great_room, not exterior)
-- Service      (x 880–980): hallway2, pantry, mech
-- Garage       (x 980–1240): mud_room, garage
+ZONES: Each room belongs to a zone defined by the current section lines.
+Use the section lines provided in the payload to determine zone boundaries — do NOT use hardcoded X ranges.
+Room zone assignments: master_bed/m_bath/his_closet/hers_closet=Master, bed1/bed2/bath1/bath2/wic1/wic2/half_bath=Bed,
+great_room/office=GreatRoom, hallway2/pantry/mech=Service, mud_room/garage=Garage.
+If a bubble has moved into a different section bay, FOLLOW IT THERE. Zone is defined by where the bubble is, not by a fixed range.
 
 HALLWAY 1: Always render as a horizontal corridor at approximately y=578–613, spanning x=220–520. It separates the master wing (top) from bed1/bath1 zone (bottom). It is NOT a draggable bubble — always include it in output at these fixed coordinates.
 
@@ -112,7 +111,7 @@ V4 REFERENCE BOX POSITIONS (use as baseline, adjust proportionally to bubble mov
 `;
 
 // ─── Call Claude ──────────────────────────────────────────────────────────────
-async function callClaude(bubbles, sections) {
+async function callClaude(bubbles, sections, gr_labels = []) {
   // Build default bubble positions for delta calculation
   const DEFAULT_BUBBLES = {
     master_bed:  { cx:262, cy:484 }, m_bath:     { cx:160, cy:556 },
@@ -132,62 +131,62 @@ async function callClaude(bubbles, sections) {
     return def ? { id: b.id, dx: b.cx - def.cx, dy: b.cy - def.cy } : { id: b.id, dx: 0, dy: 0 };
   });
 
+  const grSection = gr_labels.length > 0 ? `
+GR SUB-ROOMS (Kitchen, Living, Dining are open-plan zones inside the Great Room):
+${JSON.stringify(gr_labels.map(l => ({ id: l.id, label: l.label, cx: l.cx, cy: l.cy, br: l.br })), null, 2)}
+Rules for GR sub-rooms:
+- They live INSIDE the Great Room envelope — their boxes must not extend outside great_room's box.
+- They are open-plan — no walls between them, just zone labels.
+- Size them proportionally from their bubble positions within GR. Min 88 SF each.
+- Kitchen: typically upper-right of GR (near service zone), min 8×11ft
+- Dining: lower area of GR, min 8×10ft  
+- Living: largest sub-zone, takes remaining GR area
+- Include each in your output: { "id": "living"|"kitchen"|"dining", "x", "y", "w", "h" }
+` : '';
+
+  // Classify bubbles: moved significantly (>40px) vs default position
+  const MOVED_THRESHOLD = 40;
+  const movedRooms = deltas.filter(d => Math.hypot(d.dx, d.dy) > MOVED_THRESHOLD).map(d => d.id);
+
   const prompt = `${ARCH_RULES}
 ${JSON.stringify(V4_BOXES, null, 2)}
 
-BUBBLE MOVEMENT DELTAS (how far each bubble moved from its default position):
-${JSON.stringify(deltas, null, 2)}
-
-CURRENT BUBBLE POSITIONS:
+CURRENT BUBBLE POSITIONS (THIS IS THE USER'S INTENT — follow these closely):
 ${JSON.stringify(bubbles.map(b => ({ id: b.id, label: b.label, cx: b.cx, cy: b.cy, r: b.r })), null, 2)}
 
+MOVED ROOMS (bubble moved >40px from default — these rooms MUST follow their bubble position closely):
+${JSON.stringify(movedRooms)}
+For moved rooms: place box CENTER within 30px of bubble cx/cy. Do NOT pull them back to V4.
+For unmoved rooms: use V4 reference as your baseline.
+${grSection}
 TASK:
-1. Start from the V4 reference positions above.
-2. For each room, shift its box by approximately the same delta as its bubble moved (dx, dy).
-3. Apply all hard rules to clean up any violations.
+1. For each room, center its box on the bubble cx/cy position.
+   - Moved rooms (listed above): follow bubble position strictly, only adjust for hard rules.
+   - Unmoved rooms: use V4 reference dimensions and position as baseline.
+2. Derive zone boundaries from the CURRENT section lines, not from hardcoded X ranges.
+3. Apply hard rules (no overlaps, bedroom aspect ratio, exterior walls) to clean up violations.
 4. Always include "hallway1" as { "id": "hallway1", "x": 220, "y": 578, "w": 300, "h": 35 } — it is always there.
-5. Return ONLY a valid JSON array. Each entry: { "id": "<room_id>", "x": <int>, "y": <int>, "w": <int>, "h": <int> }
+5. If GR sub-rooms are provided, include living, kitchen, and dining in the output, sized and positioned inside great_room.
+6. Return ONLY a valid JSON array. Each entry: { "id": "<room_id>", "x": <int>, "y": <int>, "w": <int>, "h": <int> }
 No markdown, no explanation, just the JSON array.`;
 
-  // Use OpenAI if available, fall back to Anthropic
   let text;
   if (OPENAI_KEY) {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        max_tokens: 2048,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}` },
+      body: JSON.stringify({ model: 'gpt-4o', max_tokens: 2048, messages: [{ role: 'user', content: prompt }] }),
     });
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`OpenAI API error ${response.status}: ${err}`);
-    }
+    if (!response.ok) throw new Error(`OpenAI API error ${response.status}: ${await response.text()}`);
     const data = await response.json();
     text = data.choices?.[0]?.message?.content || '';
   } else {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 2048,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+      headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2048, messages: [{ role: 'user', content: prompt }] }),
     });
-    if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`Anthropic API error ${response.status}: ${err}`);
-    }
+    if (!response.ok) throw new Error(`Anthropic API error ${response.status}: ${await response.text()}`);
     const data = await response.json();
     text = data.content?.[0]?.text || '';
   }
@@ -217,10 +216,10 @@ const server = http.createServer(async (req, res) => {
     req.on('data', d => body += d);
     req.on('end', async () => {
       try {
-        const { bubbles, sections } = JSON.parse(body);
-        console.log(`[solver] Solving layout for ${bubbles.length} rooms...`);
+        const { bubbles, sections, gr_labels } = JSON.parse(body);
+        console.log(`[solver] Solving layout for ${bubbles.length} rooms + ${(gr_labels||[]).length} GR sub-rooms...`);
 
-        const boxes = await callClaude(bubbles, sections);
+        const boxes = await callClaude(bubbles, sections, gr_labels || []);
         console.log(`[solver] Got ${boxes.length} boxes back from Claude`);
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
