@@ -1,0 +1,15 @@
+# Large PDF source files
+training_data/new_pdfs/
+training_data/raw_extractions/
+training_data/elevation_extractions/
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Python
+__pycache__/
+*.pyc
+.env

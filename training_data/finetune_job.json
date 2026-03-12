@@ -1,0 +1,7 @@
+{
+  "job_id": "ftjob-FgQEnW3kvRWBwsAub8D4f7I8",
+  "file_id": "file-4xsb42XxFWVCUGw7BCinWT",
+  "status": "succeeded",
+  "model": "gpt-4o-2024-08-06",
+  "fine_tuned_model": "ft:gpt-4o-2024-08-06:personal:barnhaus:DGsyA2j2"
+}

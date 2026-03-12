@@ -1,0 +1,3395 @@
+{
+  "document": {
+    "title": "test_project",
+    "path": "H:\\Shared drives\\Barnhaus\\Revit\\Revit\\Projects\\test_project.rvt",
+    "is_modified": false,
+    "is_family": false,
+    "is_workshared": false,
+    "project_name": null,
+    "project_number": null,
+    "project_address": null,
+    "project_status": null
+  },
+  "levels": [
+    {
+      "id": 722610,
+      "name": "Level 1.0",
+      "elevation": 6.9387189883494696e-18,
+      "elevation_ft": 6.9387189883494696e-18,
+      "elevation_m": 2.1149215476489186e-18
+    },
+    {
+      "id": 5949410,
+      "name": "L1 Roof",
+      "elevation": 10,
+      "elevation_ft": 10,
+      "elevation_m": 3.0480000000000005
+    },
+    {
+      "id": 723660,
+      "name": "Level 2.0",
+      "elevation": 11,
+      "elevation_ft": 11,
+      "elevation_m": 3.3528000000000002
+    },
+    {
+      "id": 5949411,
+      "name": "Garage Roof",
+      "elevation": 12,
+      "elevation_ft": 12,
+      "elevation_m": 3.6576000000000004
+    },
+    {
+      "id": 5949412,
+      "name": "L2 Roof",
+      "elevation": 20,
+      "elevation_ft": 20,
+      "elevation_m": 6.096000000000001
+    },
+    {
+      "id": 724245,
+      "name": "Level 3.00",
+      "elevation": 22,
+      "elevation_ft": 22,
+      "elevation_m": 6.7056000000000004
+    }
+  ],
+  "wall_types": [],
+  "floor_types": [],
+  "roof_types": [],
+  "door_families": [
+    {
+      "family_id": 164247,
+      "name": "Door-Interior-Single-Pocket-2_Panel-Wood",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 1910229,
+          "name": "36\" x 96\""
+        },
+        {
+          "type_id": 3262297,
+          "name": "28\""
+        }
+      ]
+    },
+    {
+      "family_id": 177731,
+      "name": "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 1694914,
+          "name": "36\" x 96\""
+        },
+        {
+          "type_id": 2732538,
+          "name": "36\" x 96\" Orange"
+        },
+        {
+          "type_id": 2878018,
+          "name": "36\" x 80\""
+        },
+        {
+          "type_id": 3453520,
+          "name": "36\" x 96\" INTERIOR"
+        }
+      ]
+    },
+    {
+      "family_id": 222343,
+      "name": "4_Panel_Bifold_Door_18619",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 227752,
+          "name": "72\" x 84\""
+        }
+      ]
+    },
+    {
+      "family_id": 228963,
+      "name": "Interior_barn_door_18732",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 230874,
+          "name": "Interior_barn_door_18732"
+        }
+      ]
+    },
+    {
+      "family_id": 524164,
+      "name": "Int-Opening-Craftsman_Casing_1726",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 1910437,
+          "name": "36\" x 96\""
+        },
+        {
+          "type_id": 2985078,
+          "name": "Wide"
+        },
+        {
+          "type_id": 3289011,
+          "name": "48\""
+        },
+        {
+          "type_id": 3806940,
+          "name": "72\""
+        }
+      ]
+    },
+    {
+      "family_id": 896340,
+      "name": "Exterior_Sliding_Door_3843",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 2005970,
+          "name": "6'-0\"W. x 8'-0\"H."
+        },
+        {
+          "type_id": 3328494,
+          "name": "8'-0\"W. x 8'-0\"H. 2"
+        }
+      ]
+    },
+    {
+      "family_id": 1821525,
+      "name": "Frameless_Glass_shower_door_19168",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 1822521,
+          "name": "2'-6\" x 8'-0\""
+        }
+      ]
+    },
+    {
+      "family_id": 1933075,
+      "name": "Door-Interior-Single-1_Panel-Wood",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 516570,
+          "name": "32\" x 96\""
+        },
+        {
+          "type_id": 3089323,
+          "name": "36\" x 96\""
+        },
+        {
+          "type_id": 3214647,
+          "name": "28\""
+        },
+        {
+          "type_id": 3285651,
+          "name": "30\" x 96\""
+        },
+        {
+          "type_id": 3344694,
+          "name": "24\""
+        }
+      ]
+    },
+    {
+      "family_id": 2968155,
+      "name": "Curtain_Wall_Four_Panel_Sliding_Door_15505",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 2969097,
+          "name": "Curtain_Wall_Four_Panel_Sliding_Door_15505"
+        }
+      ]
+    },
+    {
+      "family_id": 2969115,
+      "name": "Four_Panel_Sliding_door_11160",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 2970275,
+          "name": "4 panel sliding door 4.40"
+        },
+        {
+          "type_id": 2970277,
+          "name": "4 panel sliding door 2.00"
+        },
+        {
+          "type_id": 2970279,
+          "name": "4 panel sliding door Parametric(Recovery)"
+        },
+        {
+          "type_id": 2970281,
+          "name": "4 panel sliding door 4.00"
+        }
+      ]
+    },
+    {
+      "family_id": 2970301,
+      "name": "Three_Panel_Sliding_Door_17534",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 2971180,
+          "name": "108\" x 84\""
+        },
+        {
+          "type_id": 2971182,
+          "name": "108\" x 80\""
+        },
+        {
+          "type_id": 2971184,
+          "name": "120\" x 96\""
+        },
+        {
+          "type_id": 2971186,
+          "name": "120\" x 84\""
+        },
+        {
+          "type_id": 2971188,
+          "name": "144\" x 96\""
+        }
+      ]
+    },
+    {
+      "family_id": 2980871,
+      "name": "Door-Garage-Flush_Panel",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 2983069,
+          "name": "96\" x 84\""
+        },
+        {
+          "type_id": 2990664,
+          "name": "RV Door"
+        },
+        {
+          "type_id": 3109351,
+          "name": "16W X 10H"
+        },
+        {
+          "type_id": 3170385,
+          "name": "10 X 10 OD GL"
+        },
+        {
+          "type_id": 3323860,
+          "name": "10x10"
+        },
+        {
+          "type_id": 3335361,
+          "name": "10x14"
+        },
+        {
+          "type_id": 3389088,
+          "name": "12X14"
+        },
+        {
+          "type_id": 3481484,
+          "name": "12 X 12"
+        }
+      ]
+    },
+    {
+      "family_id": 3001959,
+      "name": "Overhead_Door_-_Sectional_with_Glass_13396",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3002006,
+          "name": "10'W X 12'H"
+        },
+        {
+          "type_id": 3004680,
+          "name": "16' W X 8' H"
+        }
+      ]
+    },
+    {
+      "family_id": 3045713,
+      "name": "Door-Interior-Double-Sliding-2_Panel-Wood",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3047563,
+          "name": "68\" x 84\""
+        },
+        {
+          "type_id": 3047565,
+          "name": "72\" x 96\""
+        }
+      ]
+    },
+    {
+      "family_id": 3101759,
+      "name": "Door-Inswing-Andersen-E_Series-Double",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3106556,
+          "name": "Door-Inswing-Andersen-E_Series-Double"
+        },
+        {
+          "type_id": 3107007,
+          "name": "6080 EXT"
+        }
+      ]
+    },
+    {
+      "family_id": 3106473,
+      "name": "SP2",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3106472,
+          "name": "SP2"
+        }
+      ]
+    },
+    {
+      "family_id": 3326547,
+      "name": "Door-Interior-Double-Pocket-2_Panel-Wood",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3328106,
+          "name": "72\" x 96\""
+        }
+      ]
+    },
+    {
+      "family_id": 3557804,
+      "name": "Door-Exterior-Double-Full Glass-Wood_Clad",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 171945,
+          "name": "72\" x 96\""
+        },
+        {
+          "type_id": 2995412,
+          "name": "60\" x 96\""
+        },
+        {
+          "type_id": 3557677,
+          "name": "8'"
+        }
+      ]
+    },
+    {
+      "family_id": 3585657,
+      "name": "Vault_Door_1124 (1)",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3586246,
+          "name": "36\" x 84\""
+        },
+        {
+          "type_id": 3586248,
+          "name": "34\" x 84\""
+        },
+        {
+          "type_id": 3586250,
+          "name": "32\" x 84\""
+        },
+        {
+          "type_id": 3586252,
+          "name": "30\" x 84\""
+        },
+        {
+          "type_id": 3586254,
+          "name": "30\" x 80\""
+        },
+        {
+          "type_id": 3586256,
+          "name": "36\" x 80\""
+        },
+        {
+          "type_id": 3586258,
+          "name": "34\" x 80\""
+        }
+      ]
+    },
+    {
+      "family_id": 3618204,
+      "name": "Vault_Door_2672",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3587382,
+          "name": "Vault_Door_2672"
+        }
+      ]
+    },
+    {
+      "family_id": 3828836,
+      "name": "Door-Curtain-Wall-Double-Glass",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3830332,
+          "name": "Door-Curtain-Wall-Double-Glass"
+        }
+      ]
+    },
+    {
+      "family_id": 3831767,
+      "name": "Doors_GEALAN_S9000_Double-Vent-Door",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3863705,
+          "name": "Doors_GEALAN_S9000_Double-Vent-Door"
+        }
+      ]
+    },
+    {
+      "family_id": 3863973,
+      "name": "Custom_Double_Panel_Glass_Door_15045",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3865150,
+          "name": "Custom_Double_Panel_Glass_Door_15045"
+        }
+      ]
+    },
+    {
+      "family_id": 3865168,
+      "name": "Double_Glass_Sliding_Shower_Door_20748",
+      "category": "Doors",
+      "types": [
+        {
+          "type_id": 3866393,
+          "name": "Interior - Double Sliding Glass Shower Door"
+        }
+      ]
+    }
+  ],
+  "window_families": [
+    {
+      "family_id": 65222,
+      "name": "Instance-Window-Fixed",
+      "category": "Windows",
+      "types": [
+        {
+          "type_id": 1137558,
+          "name": "72\" x 36\""
+        },
+        {
+          "type_id": 1178924,
+          "name": "60\" x 24\""
+        },
+        {
+          "type_id": 2242135,
+          "name": "48\" x 96\""
+        },
+        {
+          "type_id": 2690468,
+          "name": "24\" x 96\""
+        },
+        {
+          "type_id": 2883666,
+          "name": "72\" x 24\""
+        },
+        {
+          "type_id": 2883738,
+          "name": "72\" x 30\""
+        },
+        {
+          "type_id": 2919212,
+          "name": "18\" X 18\""
+        },
+        {
+          "type_id": 2919562,
+          "name": "12\" X 24\""
+        },
+        {
+          "type_id": 2930280,
+          "name": "48\" x 84\""
+        },
+        {
+          "type_id": 2995826,
+          "name": "48\" x 48\""
+        },
+        {
+          "type_id": 3089706,
+          "name": "60\" x 30\""
+        },
+        {
+          "type_id": 3388481,
+          "name": "6080 FX"
+        }
+      ]
+    },
+    {
+      "family_id": 351454,
+      "name": "Window-Awning-Single",
+      "category": "Windows",
+      "types": [
+        {
+          "type_id": 520755,
+          "name": "36\" x 60\""
+        },
+        {
+          "type_id": 1992263,
+          "name": "36\" x 72\""
+        },
+        {
+          "type_id": 2207619,
+          "name": "24\" x 72\""
+        }
+      ]
+    },
+    {
+      "family_id": 3092476,
+      "name": "Window-Double_Hung-Andersen-E_Series",
+      "category": "Windows",
+      "types": [
+        {
+          "type_id": 3096241,
+          "name": "Window-Double_Hung-Andersen-E_Series"
+        },
+        {
+          "type_id": 3096432,
+          "name": "3060 SH"
+        },
+        {
+          "type_id": 3221473,
+          "name": "3050 SH"
+        }
+      ]
+    },
+    {
+      "family_id": 3097130,
+      "name": "Window-Double_Hung_Transom-Andersen-E_Series",
+      "category": "Windows",
+      "types": [
+        {
+          "type_id": 3100272,
+          "name": "Window-Double_Hung_Transom-Andersen-E_Series"
+        },
+        {
+          "type_id": 3100471,
+          "name": "3026 FX"
+        },
+        {
+          "type_id": 3101041,
+          "name": "6020 FX"
+        },
+        {
+          "type_id": 3101292,
+          "name": "4040 FX"
+        },
+        {
+          "type_id": 3101450,
+          "name": "5020 FX"
+        },
+        {
+          "type_id": 3101603,
+          "name": "4620 FX"
+        },
+        {
+          "type_id": 3196171,
+          "name": "3040 SH"
+        },
+        {
+          "type_id": 3563692,
+          "name": "3036"
+        }
+      ]
+    },
+    {
+      "family_id": 3474726,
+      "name": "Window-Casement-Single_Left",
+      "category": "Windows",
+      "types": [
+        {
+          "type_id": 3406610,
+          "name": "24\" x 36\""
+        },
+        {
+          "type_id": 3406905,
+          "name": "17\" x 36\""
+        },
+        {
+          "type_id": 3407138,
+          "name": "29\" x 48\""
+        },
+        {
+          "type_id": 3407239,
+          "name": "36\" x 60\""
+        },
+        {
+          "type_id": 3407362,
+          "name": "36\" x 53\""
+        },
+        {
+          "type_id": 3479785,
+          "name": "36\" X 48\""
+        }
+      ]
+    }
+  ],
+  "stair_families": [],
+  "other_families": {
+    "Casework": [
+      {
+        "family_id": 1395810,
+        "name": "Upper Cabinet-Single Door-Wall",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 1396338,
+            "name": "18\""
+          },
+          {
+            "type_id": 1396348,
+            "name": "24\""
+          },
+          {
+            "type_id": 3424657,
+            "name": "18\" 2"
+          },
+          {
+            "type_id": 3438510,
+            "name": "18\" 3"
+          }
+        ]
+      },
+      {
+        "family_id": 1398651,
+        "name": "Base Cabinet-2 Bin",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 1399309,
+            "name": "15\""
+          }
+        ]
+      },
+      {
+        "family_id": 3216373,
+        "name": "Tall Cabinet-Double Door",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3216935,
+            "name": "30\""
+          },
+          {
+            "type_id": 3216937,
+            "name": "36\""
+          },
+          {
+            "type_id": 3216939,
+            "name": "42\""
+          },
+          {
+            "type_id": 3216941,
+            "name": "48\""
+          }
+        ]
+      },
+      {
+        "family_id": 3217523,
+        "name": "Tall Cabinet-Shelf Unit(2)",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3218139,
+            "name": "30\""
+          },
+          {
+            "type_id": 3218141,
+            "name": "36\""
+          },
+          {
+            "type_id": 3218143,
+            "name": "42\""
+          },
+          {
+            "type_id": 3218145,
+            "name": "48\""
+          }
+        ]
+      },
+      {
+        "family_id": 3239039,
+        "name": "Base Cabinet-3 Drawers",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 2854802,
+            "name": "21\""
+          },
+          {
+            "type_id": 2854806,
+            "name": "27\""
+          },
+          {
+            "type_id": 2854810,
+            "name": "36\""
+          },
+          {
+            "type_id": 2856788,
+            "name": "39\""
+          },
+          {
+            "type_id": 2918570,
+            "name": "24\""
+          },
+          {
+            "type_id": 3239655,
+            "name": "18\""
+          },
+          {
+            "type_id": 3239657,
+            "name": "12\""
+          },
+          {
+            "type_id": 3239659,
+            "name": "15\""
+          },
+          {
+            "type_id": 3239661,
+            "name": "30\""
+          },
+          {
+            "type_id": 3239663,
+            "name": "600mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3239678,
+        "name": "Base Cabinet-Double Door & 1 Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3240329,
+            "name": "36\""
+          },
+          {
+            "type_id": 3240331,
+            "name": "24\""
+          },
+          {
+            "type_id": 3240333,
+            "name": "27\""
+          },
+          {
+            "type_id": 3240335,
+            "name": "30\""
+          },
+          {
+            "type_id": 3240337,
+            "name": "33\""
+          },
+          {
+            "type_id": 3240339,
+            "name": "900mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3240354,
+        "name": "Base Cabinet-Double Door Sink Unit",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 1401980,
+            "name": "36\""
+          },
+          {
+            "type_id": 3240976,
+            "name": "30\""
+          },
+          {
+            "type_id": 3240978,
+            "name": "24\""
+          },
+          {
+            "type_id": 3240980,
+            "name": "27\""
+          },
+          {
+            "type_id": 3240982,
+            "name": "33\""
+          },
+          {
+            "type_id": 3240984,
+            "name": "39\""
+          },
+          {
+            "type_id": 3240986,
+            "name": "42\""
+          },
+          {
+            "type_id": 3240988,
+            "name": "45\""
+          },
+          {
+            "type_id": 3240990,
+            "name": "48\""
+          }
+        ]
+      },
+      {
+        "family_id": 3241005,
+        "name": "Base Cabinet-Shelf Unit",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3241534,
+            "name": "30\""
+          },
+          {
+            "type_id": 3241536,
+            "name": "36\""
+          },
+          {
+            "type_id": 3241538,
+            "name": "42\""
+          },
+          {
+            "type_id": 3241540,
+            "name": "48\""
+          },
+          {
+            "type_id": 3241542,
+            "name": "18\""
+          },
+          {
+            "type_id": 3241544,
+            "name": "24\""
+          },
+          {
+            "type_id": 3241546,
+            "name": "900mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3241620,
+        "name": "Upper Cabinet-Double Door-Short-Wall",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3242181,
+            "name": "42\""
+          },
+          {
+            "type_id": 3242183,
+            "name": "36\""
+          },
+          {
+            "type_id": 3242185,
+            "name": "30\""
+          },
+          {
+            "type_id": 3242187,
+            "name": "24\""
+          },
+          {
+            "type_id": 3242189,
+            "name": "27\""
+          },
+          {
+            "type_id": 3242191,
+            "name": "33\""
+          },
+          {
+            "type_id": 3242193,
+            "name": "39\""
+          },
+          {
+            "type_id": 3242195,
+            "name": "45\""
+          },
+          {
+            "type_id": 3242197,
+            "name": "48\""
+          },
+          {
+            "type_id": 3242199,
+            "name": "1000mm"
+          },
+          {
+            "type_id": 3597583,
+            "name": "60\""
+          }
+        ]
+      },
+      {
+        "family_id": 3242217,
+        "name": "Upper Cabinet-Double Door-Wall",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 1396931,
+            "name": "36\""
+          },
+          {
+            "type_id": 1396933,
+            "name": "30\""
+          },
+          {
+            "type_id": 1396935,
+            "name": "24\""
+          },
+          {
+            "type_id": 1396941,
+            "name": "39\""
+          },
+          {
+            "type_id": 1397677,
+            "name": "39\" Fridge Top"
+          },
+          {
+            "type_id": 3242786,
+            "name": "42\""
+          },
+          {
+            "type_id": 3242788,
+            "name": "27\""
+          },
+          {
+            "type_id": 3242790,
+            "name": "33\""
+          },
+          {
+            "type_id": 3242792,
+            "name": "45\""
+          },
+          {
+            "type_id": 3242794,
+            "name": "48\""
+          },
+          {
+            "type_id": 3472236,
+            "name": "FRIDGE 2"
+          }
+        ]
+      },
+      {
+        "family_id": 3278836,
+        "name": "Tall Cabinet-Double Door(2)",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3279468,
+            "name": "30\""
+          },
+          {
+            "type_id": 3279470,
+            "name": "36\""
+          },
+          {
+            "type_id": 3279472,
+            "name": "24\""
+          },
+          {
+            "type_id": 3279474,
+            "name": "600mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3279489,
+        "name": "Tall Cabinet-Double Door(4)",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3280214,
+            "name": "30\""
+          },
+          {
+            "type_id": 3280216,
+            "name": "36\""
+          },
+          {
+            "type_id": 3280218,
+            "name": "24\""
+          }
+        ]
+      },
+      {
+        "family_id": 3280233,
+        "name": "Tall Cabinet-Single Door",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3280793,
+            "name": "30\""
+          },
+          {
+            "type_id": 3280795,
+            "name": "36\""
+          },
+          {
+            "type_id": 3280797,
+            "name": "24\""
+          },
+          {
+            "type_id": 3280799,
+            "name": "15\""
+          },
+          {
+            "type_id": 3280801,
+            "name": "18\""
+          },
+          {
+            "type_id": 3280803,
+            "name": "600mm"
+          },
+          {
+            "type_id": 3288758,
+            "name": "30 S"
+          }
+        ]
+      },
+      {
+        "family_id": 3543530,
+        "name": "couch_sofa_10525",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3543529,
+            "name": "Divano_Diagonal"
+          }
+        ]
+      },
+      {
+        "family_id": 3593753,
+        "name": "Base Cabinet-Built In",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 1398636,
+            "name": "24\""
+          }
+        ]
+      },
+      {
+        "family_id": 3595038,
+        "name": "Base Cabinet-Single Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3595593,
+            "name": "24\""
+          },
+          {
+            "type_id": 3595595,
+            "name": "18\""
+          },
+          {
+            "type_id": 3595597,
+            "name": "12\""
+          },
+          {
+            "type_id": 3595599,
+            "name": "15\""
+          },
+          {
+            "type_id": 3595601,
+            "name": "21\""
+          },
+          {
+            "type_id": 3595603,
+            "name": "600mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3612347,
+        "name": "Tall Cabinet-2 Door-Built in",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3613013,
+            "name": "30\""
+          },
+          {
+            "type_id": 3613015,
+            "name": "33\""
+          },
+          {
+            "type_id": 3613017,
+            "name": "24\""
+          },
+          {
+            "type_id": 3613019,
+            "name": "27\""
+          }
+        ]
+      },
+      {
+        "family_id": 3622426,
+        "name": "Base Cabinet-Double Door & 2 Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3623108,
+            "name": "30\""
+          },
+          {
+            "type_id": 3623110,
+            "name": "36\""
+          },
+          {
+            "type_id": 3623112,
+            "name": "42\""
+          },
+          {
+            "type_id": 3623114,
+            "name": "48\""
+          },
+          {
+            "type_id": 3623116,
+            "name": "33\""
+          },
+          {
+            "type_id": 3623118,
+            "name": "39\""
+          },
+          {
+            "type_id": 3623120,
+            "name": "45\""
+          }
+        ]
+      },
+      {
+        "family_id": 3623135,
+        "name": "Base Cabinet-Single Door & Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3623691,
+            "name": "24\""
+          },
+          {
+            "type_id": 3623693,
+            "name": "18\""
+          },
+          {
+            "type_id": 3623695,
+            "name": "12\""
+          },
+          {
+            "type_id": 3623697,
+            "name": "15\"'"
+          },
+          {
+            "type_id": 3623699,
+            "name": "21\""
+          }
+        ]
+      },
+      {
+        "family_id": 3623769,
+        "name": "Vanity Cabinet-3 Drawers",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3624378,
+            "name": "18\""
+          },
+          {
+            "type_id": 3624380,
+            "name": "12\""
+          },
+          {
+            "type_id": 3624382,
+            "name": "15\""
+          },
+          {
+            "type_id": 3624384,
+            "name": "21\""
+          },
+          {
+            "type_id": 3624386,
+            "name": "24\""
+          },
+          {
+            "type_id": 3624388,
+            "name": "27\""
+          },
+          {
+            "type_id": 3624390,
+            "name": "30\""
+          },
+          {
+            "type_id": 3624392,
+            "name": "36\""
+          },
+          {
+            "type_id": 3624394,
+            "name": "600mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3624409,
+        "name": "Vanity Cabinet-Double Door & 1 Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3625060,
+            "name": "36\""
+          },
+          {
+            "type_id": 3625062,
+            "name": "24\""
+          },
+          {
+            "type_id": 3625064,
+            "name": "27\""
+          },
+          {
+            "type_id": 3625066,
+            "name": "30\""
+          },
+          {
+            "type_id": 3625068,
+            "name": "33\""
+          },
+          {
+            "type_id": 3625070,
+            "name": "600mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3625085,
+        "name": "Vanity Cabinet-Double Door & 2 Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3625773,
+            "name": "30\""
+          },
+          {
+            "type_id": 3625775,
+            "name": "36\""
+          },
+          {
+            "type_id": 3625777,
+            "name": "42\""
+          },
+          {
+            "type_id": 3625779,
+            "name": "48\""
+          },
+          {
+            "type_id": 3625781,
+            "name": "33\""
+          },
+          {
+            "type_id": 3625783,
+            "name": "39\""
+          },
+          {
+            "type_id": 3625785,
+            "name": "45\""
+          },
+          {
+            "type_id": 3625787,
+            "name": "1000mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3625802,
+        "name": "Vanity Cabinet-Double Door & 4 Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3626517,
+            "name": "48\""
+          }
+        ]
+      },
+      {
+        "family_id": 3626532,
+        "name": "Vanity Cabinet-Double Door Sink Unit",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 1388067,
+            "name": "24\""
+          },
+          {
+            "type_id": 1388073,
+            "name": "36\""
+          },
+          {
+            "type_id": 3627155,
+            "name": "30\""
+          },
+          {
+            "type_id": 3627157,
+            "name": "27\""
+          },
+          {
+            "type_id": 3627159,
+            "name": "33\""
+          },
+          {
+            "type_id": 3627161,
+            "name": "39\""
+          },
+          {
+            "type_id": 3627163,
+            "name": "42\""
+          },
+          {
+            "type_id": 3627165,
+            "name": "45\""
+          },
+          {
+            "type_id": 3627167,
+            "name": "48\""
+          }
+        ]
+      },
+      {
+        "family_id": 3627182,
+        "name": "Vanity Cabinet-Shelf Unit",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3627711,
+            "name": "30\""
+          },
+          {
+            "type_id": 3627713,
+            "name": "36\""
+          },
+          {
+            "type_id": 3627715,
+            "name": "42\""
+          },
+          {
+            "type_id": 3627717,
+            "name": "48\""
+          },
+          {
+            "type_id": 3627719,
+            "name": "18\""
+          },
+          {
+            "type_id": 3627721,
+            "name": "24\""
+          },
+          {
+            "type_id": 3627723,
+            "name": "600mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3627738,
+        "name": "Vanity Cabinet-Single Door & Drawer",
+        "category": "Casework",
+        "types": [
+          {
+            "type_id": 3628323,
+            "name": "24\""
+          },
+          {
+            "type_id": 3628325,
+            "name": "18\""
+          },
+          {
+            "type_id": 3628327,
+            "name": "12\""
+          },
+          {
+            "type_id": 3628329,
+            "name": "15\""
+          },
+          {
+            "type_id": 3628331,
+            "name": "21\""
+          }
+        ]
+      }
+    ],
+    "Furniture": [
+      {
+        "family_id": 234946,
+        "name": "Bed-Standard",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 235483,
+            "name": "Queen 60\" x 79\""
+          },
+          {
+            "type_id": 235485,
+            "name": "King 78\" x 80\""
+          }
+        ]
+      },
+      {
+        "family_id": 414622,
+        "name": "Refridgerator_8278",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 415408,
+            "name": "Refridgerator_8278"
+          }
+        ]
+      },
+      {
+        "family_id": 415778,
+        "name": "123_or_4_seats_couch_4554",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 416440,
+            "name": "3 lugares"
+          }
+        ]
+      },
+      {
+        "family_id": 441660,
+        "name": "TV - Flat Screen",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 442528,
+            "name": "50\""
+          }
+        ]
+      },
+      {
+        "family_id": 2187538,
+        "name": "Table-Night Stand",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 468516,
+            "name": "24\" x 24\" x 30\""
+          }
+        ]
+      },
+      {
+        "family_id": 3081936,
+        "name": "Table-Dining Round",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3082476,
+            "name": "36\" Diameter"
+          },
+          {
+            "type_id": 3082478,
+            "name": "60\" Diameter"
+          },
+          {
+            "type_id": 3082480,
+            "name": "84\" Diameter"
+          }
+        ]
+      },
+      {
+        "family_id": 3179611,
+        "name": "Table-Dining",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3180114,
+            "name": "30\" x 84\" x 22\""
+          },
+          {
+            "type_id": 3180116,
+            "name": "30\" x 60\" x 18\""
+          },
+          {
+            "type_id": 3180118,
+            "name": "24\" x 36\" x 24\""
+          }
+        ]
+      },
+      {
+        "family_id": 3219967,
+        "name": "Dresser",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3220550,
+            "name": "48\" x 72\" x 24\""
+          },
+          {
+            "type_id": 3220552,
+            "name": "48\" x 60\" x 24\""
+          },
+          {
+            "type_id": 3220554,
+            "name": "72\" x 60\" x 18\""
+          }
+        ]
+      },
+      {
+        "family_id": 3220717,
+        "name": "Dresser-Detailed",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3221275,
+            "name": "Dresser-Detailed"
+          }
+        ]
+      },
+      {
+        "family_id": 3397449,
+        "name": "Chair-Corbu",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3398979,
+            "name": "Chair"
+          }
+        ]
+      },
+      {
+        "family_id": 3567713,
+        "name": "Book_Case_9062",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3568516,
+            "name": "Book_Case_9062"
+          }
+        ]
+      },
+      {
+        "family_id": 3570731,
+        "name": "Chair-Breuer",
+        "category": "Furniture",
+        "types": [
+          {
+            "type_id": 3571237,
+            "name": "Chair-Breuer"
+          }
+        ]
+      }
+    ],
+    "Plumbing Fixtures": [
+      {
+        "family_id": 233128,
+        "name": "Tub-Rectangular-3D",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 233702,
+            "name": "Tub-Rectangular-3D"
+          }
+        ]
+      },
+      {
+        "family_id": 239049,
+        "name": "Toilet-Domestic-3D",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 239914,
+            "name": "Toilet-Domestic-3D"
+          }
+        ]
+      },
+      {
+        "family_id": 407801,
+        "name": "Sink Kitchen-Island",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 408444,
+            "name": "18\" x 18\""
+          }
+        ]
+      },
+      {
+        "family_id": 408459,
+        "name": "Sink Kitchen-Single",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 409105,
+            "name": "30\" x 21\""
+          }
+        ]
+      },
+      {
+        "family_id": 410609,
+        "name": "Sink Vanity-Square",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 411306,
+            "name": "20\" x 18\""
+          }
+        ]
+      },
+      {
+        "family_id": 1393137,
+        "name": "Shower_columns_15486",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 1393886,
+            "name": "Shower_columns_15486"
+          }
+        ]
+      },
+      {
+        "family_id": 1493015,
+        "name": "Shower_Head_on_hose_7023",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 1493817,
+            "name": "Shower_Head_on_hose_7023"
+          }
+        ]
+      },
+      {
+        "family_id": 1832703,
+        "name": "Floor Drain - Round",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 1833694,
+            "name": "6\" Strainer - 4\" Drain"
+          }
+        ]
+      },
+      {
+        "family_id": 2465214,
+        "name": "Hose_Bibb_9380 (3)",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 2465233,
+            "name": "Hose Bibb"
+          }
+        ]
+      },
+      {
+        "family_id": 3054916,
+        "name": "Tub-Free Standing-3D",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 3055473,
+            "name": "30\" x 60\""
+          },
+          {
+            "type_id": 3268292,
+            "name": "3x5"
+          }
+        ]
+      },
+      {
+        "family_id": 3395573,
+        "name": "Stacked Washer and Dryer",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 3396540,
+            "name": "26\"x25\" - Private"
+          },
+          {
+            "type_id": 3396542,
+            "name": "26\"x25\" - Public"
+          }
+        ]
+      },
+      {
+        "family_id": 3811835,
+        "name": "Urinal - Stall",
+        "category": "Plumbing Fixtures",
+        "types": [
+          {
+            "type_id": 3811860,
+            "name": "Standard"
+          }
+        ]
+      }
+    ],
+    "Lighting Fixtures": [
+      {
+        "family_id": 605903,
+        "name": "gooseneck_exterior_wall_light_19146",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 606665,
+            "name": "100W - 120V"
+          }
+        ]
+      },
+      {
+        "family_id": 659958,
+        "name": "Downlight - Recessed Can",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 660488,
+            "name": "6\" Incandescent - 120V"
+          }
+        ]
+      },
+      {
+        "family_id": 687689,
+        "name": "Ceiling_Fan_With_Light_15608",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 688763,
+            "name": "Type 1"
+          }
+        ]
+      },
+      {
+        "family_id": 782258,
+        "name": "Downlight - Rectangle - LED",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 783093,
+            "name": "18W Square"
+          }
+        ]
+      },
+      {
+        "family_id": 1581026,
+        "name": "Downlight - Under Cabinet",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 1581510,
+            "name": "2'     120V"
+          },
+          {
+            "type_id": 1582286,
+            "name": "3'     120V 2"
+          },
+          {
+            "type_id": 1582538,
+            "name": "18\"     120V 2"
+          }
+        ]
+      },
+      {
+        "family_id": 1588198,
+        "name": "Edison_Wall_Sconce_20320",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 1589357,
+            "name": "Albion Light"
+          }
+        ]
+      },
+      {
+        "family_id": 1666882,
+        "name": "Security_Flood_Light_1",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 1666887,
+            "name": "OVFL 2RH"
+          }
+        ]
+      },
+      {
+        "family_id": 1666985,
+        "name": "Pendant Light - Disk",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 1666889,
+            "name": "100W - 120V"
+          },
+          {
+            "type_id": 2833534,
+            "name": "100W - 120V 2"
+          }
+        ]
+      },
+      {
+        "family_id": 3644550,
+        "name": "Floor_light_perfect_for_exterior_16733",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3644585,
+            "name": "200mm Light + 25mm Border"
+          }
+        ]
+      },
+      {
+        "family_id": 3654830,
+        "name": "Lighting-Pendant-Vibia-WIREFLOW_0345-Free_x1",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3657391,
+            "name": "0345-04"
+          }
+        ]
+      },
+      {
+        "family_id": 3657536,
+        "name": "Generic_Pendant_-_Parametric_13561",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3658332,
+            "name": "Generic_Pendant_-_Parametric_13561"
+          }
+        ]
+      },
+      {
+        "family_id": 3658477,
+        "name": "Lighting-Pendant-Vibia-Algorithm-0820",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3663736,
+            "name": "0820-93"
+          },
+          {
+            "type_id": 3663738,
+            "name": "0820-18"
+          }
+        ]
+      },
+      {
+        "family_id": 3687107,
+        "name": "EAE_APLIK_LED_7W_5700K_11",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3642666,
+            "name": "Standart"
+          }
+        ]
+      },
+      {
+        "family_id": 3688880,
+        "name": "Lighting-Recessed-Inground-Cooper-Lumiere-Boca_630",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3689824,
+            "name": "50MR16"
+          }
+        ]
+      },
+      {
+        "family_id": 3690538,
+        "name": "Lighting_Fixture-Lumenpulse-Lumenbeam_Inground_Large",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3695367,
+            "name": "Refer to Catalog"
+          }
+        ]
+      },
+      {
+        "family_id": 3695674,
+        "name": "Lighting-Spotlight-Philips_Color_Kinetics-eW_Burst_Powercore-Architectural",
+        "category": "Lighting Fixtures",
+        "types": [
+          {
+            "type_id": 3698935,
+            "name": "Not A Type - Load Type Category"
+          }
+        ]
+      }
+    ],
+    "Specialty Equipment": [
+      {
+        "family_id": 1944298,
+        "name": "Hood-Wall",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 1946586,
+            "name": "36\""
+          },
+          {
+            "type_id": 3590001,
+            "name": "48\""
+          }
+        ]
+      },
+      {
+        "family_id": 1952168,
+        "name": "Range-36_Inch",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 1957778,
+            "name": "Burners"
+          }
+        ]
+      },
+      {
+        "family_id": 2034020,
+        "name": "Dishwasher",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 2036103,
+            "name": "24\""
+          }
+        ]
+      },
+      {
+        "family_id": 2199451,
+        "name": "Washer-Top_Load",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 2200983,
+            "name": "29\""
+          }
+        ]
+      },
+      {
+        "family_id": 2201506,
+        "name": "Dryer",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 2203007,
+            "name": "29\""
+          }
+        ]
+      },
+      {
+        "family_id": 2939139,
+        "name": "HVAC_Fireplaces_Regency-Fireplace_Gas-Stove_RC500E",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 2937925,
+            "name": "Propane Stove - Black"
+          },
+          {
+            "type_id": 2937927,
+            "name": "Propane Stove - White"
+          },
+          {
+            "type_id": 2937929,
+            "name": "Natural Gas Stove - Black"
+          },
+          {
+            "type_id": 2937931,
+            "name": "Natural Gas Stove - White"
+          }
+        ]
+      },
+      {
+        "family_id": 3064145,
+        "name": "Refrigerator",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3065497,
+            "name": "18\" LH"
+          },
+          {
+            "type_id": 3065499,
+            "name": "18\" RH"
+          },
+          {
+            "type_id": 3065501,
+            "name": "24\" LH"
+          },
+          {
+            "type_id": 3065503,
+            "name": "24\" RH"
+          },
+          {
+            "type_id": 3065505,
+            "name": "30\" LH"
+          },
+          {
+            "type_id": 3065507,
+            "name": "30\" RH"
+          },
+          {
+            "type_id": 3065509,
+            "name": "36\" LH"
+          },
+          {
+            "type_id": 3065511,
+            "name": "36\" RH"
+          }
+        ]
+      },
+      {
+        "family_id": 3065924,
+        "name": "Range-Gas",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3070800,
+            "name": "30\""
+          },
+          {
+            "type_id": 3070802,
+            "name": "36\""
+          }
+        ]
+      },
+      {
+        "family_id": 3204865,
+        "name": "Range-48_Inch",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3210607,
+            "name": "Burners"
+          },
+          {
+            "type_id": 3210609,
+            "name": "Griddle / Grill"
+          },
+          {
+            "type_id": 3210611,
+            "name": "Grill / Griddle"
+          },
+          {
+            "type_id": 3210613,
+            "name": "Double Griddle"
+          },
+          {
+            "type_id": 3210615,
+            "name": "Griddle - Center Left"
+          },
+          {
+            "type_id": 3210617,
+            "name": "Griddle - Center Right"
+          },
+          {
+            "type_id": 3210619,
+            "name": "Grill - Center Left"
+          },
+          {
+            "type_id": 3210621,
+            "name": "Grill - Center Right"
+          }
+        ]
+      },
+      {
+        "family_id": 3396804,
+        "name": "Washer-Dryer-Stack",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3397377,
+            "name": "27\" x 30\""
+          },
+          {
+            "type_id": 3397379,
+            "name": "24\" x 28\""
+          }
+        ]
+      },
+      {
+        "family_id": 3416230,
+        "name": "Electric_Elevator_1119",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3413932,
+            "name": "2000 lbs"
+          },
+          {
+            "type_id": 3413934,
+            "name": "2500 lbs"
+          },
+          {
+            "type_id": 3413936,
+            "name": "3000 lbs"
+          },
+          {
+            "type_id": 3413938,
+            "name": "3500 lbs"
+          }
+        ]
+      },
+      {
+        "family_id": 3503191,
+        "name": "Oven-Built-in-Double",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3506025,
+            "name": "30\""
+          }
+        ]
+      },
+      {
+        "family_id": 3513022,
+        "name": "Shelf - Book",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3513578,
+            "name": "15\" x 72\""
+          },
+          {
+            "type_id": 3513580,
+            "name": "400 x 1800mm"
+          }
+        ]
+      },
+      {
+        "family_id": 3592651,
+        "name": "Oven-Warming Built-In",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3593158,
+            "name": "30\" Wide"
+          },
+          {
+            "type_id": 3593160,
+            "name": "27\" Wide"
+          },
+          {
+            "type_id": 3593162,
+            "name": "24\" Wide"
+          },
+          {
+            "type_id": 3593164,
+            "name": "600mm Wide"
+          }
+        ]
+      },
+      {
+        "family_id": 3605439,
+        "name": "Oven-Built-in-Microwave",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3608121,
+            "name": "30\""
+          },
+          {
+            "type_id": 3608123,
+            "name": "24\""
+          }
+        ]
+      },
+      {
+        "family_id": 3608665,
+        "name": "Fridge-UnderCounter",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3590651,
+            "name": "24\" x 24\" x 35.75\""
+          }
+        ]
+      },
+      {
+        "family_id": 3633362,
+        "name": "Fridge-Dbl Door",
+        "category": "Specialty Equipment",
+        "types": [
+          {
+            "type_id": 3496117,
+            "name": "59\" x 30\" x 74\""
+          },
+          {
+            "type_id": 3496119,
+            "name": "59\" x 36\" x 83\""
+          }
+        ]
+      }
+    ],
+    "Generic Models": [
+      {
+        "family_id": 49096,
+        "name": "Muntin Pattern_2x2",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 49068,
+            "name": "Muntin Pattern_2x2"
+          }
+        ]
+      },
+      {
+        "family_id": 49110,
+        "name": "Trim-Window-Interior-Flat",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 49087,
+            "name": "with Sill"
+          },
+          {
+            "type_id": 49088,
+            "name": "Picture Frame"
+          }
+        ]
+      },
+      {
+        "family_id": 49125,
+        "name": "Trim-Window-Exterior-Flat",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 49078,
+            "name": "with Sill"
+          },
+          {
+            "type_id": 49079,
+            "name": "Picture Frame"
+          }
+        ]
+      },
+      {
+        "family_id": 1097980,
+        "name": "Closet Shelf and Pole",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 1099045,
+            "name": "12\" Deep"
+          }
+        ]
+      },
+      {
+        "family_id": 1375181,
+        "name": "Shelf-_Parametric_17480",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 1375004,
+            "name": "Shelf-_Parametric_17480"
+          }
+        ]
+      },
+      {
+        "family_id": 3417845,
+        "name": "Ascenseur_-_Verre",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 3420400,
+            "name": "Avec v\u00e9rin hydraulique"
+          },
+          {
+            "type_id": 3420402,
+            "name": "Sans v\u00e9rin hydraulique"
+          }
+        ]
+      },
+      {
+        "family_id": 3435462,
+        "name": "Nicho Estendido",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 3435517,
+            "name": "Nicho Estendido"
+          }
+        ]
+      },
+      {
+        "family_id": 3568732,
+        "name": "OUTDOOR_FIREPLACE_12375",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 3569962,
+            "name": "OUTDOOR_FIREPLACE_12375"
+          }
+        ]
+      },
+      {
+        "family_id": 3672393,
+        "name": "3D_Chain_-_Strechable_3499",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 3651862,
+            "name": "3D_Chain_-_Strechable_3499"
+          }
+        ]
+      },
+      {
+        "family_id": 4554306,
+        "name": "Stringer_V5",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 4667158,
+            "name": "Stringer_V5"
+          }
+        ]
+      },
+      {
+        "family_id": 4667236,
+        "name": "Stringer_V5_2Step",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 4780022,
+            "name": "Stringer_V5_2Step"
+          }
+        ]
+      },
+      {
+        "family_id": 4780046,
+        "name": "TreadFamily",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 4892727,
+            "name": "TopTread"
+          },
+          {
+            "type_id": 4892729,
+            "name": "RegularTread"
+          },
+          {
+            "type_id": 4892731,
+            "name": "zeroNose"
+          }
+        ]
+      },
+      {
+        "family_id": 4892746,
+        "name": "RiserFamily",
+        "category": "Generic Models",
+        "types": [
+          {
+            "type_id": 5005420,
+            "name": "FirstRiser"
+          },
+          {
+            "type_id": 5005422,
+            "name": "RegularRiser"
+          },
+          {
+            "type_id": 5005424,
+            "name": "TopRiser"
+          },
+          {
+            "type_id": 5005426,
+            "name": "LastRiser"
+          }
+        ]
+      }
+    ],
+    "Structural Columns": [
+      {
+        "family_id": 145049,
+        "name": "Pipe-Column",
+        "category": "Structural Columns",
+        "types": [
+          {
+            "type_id": 145492,
+            "name": "Pipe4XS"
+          }
+        ]
+      },
+      {
+        "family_id": 482880,
+        "name": "W-Wide Flange-Column",
+        "category": "Structural Columns",
+        "types": [
+          {
+            "type_id": 483379,
+            "name": "W10X12"
+          }
+        ]
+      },
+      {
+        "family_id": 2888929,
+        "name": "HSS-Hollow Structural Section-Column",
+        "category": "Structural Columns",
+        "types": [
+          {
+            "type_id": 2889440,
+            "name": "HSS6X6X3/16"
+          },
+          {
+            "type_id": 2914806,
+            "name": "HSS4X4X3/8"
+          }
+        ]
+      },
+      {
+        "family_id": 3537123,
+        "name": "HSS Square-Column",
+        "category": "Structural Columns",
+        "types": [
+          {
+            "type_id": 3537137,
+            "name": "HSS10X10X1/2"
+          },
+          {
+            "type_id": 3588771,
+            "name": "12x14"
+          }
+        ]
+      },
+      {
+        "family_id": 3874185,
+        "name": "BIMSF-Dimension Lumber-Column v2.0",
+        "category": "Structural Columns",
+        "types": [
+          {
+            "type_id": 3987011,
+            "name": "4x6"
+          },
+          {
+            "type_id": 3987013,
+            "name": "2x6"
+          },
+          {
+            "type_id": 3987015,
+            "name": ".75x4"
+          },
+          {
+            "type_id": 3987017,
+            "name": "1 3/8x4 Filler"
+          },
+          {
+            "type_id": 3987019,
+            "name": ".86\"x4\" Custom"
+          },
+          {
+            "type_id": 3987021,
+            "name": "3\"x3.5\""
+          },
+          {
+            "type_id": 3987023,
+            "name": "3\"x5.5\""
+          },
+          {
+            "type_id": 3987025,
+            "name": "1x4"
+          },
+          {
+            "type_id": 3987027,
+            "name": "2x3"
+          },
+          {
+            "type_id": 3987029,
+            "name": "4x4"
+          },
+          {
+            "type_id": 3987031,
+            "name": "2x4"
+          },
+          {
+            "type_id": 3987033,
+            "name": "2x8"
+          },
+          {
+            "type_id": 3987035,
+            "name": "8x2"
+          },
+          {
+            "type_id": 3987037,
+            "name": "4x2"
+          },
+          {
+            "type_id": 3987039,
+            "name": "10x2"
+          },
+          {
+            "type_id": 3987041,
+            "name": "6x2"
+          }
+        ]
+      }
+    ]
+  },
+  "views": [
+    {
+      "id": 1213,
+      "name": "Project View",
+      "type": "ProjectBrowser",
+      "scale": 96,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2002,
+      "name": "System Browser",
+      "type": "SystemBrowser",
+      "scale": 96,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 5397,
+      "name": "{3D}",
+      "type": "ThreeD",
+      "scale": 96,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 93747,
+      "name": "Right",
+      "type": "Elevation",
+      "scale": 48,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 598632,
+      "name": "Back",
+      "type": "Elevation",
+      "scale": 48,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 607681,
+      "name": "Left",
+      "type": "Elevation",
+      "scale": 48,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 607691,
+      "name": "Front",
+      "type": "Elevation",
+      "scale": 48,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 611405,
+      "name": "FLOOR PLANS",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 612296,
+      "name": "ROOF LAYOUT",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 622317,
+      "name": "COVER SHEET",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 623419,
+      "name": "FOUNDATION & COLUMNS",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 624905,
+      "name": "ELEVATIONS SIDES",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 647856,
+      "name": "ELEVATIONS FRONT BACK",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 648053,
+      "name": "ELECTRICAL PLAN",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 722612,
+      "name": "Level 1.0",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 722622,
+      "name": "Level 1.0",
+      "type": "CeilingPlan",
+      "scale": 48,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 722631,
+      "name": "Level 1.0",
+      "type": "EngineeringPlan",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 723662,
+      "name": "Level 2.0",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 723672,
+      "name": "Level 2.0",
+      "type": "CeilingPlan",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 723681,
+      "name": "Level 2.0",
+      "type": "EngineeringPlan",
+      "scale": 48,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 724246,
+      "name": "Level 3.00",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 724256,
+      "name": "Level 3.00",
+      "type": "CeilingPlan",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 724265,
+      "name": "Level 3.00",
+      "type": "EngineeringPlan",
+      "scale": 48,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 754323,
+      "name": "Level 1.0 COLUMNS",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 755164,
+      "name": "Level 1.0 ELECTRICAL",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 914357,
+      "name": "DIMENSION PLAN F1",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 940466,
+      "name": "Level 2.0 DIMENSIONS",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 942600,
+      "name": "Door Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 942834,
+      "name": "WINDOW SCHEDULE",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 989374,
+      "name": "LIGHT FIXTURE SCHEDULE",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 989501,
+      "name": "ELECTRICAL FIXTURE SCHEDULE",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 990642,
+      "name": "Level 2.0 ELECTRICAL",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 1259038,
+      "name": "Level 2.0",
+      "type": "AreaPlan",
+      "scale": 192,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 1259075,
+      "name": "Level 1.0",
+      "type": "AreaPlan",
+      "scale": 192,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 1306933,
+      "name": "Level 1.0 Simple",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 1306990,
+      "name": "Level 2.0 Simple",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 1336346,
+      "name": "Area Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1435671,
+      "name": "CABINET SCHEDULE",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1455490,
+      "name": "INTERIOR ELEVATIONS",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1574726,
+      "name": "Ceiling Material Takeoff",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1666833,
+      "name": "ELECTRICAL",
+      "type": "Legend",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 1726742,
+      "name": "Level 1.0 DIMENSIONS",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 1730738,
+      "name": "Gypsum",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1730962,
+      "name": "Wall Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1731203,
+      "name": "Backsplash",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1737255,
+      "name": "Level 1.0 FOUNDATION",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 1752795,
+      "name": "FOUNDATION PLAN",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1772724,
+      "name": "Level 1.0 Survey",
+      "type": "FloorPlan",
+      "scale": 720,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 1778527,
+      "name": "SITE PLAN",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1832487,
+      "name": "Level 1.0 PLUMBING",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 1843691,
+      "name": "PLUMBING PLAN",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1991535,
+      "name": "DIMENSION PLAN F2",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 1991712,
+      "name": "FLOOR PLAN F2",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2081184,
+      "name": "Countertop Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2081289,
+      "name": "TAKE OFFS",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2095189,
+      "name": "Floor Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2095208,
+      "name": "Ceiling Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2346779,
+      "name": "Front Face",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2462515,
+      "name": "Plumbing Fixture Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2579748,
+      "name": "Equipment Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2585611,
+      "name": "Tile",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2587191,
+      "name": "Stone",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2587384,
+      "name": "Stucco",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2587395,
+      "name": "Roof Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2587444,
+      "name": "Fascia Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2587453,
+      "name": "Gutter Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2616641,
+      "name": "Level 1.0 FOUNDATION Control Joints",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 2621037,
+      "name": "FOUNDATION PLAN Control Joints",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2730284,
+      "name": "Roof Soffit Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2808233,
+      "name": "Level 2.0 PLUMBING",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 2831022,
+      "name": "Structural Foundation Schedule",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 2884932,
+      "name": "Level 1.0 FINISHES",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 2885047,
+      "name": "Level 2.0 FINISHES",
+      "type": "FloorPlan",
+      "scale": 48,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 2928236,
+      "name": "STRUCTURAL ELEVATIONS",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3357850,
+      "name": "Level 3.0",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 3583055,
+      "name": "Level 1.0 DIMENSIONS Carport",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 3637235,
+      "name": "Bath 1",
+      "type": "Section",
+      "scale": 32,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 3637285,
+      "name": "Bath 2",
+      "type": "Section",
+      "scale": 32,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 3867863,
+      "name": "Level 1.0 Simple Carport",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 3867879,
+      "name": "Level 1.0 Carport",
+      "type": "AreaPlan",
+      "scale": 192,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 3871280,
+      "name": "CARPORT PLAN",
+      "type": "DrawingSheet",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3871401,
+      "name": "Level 1.0 Survey SIte",
+      "type": "FloorPlan",
+      "scale": 240,
+      "detail_level": "Coarse"
+    },
+    {
+      "id": 3871812,
+      "name": "Level 3.0 Carport",
+      "type": "FloorPlan",
+      "scale": 64,
+      "detail_level": "Fine"
+    },
+    {
+      "id": 3872326,
+      "name": "<Revision Schedule>",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872331,
+      "name": "<Revision Schedule> 2",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872336,
+      "name": "<Revision Schedule> 3",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872341,
+      "name": "<Revision Schedule> 5",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872346,
+      "name": "<Revision Schedule> 6",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872351,
+      "name": "<Revision Schedule> 7",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872356,
+      "name": "<Revision Schedule> 8",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872361,
+      "name": "<Revision Schedule> 9",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872366,
+      "name": "<Revision Schedule> 10",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872371,
+      "name": "<Revision Schedule> 13",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872376,
+      "name": "<Revision Schedule> 11",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872381,
+      "name": "<Revision Schedule> 12",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872386,
+      "name": "<Revision Schedule> 4",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872391,
+      "name": "<Revision Schedule> 14",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872396,
+      "name": "<Revision Schedule> 15",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872401,
+      "name": "<Revision Schedule> 16",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872406,
+      "name": "<Revision Schedule> 17",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872411,
+      "name": "<Revision Schedule> 18",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 3872416,
+      "name": "<Revision Schedule> 19",
+      "type": "Schedule",
+      "scale": 1,
+      "detail_level": "Undefined"
+    },
+    {
+      "id": 5948111,
+      "name": "AI Model 3D",
+      "type": "ThreeD",
+      "scale": 96,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 5949348,
+      "name": "432 Cloud Top 3D",
+      "type": "ThreeD",
+      "scale": 96,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 5949758,
+      "name": "432 Cloud Top v3",
+      "type": "ThreeD",
+      "scale": 96,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 5950668,
+      "name": "432 Cloud Top f7d3708c",
+      "type": "ThreeD",
+      "scale": 96,
+      "detail_level": "Medium"
+    },
+    {
+      "id": 5950933,
+      "name": "f7d3708c v2",
+      "type": "ThreeD",
+      "scale": 96,
+      "detail_level": "Medium"
+    }
+  ],
+  "warnings": [
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        520755,
+        3221473
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1396348,
+        1396935
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1398636,
+        2918570
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1992263,
+        3096432
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        2883666,
+        3101041
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        2995826,
+        3101292
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        171945,
+        2005970,
+        3107007
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1715521,
+        3557457,
+        3631007
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1707168,
+        1717001,
+        3212928,
+        3270162,
+        3451050,
+        3555898,
+        3597160
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        1306992,
+        3357893
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        1306992,
+        3357894
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        1306992,
+        3357895
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        1306992,
+        3357896
+      ]
+    }
+  ]
+}
