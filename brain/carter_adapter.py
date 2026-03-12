@@ -65,6 +65,28 @@ ZONE_MAP = {
 
 # ── Adapter ───────────────────────────────────────────────────────────────────
 
+def _coords_with_scale(carter_export: dict, scale: float) -> dict:
+    """Internal: convert Carter export using a pre-computed scale."""
+    room_coords = {}
+    boxes = carter_export.get("boxes", [])
+    h1 = carter_export.get("hallway1")
+    if h1 and isinstance(h1, dict) and h1.get("id"):
+        boxes = boxes + [h1]
+    for box in boxes:
+        if not box.get("id"):
+            continue
+        name = CARTER_TO_BARNHAUS.get(box["id"], box["id"])
+        room_coords[name] = {
+            "x0": round(box["x"] / scale, 1),
+            "y0": round(box["y"] / scale, 1),
+            "x1": round((box["x"] + box["w"]) / scale, 1),
+            "y1": round((box["y"] + box["h"]) / scale, 1),
+            "sf": round((box["w"] / scale) * (box["h"] / scale)),
+            "zone": ZONE_MAP.get(box.get("zone", 2), "living"),
+        }
+    return room_coords
+
+
 def carter_to_room_coords(carter_export: dict, living_sf: int = CARTER_LIVING_SF) -> dict:
     """Convert Carter Canvas export to Barnhaus room_coords dict.
 
@@ -111,22 +133,69 @@ def carter_to_room_coords(carter_export: dict, living_sf: int = CARTER_LIVING_SF
     return room_coords
 
 
-# ── CLI test ──────────────────────────────────────────────────────────────────
+# ── CLI ───────────────────────────────────────────────────────────────────────
+
+def measure_scale(pairs: list[tuple[float, float]]) -> float:
+    """Compute scale from (pixels, feet) measurement pairs.
+
+    Prints each measurement and warns if spread > 0.15 px/ft.
+    Returns average scale.
+    """
+    scales = []
+    for px, ft in pairs:
+        s = px / ft
+        scales.append(s)
+        print(f"  {px:.0f}px / {ft:.1f}ft = {s:.4f} px/ft")
+    avg = sum(scales) / len(scales)
+    spread = max(scales) - min(scales)
+    print(f"  Average: {avg:.4f} px/ft  |  Spread: {spread:.4f} px/ft", end="")
+    if spread > 0.15:
+        print("  ⚠️  spread > 0.15 — check measurements or mixed-scale sheets")
+    else:
+        print("  ✅ locked")
+    return avg
+
 
 if __name__ == "__main__":
     import json, sys
-    if len(sys.argv) < 2:
-        print("Usage: python3 carter_adapter.py <carter_export.json> [living_sf]")
+
+    args = sys.argv[1:]
+
+    # Mode 1: --measure px1 ft1 px2 ft2 ...
+    if "--measure" in args:
+        idx = args.index("--measure")
+        pairs_flat = args[idx + 1:]
+        if len(pairs_flat) % 2 != 0 or len(pairs_flat) < 2:
+            print("Usage: --measure px1 ft1 px2 ft2 ...")
+            sys.exit(1)
+        pairs = [(float(pairs_flat[i]), float(pairs_flat[i+1]))
+                 for i in range(0, len(pairs_flat), 2)]
+        print("Scale measurement:")
+        scale = measure_scale(pairs)
+        sys.exit(0)
+
+    if not args:
+        print("Usage:")
+        print("  python3 carter_adapter.py carter_export.json [--scale 11.13]")
+        print("  python3 carter_adapter.py carter_export.json 2823")
+        print("  python3 carter_adapter.py --measure 578 52 356 32 267 24")
         sys.exit(1)
 
-    with open(sys.argv[1]) as f:
+    with open(args[0]) as f:
         export = json.load(f)
 
-    sf = int(sys.argv[2]) if len(sys.argv) > 2 else CARTER_LIVING_SF
-    scale = get_scale(export, sf)
-    print(f"Scale: {scale:.4f} px/ft")
+    # Mode 2: --scale override
+    if "--scale" in args:
+        scale = float(args[args.index("--scale") + 1])
+        print(f"Scale (manual): {scale:.4f} px/ft")
+        coords = _coords_with_scale(export, scale)
+    else:
+        # Mode 3: SF derivation
+        sf = int(args[1]) if len(args) > 1 else CARTER_LIVING_SF
+        scale = get_scale(export, sf)
+        print(f"Scale (SF-derived, {sf} SF): {scale:.4f} px/ft")
+        coords = carter_to_room_coords(export, sf)
 
-    coords = carter_to_room_coords(export, sf)
     print(f"\nRoom coords ({len(coords)} rooms):")
     for name, rc in coords.items():
         print(f"  {name:20s}  ({rc['x0']:.1f},{rc['y0']:.1f})->({rc['x1']:.1f},{rc['y1']:.1f})  {rc['sf']} SF  zone={rc['zone']}")
