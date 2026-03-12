@@ -279,39 +279,7 @@ def carter_to_room_coords(carter_export: dict, living_sf: int = CARTER_LIVING_SF
         room_coords dict compatible with validate_layout() + generate_floorplan_image()
     """
     scale = get_scale(carter_export, living_sf)
-
-    room_coords = {}
-
-    # Main boxes
-    boxes = carter_export.get("boxes", [])
-
-    # Also include hallway1 if present at top level
-    h1 = carter_export.get("hallway1")
-    if h1 and isinstance(h1, dict) and h1.get("id"):
-        boxes = boxes + [h1]
-
-    for box in boxes:
-        if not box.get("id"):
-            continue
-
-        name = CARTER_TO_BARNHAUS.get(box["id"], box["id"])
-        x0 = round(box["x"] / scale, 1)
-        y0 = round(box["y"] / scale, 1)
-        x1 = round((box["x"] + box["w"]) / scale, 1)
-        y1 = round((box["y"] + box["h"]) / scale, 1)
-        sf = round((box["w"] / scale) * (box["h"] / scale))
-        zone = ZONE_MAP.get(box.get("zone", 2), "living")
-
-        room_coords[name] = {
-            "x0": x0,
-            "y0": y0,
-            "x1": x1,
-            "y1": y1,
-            "sf": sf,
-            "zone": zone,
-        }
-
-    return room_coords
+    return _coords_with_scale(carter_export, scale)
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
