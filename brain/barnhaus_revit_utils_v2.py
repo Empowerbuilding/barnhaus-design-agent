@@ -299,6 +299,42 @@ def checkpoint_clear(submission_id: str):
 # WALLS
 # ─────────────────────────────────────────────
 
+def get_wall_orientation(wall_id: int) -> dict:
+    """Get wall exterior face orientation vector."""
+    result = _call("revit.get_wall_orientation", {"wall_id": wall_id})
+    if result.get("success"):
+        return result.get("result", {}).get("orientation")
+    return None
+
+
+def flip_wall(wall_id: int) -> bool:
+    """Flip a wall's facing direction."""
+    result = _call("revit.flip_wall", {"wall_id": wall_id})
+    return result.get("success", False)
+
+
+def verify_wall_facing(wall_id: int, expected_nx: float, expected_ny: float, label: str = ""):
+    """
+    Check wall exterior face orientation and flip if wrong.
+    Expected normals: south wall=(0,-1), north=(0,+1), east=(+1,0), west=(-1,0)
+    """
+    orient = get_wall_orientation(wall_id)
+    if orient is None:
+        print(f"  [FACING] could not get orientation for wall {wall_id}")
+        return
+    ox, oy = orient.get("x", 0), orient.get("y", 0)
+    correct = (
+        (expected_nx == 0 or (expected_nx > 0 and ox > 0.5) or (expected_nx < 0 and ox < -0.5)) and
+        (expected_ny == 0 or (expected_ny > 0 and oy > 0.5) or (expected_ny < 0 and oy < -0.5))
+    )
+    if not correct:
+        print(f"  [FACING] {label} wall {wall_id} facing wrong ({ox:.1f},{oy:.1f}), "
+              f"expected ({expected_nx},{expected_ny}) — flipping")
+        flip_wall(wall_id)
+    else:
+        print(f"  [FACING] {label} wall {wall_id} ok ({ox:.1f},{oy:.1f})")
+
+
 def create_wall(x0: float, y0: float, x1: float, y1: float,
                 wall_type: str = WALL["EXT"],
                 level: str = LEVEL["L1"],
@@ -408,10 +444,9 @@ def place_door(wall_id: int, x: float, y: float,
     """
     payload = {
         "wall_id": wall_id,
-        "x": x, "y": y, "z": z,
-        "family": family,
+        "location": {"x": x, "y": y, "z": z},
+        "family_name": family,
         "type_name": type_name,
-        "rotation": face_to_rotation(face),
         "level": level,
         "label": label,
     }
@@ -433,9 +468,8 @@ def place_window(wall_id: int, x: float, y: float,
     """Place a window on a wall at given sill height."""
     payload = {
         "wall_id": wall_id,
-        "x": x, "y": y,
-        "sill_height": sill_height,
-        "family": family,
+        "location": {"x": x, "y": y, "z": sill_height},
+        "family_name": family,
         "type_name": type_name,
         "level": level,
         "label": label,
@@ -460,14 +494,14 @@ def place_fixture(family: str, type_name: str,
     face: which direction the FRONT of the fixture faces (N/S/E/W).
     """
     payload = {
-        "family": family,
+        "family_name": family,
         "type_name": type_name,
-        "x": x, "y": y, "z": 0,
+        "location": {"x": x, "y": y, "z": 0},
         "rotation": face_to_rotation(face),
         "level": level,
         "label": label,
     }
-    result = _call("revit.place_fixture", payload)
+    result = _call("revit.place_family_instance", payload)
     if not result.get("success") and not result.get("dry_run"):
         print(f"❌ Fixture failed [{label}]: {result.get('error')}")
     return result
