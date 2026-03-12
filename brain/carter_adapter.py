@@ -123,6 +123,28 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
                 room_coords[a]["adjacencies"].append(b)
                 room_coords[b]["adjacencies"].append(a)
 
+    # GR sub-room splitter: if Kitchen/Dining/Living missing, derive from GR box
+    # Carter tracks them as labels inside GR but doesn't export as separate boxes
+    if "Great Room" in room_coords and "Kitchen" not in room_coords:
+        gr = room_coords["Great Room"]
+        gx0, gy0, gx1, gy1 = gr["x0"], gr["y0"], gr["x1"], gr["y1"]
+        gw = gx1 - gx0
+        gh = gy1 - gy0
+        # Split: Kitchen right 50% width upper 45%, Dining right 50% lower 55%, Living left 50%
+        mid_x = round(gx0 + gw * 0.5, 1)
+        mid_y = round(gy0 + gh * 0.45, 1)
+        room_coords["Kitchen"] = {
+            "x0": mid_x, "y0": gy0, "x1": gx1, "y1": mid_y,
+            "sf": round((gx1 - mid_x) * (mid_y - gy0)), "zone": "living", "adjacencies": []
+        }
+        room_coords["Dining Room"] = {
+            "x0": mid_x, "y0": mid_y, "x1": gx1, "y1": gy1,
+            "sf": round((gx1 - mid_x) * (gy1 - mid_y)), "zone": "living", "adjacencies": []
+        }
+        # Shrink GR to left half only
+        room_coords["Great Room"]["x1"] = mid_x
+        room_coords["Great Room"]["sf"] = round((mid_x - gx0) * gh)
+
     # Sub-room correction: subtract Office SF from Great Room if both present
     # (Office is a sub-bubble inside GR on Carter canvas)
     SUB_ROOMS = {"Office": "Great Room"}
