@@ -15,8 +15,8 @@ You are a specialist. Stay focused.
 - Supabase URL: https://hbfjdfxephlczkfgpceg.supabase.co
 - Supabase Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiZmpkZnhlcGhsY3prZmdwY2VnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTMzNzcxMCwiZXhwIjoyMDU0OTEzNzEwfQ.weXk7CqDqR8XkEpi4kaI_GmHWlkqh6snOMQm-hk48RM
 - OpenAI Key: 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
-- Fine-tuned layout model: ft:gpt-4o-2024-08-06:personal:barnhaus-v2:DGvkLZ9T
-- Fine-tuned elevation model: ft:gpt-4o-2024-08-06:personal:barnhaus-elev:DGz0hZiL
+- Fine-tuned layout model: ft:gpt-4o-2024-08-06:personal:barnhaus-v4:DI9LtTgM
+- Fine-tuned elevation model: ft:gpt-4o-2024-08-06:personal:barnhaus-elev-v2:DI9VoKUx
 - Revit bridge: http://localhost:3000/execute (health: http://localhost:3000/health)
 - Workspace: /home/mitch/.openclaw/workspace
 
