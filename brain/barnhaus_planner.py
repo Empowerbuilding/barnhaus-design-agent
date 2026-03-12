@@ -29,7 +29,7 @@ ROOM_NORMS = {
     "Master Sitting Room": {"min": 80,  "target_lo": 100, "target_hi": 140, "max": 200},
     "Bedroom":             {"min": 110, "target_lo": 130, "target_hi": 180, "max": 220},
     "Bathroom":            {"min": 70,  "target_lo": 90,  "target_hi": 120, "max": 160},
-    "Great Room":          {"min": 280, "target_lo": 380, "target_hi": 520, "max": 700},
+    "Great Room":          {"min": 280, "target_lo": 400, "target_hi": 700, "max": 1400},
     "Kitchen":             {"min": 180, "target_lo": 220, "target_hi": 320, "max": 420},
     "Dining Room":         {"min": 100, "target_lo": 130, "target_hi": 180, "max": 240},
     "Dining":              {"min": 100, "target_lo": 130, "target_hi": 180, "max": 240},

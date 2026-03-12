@@ -106,6 +106,16 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
             "sf": round((box["w"] / scale) * (box["h"] / scale)),
             "zone": zone,
         }
+
+    # Sub-room correction: subtract Office SF from Great Room if both present
+    # (Office is a sub-bubble inside GR on Carter canvas)
+    SUB_ROOMS = {"Office": "Great Room"}
+    for sub, parent in SUB_ROOMS.items():
+        if sub in room_coords and parent in room_coords:
+            room_coords[parent]["sf"] = max(
+                0, room_coords[parent]["sf"] - room_coords[sub]["sf"]
+            )
+
     return room_coords
 
 
