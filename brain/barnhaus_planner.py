@@ -967,8 +967,14 @@ def generate_floorplan_image(
     room_coords: dict,
     submission_id: str,
     output_dir: str = "designs",
+    section_lines: list = None,
 ) -> str:
-    """Render a 2D floor plan PNG with matplotlib. Returns file path."""
+    """Render a 2D floor plan PNG with matplotlib. Returns file path.
+
+    Args:
+        section_lines: list of dicts from Carter export, e.g.
+            [{"id": "S1", "axis": "NS", "x": 45.2}, {"id": "S3", "axis": "EW", "y": 22.1}]
+    """
     os.makedirs(output_dir, exist_ok=True)
     fig, ax = plt.subplots(1, 1, figsize=(16, 10))
 
@@ -1026,6 +1032,25 @@ def generate_floorplan_image(
     ax.annotate(
         "", xy=(min_x - 3, max_y), xytext=(min_x - 3, max_y - 5),
         arrowprops=dict(arrowstyle="->", color="black", lw=2))
+
+    # Section lines (from Carter export)
+    if section_lines:
+        for sl in section_lines:
+            sid = sl.get("id", "")
+            is_major = sid in ("S1", "S3", "S4", "S6")
+            lw = 1.5 if is_major else 0.8
+            ls = "-" if is_major else "--"
+            color = "#2255AA"
+            if sl.get("axis") == "NS":
+                x = sl.get("x", 0)
+                ax.axvline(x=x, color=color, linewidth=lw, linestyle=ls, alpha=0.7)
+                ax.text(x, max_y + 1, sid, ha="center", va="bottom",
+                        fontsize=7, color=color, fontweight="bold")
+            elif sl.get("axis") == "EW":
+                y = sl.get("y", 0)
+                ax.axhline(y=y, color=color, linewidth=lw, linestyle=ls, alpha=0.7)
+                ax.text(min_x - 1, y, sid, ha="right", va="center",
+                        fontsize=7, color=color, fontweight="bold")
 
     # Legend
     legend_patches = [

@@ -17,6 +17,21 @@ CARTER_LIVING_SF = 2823
 CARTER_LIVING_PX2 = 348945  # sum of all non-garage box areas at V4
 
 
+def extract_section_lines(carter_export: dict, scale: float) -> list:
+    """Extract section lines from Carter export and convert px → ft."""
+    lines = []
+    for sl in carter_export.get("sections", []):
+        sid = sl.get("id", "")
+        axis = sl.get("axis", "NS")
+        entry = {"id": sid, "axis": axis}
+        if axis == "NS":
+            entry["x"] = round(sl.get("x", 0) / scale, 1)
+        else:
+            entry["y"] = round(sl.get("y", 0) / scale, 1)
+        lines.append(entry)
+    return lines
+
+
 def get_scale(carter_export: dict, living_sf: int = CARTER_LIVING_SF) -> float:
     """Compute px/ft scale dynamically from a Carter export."""
     living_px2 = sum(
@@ -106,6 +121,34 @@ def _coords_with_scale(carter_export: dict, scale: float) -> dict:
             "sf": round((box["w"] / scale) * (box["h"] / scale)),
             "zone": zone,
         }
+
+    # Overlap nudge: if two rooms overlap, shrink the smaller one to eliminate shared area
+    names = list(room_coords.keys())
+    for i, a in enumerate(names):
+        for b in names[i+1:]:
+            ra, rb = room_coords[a], room_coords[b]
+            ox0 = max(ra["x0"], rb["x0"])
+            ox1 = min(ra["x1"], rb["x1"])
+            oy0 = max(ra["y0"], rb["y0"])
+            oy1 = min(ra["y1"], rb["y1"])
+            if ox1 > ox0 and oy1 > oy0:
+                # Overlap exists — nudge smaller room
+                smaller = a if room_coords[a]["sf"] <= room_coords[b]["sf"] else b
+                larger = b if smaller == a else a
+                rs, rl = room_coords[smaller], room_coords[larger]
+                # Push smaller room away on the axis with least overlap
+                x_overlap = ox1 - ox0
+                y_overlap = oy1 - oy0
+                if x_overlap <= y_overlap:
+                    if rs["x0"] < rl["x0"]:
+                        room_coords[smaller]["x1"] = rl["x0"]
+                    else:
+                        room_coords[smaller]["x0"] = rl["x1"]
+                else:
+                    if rs["y0"] < rl["y0"]:
+                        room_coords[smaller]["y1"] = rl["y0"]
+                    else:
+                        room_coords[smaller]["y0"] = rl["y1"]
 
     # Compute adjacencies geometrically — rooms are adjacent if edges within 1.5ft
     names = list(room_coords.keys())
