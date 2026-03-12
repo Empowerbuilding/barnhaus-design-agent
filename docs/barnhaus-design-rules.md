@@ -408,7 +408,7 @@ attach_walls_to_roof([cb_west, cb_east], center_bridge_roof_id)
 
 ### Two-Script Rule
 ALWAYS split builds into two scripts:
-1. `build_[id].py` — walls, floors, doors, windows, roofs, stairs, room labels (labels BEFORE fixtures)
+1. `build_[id].py` — walls, floors, doors, windows, roofs, stairs, room labels (labels go AFTER interior walls in Stage 2 — walls must exist to bound rooms)
 2. `fixtures_[id].py` — cabinets, appliances, plumbing, furniture  
 Run structure script first (including room labels), verify it completes, THEN run fixtures.
 

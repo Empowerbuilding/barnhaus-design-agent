@@ -250,18 +250,13 @@
 Cabinets must be placed with their BACK flush to the INTERIOR FACE of the wall.
 Faces must point INTO the room, NOT into the wall.
 
-### ⚠️ ROTATION ISSUE — NOT YET CONFIRMED
-The correct rotation values have NOT been tested in Revit. build_3fd426b2 fixtures
-had wrong-facing cabinets. Before the next full fixture run, place ONE test cabinet
-and verify direction in Revit. Update this section with confirmed values.
-
-### SUSPECTED correct rotation (to be verified):
+### ✅ ROTATION — CONFIRMED (matches v1 code, ground truth)
 ```
 Cabinets face INTO the room:
   North wall (back to north, face south into room) → rotation=0
   South wall (back to south, face north into room) → rotation=180
-  West wall  (back to west, face east into room)   → rotation=90
-  East wall  (back to east, face west into room)   → rotation=270
+  West wall  (back to west,  face east into room)  → rotation=90
+  East wall  (back to east,  face west into room)  → rotation=270
 ```
 
 ### Offset formula (back of cabinet flush to interior wall face):
@@ -349,7 +344,7 @@ place_fixture(family, type_name, x, y, z, level, rotation=0, label="")
 
 # ROOMS
 label_rooms(rooms, level, upper_limit_level=None)
-# rooms = list of (name, x, y) tuples
+# rooms = list of dicts: [{"name": "Kitchen", "x": 15, "y": 38}, ...]  ← NOT tuples
 # Always use upper_limit_level="Level 2.0" for L1 single-story
 # Always use upper_limit_level="L2 Roof" for L2 rooms
 

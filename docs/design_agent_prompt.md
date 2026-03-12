@@ -70,10 +70,9 @@ Then WAIT for Mitch to explicitly say "approved" or "looks good" before writing 
 
 ### Step 5 — Write staged build scripts
 - Stage 1: `build_[id]_s1.py` — exterior walls (use create_polygon_exterior() for non-rectangular), floors, roofs, wall attachments, porch posts, garage
-- Stage 2: `build_[id]_s2.py` — interior walls, circulation walls (gallery halls, corridors)
+- Stage 2: `build_[id]_s2.py` — interior walls, circulation walls (gallery halls, corridors), then room labels immediately after (walls must exist to bound rooms)
 - Stage 3: `build_[id]_s3.py` — doors, windows (check overlaps)
-- Stage 4: room labels (BEFORE fixtures)
-- Stage 5: `fixtures_[id].py` — all fixtures separately (prevents Revit crash)
+- Stage 4: `fixtures_[id].py` — all fixtures separately (prevents Revit crash)
 
 Rules:
 - ONLY use family/type names from REVIT_TEMPLATE.md

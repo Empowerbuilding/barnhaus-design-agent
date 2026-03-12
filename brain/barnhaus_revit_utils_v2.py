@@ -65,10 +65,10 @@ INT_WALL_OFFSET = 0.375  # half of 4.5" wall
 # Face = direction the FRONT of the fixture points toward
 # ─────────────────────────────────────────────
 FACE_TO_ROT = {
-    "S":  0,    # front faces south
-    "N":  180,  # front faces north
-    "W":  90,   # front faces west
-    "E":  270,  # front faces east
+    "S":  0,    # front faces south (fixture against north wall)
+    "N":  180,  # front faces north (fixture against south wall)
+    "E":  90,   # front faces east  (fixture against west wall)
+    "W":  270,  # front faces west  (fixture against east wall)
 }
 
 def face_to_rotation(face: str) -> float:
@@ -84,10 +84,10 @@ def face_to_rotation(face: str) -> float:
 # fixture front faces INTO the room (away from wall)
 # ─────────────────────────────────────────────
 WALL_FACE_TO_FRONT = {
-    "N": "S",   # against north wall → faces south into room
-    "S": "N",   # against south wall → faces north into room
-    "E": "W",   # against east wall  → faces west into room
-    "W": "E",   # against west wall  → faces east into room
+    "N": "S",   # against north wall → faces south (rotation=0)
+    "S": "N",   # against south wall → faces north (rotation=180)
+    "W": "E",   # against west wall  → faces east  (rotation=90)
+    "E": "W",   # against east wall  → faces west  (rotation=270)
 }
 
 # ─────────────────────────────────────────────
@@ -197,7 +197,7 @@ PLUMBING = {
     "sink_kitchen": ("Sink Kitchen-Single", "30\" x 21\""),
     "sink_island":  ("Sink Kitchen-Island", "18\" x 18\""),
     "sink_vanity":  ("Sink Vanity-Square", "20\" x 18\""),
-    "washer_dryer": ("Stacked Washer and Dryer", "26\"x25\" - Private"),
+    "washer_dryer": ("Washer-Dryer-Stack", "27\" x 30\""),
     "shower_col":   ("Shower_columns_15486", "Shower_columns_15486"),
 }
 
