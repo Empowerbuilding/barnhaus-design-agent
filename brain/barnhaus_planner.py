@@ -64,15 +64,13 @@ MUST_TOUCH = {
 }
 
 MUST_NOT_TOUCH = {
-    "Master Bedroom":  ["Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5",
-                        "Garage"],
-    "Master Bathroom": ["Kitchen", "Garage"],
-    "Master Bath":     ["Kitchen", "Garage"],
-    "Great Room":      ["Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5"],
-    "Kitchen":         ["Master Bathroom", "Master Bath",
-                        "Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5"],
-    "Garage":          ["Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5",
-                        "Master Bedroom", "Master Bathroom", "Master Bath"],
+    # NOTE: "Master must not touch Bedroom X" and "Great Room must not touch Bed Wing"
+    # removed — these are plan-type assumptions, not universal architectural rules.
+    # Separation preference (master ↔ beds, GR ↔ beds) will be encoded as GNN weights,
+    # not hard constraints. Only genuine hard rules remain below.
+    "Master Bathroom": ["Garage"],
+    "Master Bath":     ["Garage"],
+    "Kitchen":         ["Garage"],
 }
 
 # ── Zone classification ───────────────────────────────────────────────────────
