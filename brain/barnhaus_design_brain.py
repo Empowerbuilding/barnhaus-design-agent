@@ -103,6 +103,35 @@ def build_brief(sub: dict) -> str:
         if feat_list:
             lines.append(f"- Features: {', '.join(feat_list[:6])}")
 
+    # ── Site orientation ──────────────────────────────────────────────────
+    street = sub.get("street_facing", "")
+    view = sub.get("view_facing", "")
+    lot = sub.get("lot") or {}
+    driveway = lot.get("driveway_approach", "") if isinstance(lot, dict) else ""
+
+    if street: lines.append(f"- Street-facing side: {street}")
+    if view:   lines.append(f"- Primary view / hero elevation: {view}")
+    if driveway: lines.append(f"- Driveway approach: {driveway}")
+
+    # ── Spatial intent ────────────────────────────────────────────────────
+    master_suite = sub.get("master_suite") or {}
+    master_loc = master_suite.get("location", "") if isinstance(master_suite, dict) else ""
+    garage_attach = sub.get("garage_attachment", "")
+    priorities = sub.get("priorities") or []
+
+    if master_loc:    lines.append(f"- Master suite location: {master_loc.replace('_', ' ')}")
+    if garage_attach: lines.append(f"- Garage attachment: {garage_attach.replace('_', ' ')}")
+    if priorities:    lines.append(f"- Client priorities: {', '.join(priorities)}")
+
+    # ── Bubble layout from intake form Step 11 ────────────────────────────
+    bubbles = sub.get("bubbles") or []
+    bubble_positions = sub.get("bubble_positions") or {}
+
+    if bubbles:
+        lines.append(f"- Client bubble layout (relative room positions): {json.dumps(bubbles)}")
+    elif bubble_positions:
+        lines.append(f"- Client bubble positions: {json.dumps(bubble_positions)}")
+
     return "\n".join(lines)
 
 
