@@ -23,17 +23,17 @@ ROOM_NORMS = {
     "Master Bedroom":      {"min": 200, "target_lo": 240, "target_hi": 320, "max": 400},
     "Master Bathroom":     {"min": 100, "target_lo": 140, "target_hi": 200, "max": 280},
     "Master Bath":         {"min": 100, "target_lo": 140, "target_hi": 200, "max": 280},
-    "His Closet":          {"min": 35,  "target_lo": 60,  "target_hi": 80,  "max": 120},
+    "His Closet":          {"min": 40,  "target_lo": 60,  "target_hi": 80,  "max": 120},
     "Hers Closet":         {"min": 50,  "target_lo": 80,  "target_hi": 120, "max": 180},
     "Master Closet":       {"min": 40,  "target_lo": 60,  "target_hi": 120, "max": 180},
     "Master Sitting Room": {"min": 80,  "target_lo": 100, "target_hi": 140, "max": 200},
     "Bedroom":             {"min": 110, "target_lo": 130, "target_hi": 180, "max": 220},
-    "Bathroom":            {"min": 40,  "target_lo": 90,  "target_hi": 120, "max": 160},
-    "Great Room":          {"min": 280, "target_lo": 400, "target_hi": 700, "max": 1400},
-    "Kitchen":             {"min": 88, "target_lo": 180, "target_hi": 280, "max": 420},
-    "Dining Room":         {"min": 100, "target_lo": 150, "target_hi": 280, "max": 400},
-    "Dining":              {"min": 100, "target_lo": 150, "target_hi": 280, "max": 400},
-    "Office":              {"min": 100, "target_lo": 160, "target_hi": 220, "max": 300},
+    "Bathroom":            {"min": 70,  "target_lo": 90,  "target_hi": 120, "max": 160},
+    "Great Room":          {"min": 280, "target_lo": 380, "target_hi": 520, "max": 700},
+    "Kitchen":             {"min": 88,  "target_lo": 180, "target_hi": 320, "max": 420},
+    "Dining Room":         {"min": 100, "target_lo": 130, "target_hi": 180, "max": 240},
+    "Dining":              {"min": 100, "target_lo": 130, "target_hi": 180, "max": 240},
+    "Office":              {"min": 120, "target_lo": 160, "target_hi": 220, "max": 300},
     "Bonus Room":          {"min": 150, "target_lo": 180, "target_hi": 280, "max": 380},
     "Butler Pantry":       {"min": 60,  "target_lo": 80,  "target_hi": 120, "max": 160},
     "Pantry":              {"min": 40,  "target_lo": 60,  "target_hi": 120, "max": 160},
@@ -64,11 +64,15 @@ MUST_TOUCH = {
 }
 
 MUST_NOT_TOUCH = {
-    # All separation rules removed — these are GNN weights derived from training data,
-    # not hard architectural constraints. validate_layout() only enforces:
-    # 1. Required rooms present
-    # 2. Minimum SF per room type
-    # 3. Required adjacencies (MUST_TOUCH)
+    "Master Bedroom":  ["Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5",
+                        "Garage"],
+    "Master Bathroom": ["Kitchen", "Garage"],
+    "Master Bath":     ["Kitchen", "Garage"],
+    "Great Room":      ["Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5"],
+    "Kitchen":         ["Master Bathroom", "Master Bath",
+                        "Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5"],
+    "Garage":          ["Bedroom 2", "Bedroom 3", "Bedroom 4", "Bedroom 5",
+                        "Master Bedroom", "Master Bathroom", "Master Bath"],
 }
 
 # ── Zone classification ───────────────────────────────────────────────────────
@@ -222,9 +226,12 @@ def validate_layout(layout_json: dict, intake_json: dict) -> list[str]:
                     violations.append(
                         f"Adjacency: {rname} must NOT touch {forbidden}")
 
-    # Master dead-end rule removed — not a universal constraint.
-    # Master can connect to patio, mudroom, closet corridor, etc.
-    # Separation from guest beds is a GNN weight, not a hard rule.
+    # ── Master at dead end (no secondary bed adjacency) ──
+    if "Master Bedroom" in rooms:
+        for adj in rooms["Master Bedroom"].get("adjacencies", []):
+            if re.match(r"Bedroom \d", adj):
+                violations.append(
+                    f"Master must be at dead end — adjacent to {adj}")
 
     # ── Kitchen must touch dining ──
     if "Kitchen" in rooms:
@@ -268,7 +275,22 @@ def solve_footprint(layout_json: dict, intake_json: dict) -> dict:
     shape = (intake_json.get("house_shape") or brief_info.get("house_shape") or
              layout_json.get("footprint", "rectangle")).lower()
     garage_cars = int(intake_json.get("garage_cars") or brief_info.get("garage_cars", 2))
-    master_location = intake_json.get("master_location") or layout_json.get("master_location")
+
+    # ── Spatial intent from intake form ─────────────────────────────────────
+    # master_location: far_left | far_right | rear_center | front_center
+    # garage_attachment: attached_left | attached_right | detached
+    # street_facing: N | S | E | W  (which side faces the street / entry)
+    master_location = (
+        intake_json.get("master_location") or
+        intake_json.get("master_suite", {}).get("location") if isinstance(intake_json.get("master_suite"), dict) else None or
+        layout_json.get("master_location")
+    )
+    garage_attachment = intake_json.get("garage_attachment", "attached_right")
+    street_facing = intake_json.get("street_facing", "S")  # default: entry from south
+
+    # Normalize master_location
+    if not master_location:
+        master_location = "far_left"  # Barnhaus default
 
     garage_w = {1: 14, 2: 24, 3: 34}.get(garage_cars, 24)
     garage_d = 24
@@ -285,7 +307,34 @@ def solve_footprint(layout_json: dict, intake_json: dict) -> dict:
         "h-shape":   _solve_h_shape,
     }
     solver = solvers.get(shape, _solve_rectangle)
-    return solver(total_sf, garage_w, garage_d, master_location=master_location)
+    result = solver(total_sf, garage_w, garage_d,
+                    master_location=master_location,
+                    garage_attachment=garage_attachment)
+
+    # ── Flip zones if master should be on right ───────────────────────────
+    # Default solvers always put master on the left (x=0 side).
+    # If intake says far_right, mirror all zone x coords.
+    if master_location in ("far_right",) and result.get("total_width"):
+        tw = result["total_width"]
+        def _flip_x(v): return tw - v
+
+        def _flip_zone(z):
+            return {"x0": _flip_x(z["x1"]), "y0": z["y0"],
+                    "x1": _flip_x(z["x0"]), "y1": z["y1"]}
+
+        result["zones"] = {k: _flip_zone(v) for k, v in result["zones"].items()}
+        result["polygon"] = [{"x": _flip_x(p["x"]), "y": p["y"]}
+                              for p in result["polygon"]]
+        # Swap master ↔ bed_wing zone names after flip
+        z = result["zones"]
+        z["master"], z["bed_wing"] = z.get("bed_wing", z.get("master")), z.get("master")
+        if "left_wing" in z and "right_wing" in z:
+            z["left_wing"], z["right_wing"] = z["right_wing"], z["left_wing"]
+
+    result["master_location"] = master_location
+    result["garage_attachment"] = garage_attachment
+    result["street_facing"] = street_facing
+    return result
 
 
 def _rect_to_polygon_ccw(x0, y0, x1, y1):
@@ -369,7 +418,7 @@ def _solve_rectangle(living_sf: int, garage_w: int, garage_d: int,
 
 
 def _solve_l_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None) -> dict:
+                   master_location=None, garage_attachment="attached_right") -> dict:
     """L-shape: main_body + wing. Inner corner has 45° chamfer (4ft) for visual interest."""
     depth = 36
     main_sf = int(living_sf * 0.70)
@@ -433,7 +482,7 @@ def _solve_l_shape(living_sf: int, garage_w: int, garage_d: int,
 
 
 def _solve_u_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None) -> dict:
+                   master_location=None, garage_attachment="attached_right") -> dict:
     """U-shape: left_arm + main_body + right_arm with courtyard.
     One wing 3ft deeper than the other for asymmetry."""
     arm_depth = 28
@@ -494,7 +543,7 @@ def _solve_u_shape(living_sf: int, garage_w: int, garage_d: int,
 
 
 def _solve_h_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None) -> dict:
+                   master_location=None, garage_attachment="attached_right") -> dict:
     """H-shape: left_wing + center_bridge + right_wing, 8ft breezeways."""
     breezeway = 8
     wing_depth = 36
@@ -556,7 +605,7 @@ def _solve_h_shape(living_sf: int, garage_w: int, garage_d: int,
 
 
 def _solve_t_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None) -> dict:
+                   master_location=None, garage_attachment="attached_right") -> dict:
     """T-shape: wide main body + rear wing centered on back.
     Entry/foyer projects 4ft forward as a distinct volume on front face."""
     porch_d = 8
@@ -660,6 +709,9 @@ _ZONE_KEY_MAP = {
 def assign_rooms_to_zones(layout_json: dict, zones: dict) -> dict:
     """Place each room into its zone and compute sub-coordinates.
 
+    Uses actual room dimensions (w, d) from the fine-tuned model output when
+    available. Falls back to SF-proportional packing if not provided.
+
     Returns {room_name: {x0, y0, x1, y1, sf, zone}}.
     """
     rooms = layout_json.get("rooms", [])
@@ -697,14 +749,31 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict) -> dict:
 
         for r in z_rooms:
             sf = r.get("sf", 100)
-            frac = sf / max(total_sf, 1)
-            area = frac * zone_w * zone_d
 
-            # Aim for reasonable aspect ratio
-            room_w = math.sqrt(area * (zone_w / max(zone_d, 1)))
-            room_w = max(8, min(room_w, zone_w))
-            room_d = area / max(room_w, 1)
-            room_d = max(8, min(room_d, zone_d))
+            # ── Use actual dims from model output if available ────────────
+            # Fine-tuned model may return w/d or width/depth or dimensions dict
+            room_w = None
+            room_d = None
+            dims = r.get("dimensions") or {}
+            if isinstance(dims, dict):
+                room_w = dims.get("w") or dims.get("width")
+                room_d = dims.get("d") or dims.get("depth")
+            if not room_w:
+                room_w = r.get("w") or r.get("width")
+            if not room_d:
+                room_d = r.get("d") or r.get("depth")
+
+            # Fallback: derive from SF with reasonable aspect ratio
+            if not room_w or not room_d:
+                frac = sf / max(total_sf, 1)
+                area = frac * zone_w * zone_d
+                room_w = math.sqrt(area * (zone_w / max(zone_d, 1)))
+                room_w = max(8, min(room_w, zone_w))
+                room_d = area / max(room_w, 1)
+                room_d = max(8, min(room_d, zone_d))
+            else:
+                room_w = float(room_w)
+                room_d = float(room_d)
 
             # Wrap to next row if needed
             if cursor_x + room_w > zx1 + 0.5:
@@ -716,7 +785,6 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict) -> dict:
             if cursor_y + room_d > zy1:
                 room_d = zy1 - cursor_y
             if room_d < 4:
-                # Not enough vertical space — repack in leftover column
                 cursor_y = zy0
                 cursor_x = zx0 + zone_w * 0.8
                 room_d = min(zone_d, room_d + 8)
@@ -732,6 +800,7 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict) -> dict:
                 "y1": round(cursor_y + room_d, 1),
                 "sf": sf,
                 "zone": z_name,
+                "dims_source": "model" if (r.get("w") or r.get("dimensions")) else "derived",
             }
             cursor_x += room_w
             row_height = max(row_height, room_d)
@@ -967,14 +1036,8 @@ def generate_floorplan_image(
     room_coords: dict,
     submission_id: str,
     output_dir: str = "designs",
-    section_lines: list = None,
 ) -> str:
-    """Render a 2D floor plan PNG with matplotlib. Returns file path.
-
-    Args:
-        section_lines: list of dicts from Carter export, e.g.
-            [{"id": "S1", "axis": "NS", "x": 45.2}, {"id": "S3", "axis": "EW", "y": 22.1}]
-    """
+    """Render a 2D floor plan PNG with matplotlib. Returns file path."""
     os.makedirs(output_dir, exist_ok=True)
     fig, ax = plt.subplots(1, 1, figsize=(16, 10))
 
@@ -1032,25 +1095,6 @@ def generate_floorplan_image(
     ax.annotate(
         "", xy=(min_x - 3, max_y), xytext=(min_x - 3, max_y - 5),
         arrowprops=dict(arrowstyle="->", color="black", lw=2))
-
-    # Section lines (from Carter export)
-    if section_lines:
-        for sl in section_lines:
-            sid = sl.get("id", "")
-            is_major = sid in ("S1", "S3", "S4", "S6")
-            lw = 1.5 if is_major else 0.8
-            ls = "-" if is_major else "--"
-            color = "#2255AA"
-            if sl.get("axis") == "NS":
-                x = sl.get("x", 0)
-                ax.axvline(x=x, color=color, linewidth=lw, linestyle=ls, alpha=0.7)
-                ax.text(x, max_y + 1, sid, ha="center", va="bottom",
-                        fontsize=7, color=color, fontweight="bold")
-            elif sl.get("axis") == "EW":
-                y = sl.get("y", 0)
-                ax.axhline(y=y, color=color, linewidth=lw, linestyle=ls, alpha=0.7)
-                ax.text(min_x - 1, y, sid, ha="right", va="center",
-                        fontsize=7, color=color, fontweight="bold")
 
     # Legend
     legend_patches = [

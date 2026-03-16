@@ -2053,3 +2053,168 @@ def validate_build_script(rooms, doors, windows, walls):
         print("\n✅  All QA checks passed.\n")
 
     return violations
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# V2 IMPROVEMENTS — cherry-picked from barnhaus_revit_utils_v2.py
+# Added 2026-03-16
+# ═══════════════════════════════════════════════════════════════════════
+
+# ── Dry-run mode ──────────────────────────────────────────────────────
+DRY_RUN = False  # Set True to preview without hitting Revit
+
+# ── Compass direction → rotation degrees ─────────────────────────────
+FACE_TO_ROT = {"S": 0, "N": 180, "W": 90, "E": 270}
+
+def face_to_rotation(face: str) -> float:
+    """Convert compass direction (N/S/E/W) to Revit rotation degrees."""
+    rot = FACE_TO_ROT.get(face.upper())
+    if rot is None:
+        raise ValueError(f"Invalid face direction '{face}'. Use N/S/E/W.")
+    return rot
+
+
+# ── Bridge health check ───────────────────────────────────────────────
+def health_check() -> bool:
+    """Check Revit bridge is alive. Returns True if healthy."""
+    import requests as _req
+    try:
+        r = _req.get("http://localhost:3000/health", timeout=5)
+        data = r.json()
+        if data.get("status") == "healthy":
+            print(f"✅ Bridge healthy — Revit {data.get('revit_version')}, doc: {data.get('active_document')}")
+            return True
+        print(f"⚠️  Bridge unhealthy: {data}")
+        return False
+    except Exception as e:
+        print(f"❌ Bridge unreachable: {e}")
+        return False
+
+
+# ── Stage checkpointing ───────────────────────────────────────────────
+_CHECKPOINT_FILE = "/tmp/revit_stage_checkpoint.json"
+
+def checkpoint_save(submission_id: str, stage: int, element_ids: list):
+    """Save completed element IDs for a stage so we can resume."""
+    import json as _json, os as _os
+    data = {}
+    if _os.path.exists(_CHECKPOINT_FILE):
+        with open(_CHECKPOINT_FILE) as f:
+            data = _json.load(f)
+    data.setdefault(submission_id, {})[f"stage_{stage}"] = element_ids
+    with open(_CHECKPOINT_FILE, "w") as f:
+        _json.dump(data, f, indent=2)
+    print(f"💾 Checkpoint saved: {submission_id} stage {stage} ({len(element_ids)} elements)")
+
+
+def checkpoint_load(submission_id: str, stage: int) -> list:
+    """Load element IDs from a previous stage run. Returns [] if none."""
+    import json as _json, os as _os
+    if not _os.path.exists(_CHECKPOINT_FILE):
+        return []
+    with open(_CHECKPOINT_FILE) as f:
+        data = _json.load(f)
+    return data.get(submission_id, {}).get(f"stage_{stage}", [])
+
+
+def checkpoint_clear(submission_id: str):
+    """Clear all checkpoints for a submission (fresh start)."""
+    import json as _json, os as _os
+    if not _os.path.exists(_CHECKPOINT_FILE):
+        return
+    with open(_CHECKPOINT_FILE) as f:
+        data = _json.load(f)
+    data.pop(submission_id, None)
+    with open(_CHECKPOINT_FILE, "w") as f:
+        _json.dump(data, f, indent=2)
+    print(f"🗑️  Checkpoints cleared for {submission_id}")
+
+
+# ── Catalog lookup helpers ────────────────────────────────────────────
+_DOOR_CATALOG = {
+    "front":         ("Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad", '36" x 96"'),
+    "interior":      ("Door-Interior-Single-1_Panel-Wood", '36" x 96"'),
+    "interior_30":   ("Door-Interior-Single-1_Panel-Wood", '30" x 96"'),
+    "interior_32":   ("Door-Interior-Single-1_Panel-Wood", '32" x 96"'),
+    "pocket":        ("Door-Interior-Single-Pocket-2_Panel-Wood", '36" x 96"'),
+    "slider_6":      ("Exterior_Sliding_Door_3843", "6'-0\"W. x 8'-0\"H."),
+    "slider_8":      ("Exterior_Sliding_Door_3843", "8'-0\"W. x 8'-0\"H. 2"),
+    "garage_16x10":  ("Door-Garage-Flush_Panel", "16W X 10H"),
+    "garage_10x10":  ("Door-Garage-Flush_Panel", "10x10"),
+    "garage_12x12":  ("Door-Garage-Flush_Panel", "12 X 12"),
+}
+
+_WINDOW_CATALOG = {
+    "large":       ("Instance-Window-Fixed", '72" x 36"'),
+    "medium":      ("Instance-Window-Fixed", '48" x 48"'),
+    "tall":        ("Instance-Window-Fixed", '48" x 96"'),
+    "clerestory":  ("Instance-Window-Fixed", '72" x 24"'),
+    "awning":      ("Window-Awning-Single", '24" x 72"'),
+    "kitchen":     ("Instance-Window-Fixed", '60" x 30"'),
+}
+
+_CABINET_CATALOG = {
+    "base_36":     ("Base Cabinet-Double Door & 1 Drawer", '36"'),
+    "base_sink":   ("Base Cabinet-Double Door Sink Unit", '36"'),
+    "upper":       ("Upper Cabinet-Single Door", '36"'),
+    "vanity":      ("Vanity Cabinet-Double Door Sink Unit", '30"'),
+    "vanity_36":   ("Vanity Cabinet-Double Door Sink Unit", '36"'),
+}
+
+_PLUMBING_CATALOG = {
+    "toilet":      ("Toilet-Domestic-3D", "Toilet-Domestic-3D"),
+    "tub":         ("Tub-Free Standing-3D", '30" x 60"'),
+    "shower":      ("Shower-Square", '36" x 36"'),
+    "sink_kitchen":("Sink Kitchen-Single", '30" x 21"'),
+    "sink_island": ("Sink Kitchen-Island", '18" x 18"'),
+    "sink_bath":   ("Sink Vanity-Square", '20" x 18"'),
+    "range":       ("Range-Gas", '30"'),
+    "range_36":    ("Range-36_Inch", "Burners"),
+    "dishwasher":  ("Dishwasher", '24"'),
+    "fridge":      ("Fridge-Dbl Door", '59" x 30" x 74"'),
+    "hood":        ("Hood-Wall", '36"'),
+    "washer":      ("Washer-Top_Load", '29"'),
+    "dryer":       ("Dryer", '29"'),
+}
+
+def door_catalog(key: str) -> tuple:
+    """Get (family, type_name) for a door key. See _DOOR_CATALOG for keys."""
+    if key not in _DOOR_CATALOG:
+        raise KeyError(f"Unknown door key '{key}'. Available: {list(_DOOR_CATALOG)}")
+    return _DOOR_CATALOG[key]
+
+def window_catalog(key: str) -> tuple:
+    """Get (family, type_name) for a window key. See _WINDOW_CATALOG for keys."""
+    if key not in _WINDOW_CATALOG:
+        raise KeyError(f"Unknown window key '{key}'. Available: {list(_WINDOW_CATALOG)}")
+    return _WINDOW_CATALOG[key]
+
+def cabinet_catalog(key: str) -> tuple:
+    """Get (family, type_name) for a cabinet key."""
+    if key not in _CABINET_CATALOG:
+        raise KeyError(f"Unknown cabinet key '{key}'. Available: {list(_CABINET_CATALOG)}")
+    return _CABINET_CATALOG[key]
+
+def plumbing_catalog(key: str) -> tuple:
+    """Get (family, type_name) for a plumbing fixture key."""
+    if key not in _PLUMBING_CATALOG:
+        raise KeyError(f"Unknown plumbing key '{key}'. Available: {list(_PLUMBING_CATALOG)}")
+    return _PLUMBING_CATALOG[key]
+
+def print_catalog():
+    """Print all available catalog keys."""
+    print("\n=== DOORS ===")
+    for k, (f, t) in _DOOR_CATALOG.items():
+        print(f"  {k:20s} → {f} | {t}")
+    print("\n=== WINDOWS ===")
+    for k, (f, t) in _WINDOW_CATALOG.items():
+        print(f"  {k:20s} → {f} | {t}")
+    print("\n=== CABINETS ===")
+    for k, (f, t) in _CABINET_CATALOG.items():
+        print(f"  {k:20s} → {f} | {t}")
+    print("\n=== PLUMBING ===")
+    for k, (f, t) in _PLUMBING_CATALOG.items():
+        print(f"  {k:20s} → {f} | {t}")
+    print("\n=== ROTATION (face → degrees) ===")
+    for face, deg in FACE_TO_ROT.items():
+        print(f"  Face {face} = {deg}°")
