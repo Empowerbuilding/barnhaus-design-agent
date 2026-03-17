@@ -24,7 +24,8 @@ cd /home/node/.openclaw/workspace && python3 brain/barnhaus_design_brain.py [sub
 ```
 
 ### Step 3: Post Floor Plan for Review
-- Upload the generated floor plan PNG to Discord
+- The brain outputs an SVG — ALWAYS convert to PNG first: `convert floorplan_XXXX.svg floorplan_XXXX.png` (ImageMagick)
+- Post the PNG as a Discord image attachment — never post an SVG
 - Include design summary (room layout, dimensions, key decisions)
 - Ask Mitch: "Approve or request changes?"
 
