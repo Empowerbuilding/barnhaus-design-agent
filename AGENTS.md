@@ -23,10 +23,10 @@ When a new design_intake_submissions row appears:
 cd /home/node/.openclaw/workspace && python3 brain/barnhaus_design_brain.py [submission_id]
 ```
 
-### Step 3: Post Floor Plan for Review
-- The brain outputs an SVG — ALWAYS convert to PNG first: `convert floorplan_XXXX.svg floorplan_XXXX.png` (ImageMagick)
-- Post the PNG as a Discord image attachment — never post an SVG
-- Include design summary (room layout, dimensions, key decisions)
+### Step 3: Post Design Brief for Review
+- The brain outputs a JSON file saved to workspace/designs/design_XXXX.json
+- The brain does NOT generate floor plan images — do NOT try to create or post fake SVG/PNG floor plans
+- Read the JSON and post the design brief as formatted text: room list, dimensions, layout highlights, exterior style
 - Ask Mitch: "Approve or request changes?"
 
 ### Step 4: Handle Feedback
