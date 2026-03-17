@@ -307,9 +307,11 @@ def solve_footprint(layout_json: dict, intake_json: dict) -> dict:
         "h-shape":   _solve_h_shape,
     }
     solver = solvers.get(shape, _solve_rectangle)
+    vid = (intake_json.get("id") or intake_json.get("submission_id") or "")[:12]
     result = solver(total_sf, garage_w, garage_d,
                     master_location=master_location,
-                    garage_attachment=garage_attachment)
+                    garage_attachment=garage_attachment,
+                    _vid=vid)
 
     # ── Flip zones if master should be on right ───────────────────────────
     # Default solvers always put master on the left (x=0 side).
@@ -343,350 +345,593 @@ def _rect_to_polygon_ccw(x0, y0, x1, y1):
             {"x": x1, "y": y1}, {"x": x0, "y": y1}]
 
 
+def _variation(submission_id: str, key: str, lo: float, hi: float) -> float:
+    """Deterministic variation seeded by submission_id + key.
+    Always returns same value for same inputs — reproducible per project."""
+    import hashlib
+    seed = int(hashlib.md5(f"{submission_id or 'default'}{key}".encode()).hexdigest(), 16)
+    t = (seed % 1000) / 1000.0  # 0.0 → 1.0
+    return round(lo + t * (hi - lo), 1)
+
+
 def _solve_rectangle(living_sf: int, garage_w: int, garage_d: int,
-                     master_location=None) -> dict:
-    """Rectangle: master|living|beds|service + garage at end + rear porch.
-    Adds rear bumpout for master sitting if master_location given."""
-    porch_d = 8
-    depth = 36
-    width = math.ceil(living_sf / depth)
-    if width > 100:
-        depth = 40
-        width = math.ceil(living_sf / depth)
+                     master_location=None, garage_attachment="attached_right",
+                     _vid: str = "", **_) -> dict:
+    """
+    Rectangle plan with real articulation:
+    - Great room steps BACK from house face (compression/release effect)
+    - Master wing is DEEPER than bed wing (more rooms stacked)
+    - Garage face set back 6-10ft from main house face
+    - Rear bumpout on master side (sitting room / master bath bump)
+    - Front covered porch full width
+    """
+    # Varied depths per zone — master deeper, beds shallower, great room pushed back
+    master_d   = _variation(_vid, "rect_master_d",   34, 42)   # deeper = more private rooms
+    great_d    = _variation(_vid, "rect_great_d",    30, 38)   # great room depth
+    bed_d      = _variation(_vid, "rect_bed_d",      28, 36)   # shallower than master
+    service_d  = _variation(_vid, "rect_service_d",  26, 32)   # service narrowest
+
+    # Great room steps back from front face (creates entry compression)
+    gr_stepback = _variation(_vid, "rect_gr_stepback", 2, 6)
+
+    # Overall depth = master (it's the deepest)
+    house_depth = master_d
+    porch_d = _variation(_vid, "rect_porch_d", 10, 16)
+
+    # Width: solve from SF using average zone depth
+    avg_d = (master_d * 0.28 + great_d * 0.38 + bed_d * 0.24 + service_d * 0.10)
+    width = max(48, math.ceil(living_sf / avg_d))
+    if width > 110:
+        # Too wide — increase depth
+        master_d += 4; great_d += 4; bed_d += 4
+        avg_d = (master_d*0.28 + great_d*0.38 + bed_d*0.24 + service_d*0.10)
+        width = math.ceil(living_sf / avg_d)
+
+    # Zone widths — NOT equal. Great room is widest, service narrowest
+    mw = round(width * _variation(_vid, "rect_mw_frac", 0.22, 0.30))
+    lw = round(width * _variation(_vid, "rect_lw_frac", 0.34, 0.42))
+    sw = round(width * _variation(_vid, "rect_sw_frac", 0.08, 0.14))
+    bw = width - mw - lw - sw
+
     total_width = width + garage_w
-    total_depth = depth + porch_d
 
-    # Zone proportions: master 25%, living 35%, beds 25%, service 15%
-    mw = round(width * 0.25)
-    lw = round(width * 0.35)
-    bw = round(width * 0.25)
-    sw = width - mw - lw - bw
+    # Y positions (south to north = 0 to +)
+    y0_front = porch_d
+    y0_house = porch_d
 
+    # Each zone has its own depth — rear wall is NOT a straight line
     zones = {
-        "master":      {"x0": 0,        "y0": porch_d, "x1": mw,        "y1": total_depth},
-        "living_core": {"x0": mw,       "y0": porch_d, "x1": mw + lw,   "y1": total_depth},
-        "bed_wing":    {"x0": mw + lw,  "y0": porch_d, "x1": mw+lw+bw,  "y1": total_depth},
-        "service":     {"x0": mw+lw+bw, "y0": porch_d, "x1": width,     "y1": total_depth},
-        "garage":      {"x0": width,    "y0": porch_d, "x1": total_width,
-                        "y1": porch_d + garage_d},
-        "porch":       {"x0": 0,        "y0": 0,       "x1": width,     "y1": porch_d},
+        "master":      {"x0": 0,        "y0": y0_house, "x1": mw,        "y1": y0_house + master_d},
+        "living_core": {"x0": mw,       "y0": y0_house + gr_stepback,
+                        "x1": mw + lw,  "y1": y0_house + gr_stepback + great_d},
+        "bed_wing":    {"x0": mw + lw,  "y0": y0_house, "x1": mw+lw+bw,  "y1": y0_house + bed_d},
+        "service":     {"x0": mw+lw+bw, "y0": y0_house, "x1": width,     "y1": y0_house + service_d},
+        "porch":       {"x0": 0,        "y0": 0,         "x1": width,     "y1": porch_d},
     }
-    # Legacy compat
     zones["living"] = zones["living_core"]
     zones["beds"] = zones["bed_wing"]
 
-    # Garage set back 3ft from front face
-    garage_setback = 3
-    zones["garage"]["y0"] = porch_d + garage_setback
+    # Garage — set back from front face, NOT flush
+    garage_setback = _variation(_vid, "rect_garage_setback", 5, 10)
+    zones["garage"] = {
+        "x0": width, "y0": y0_house + garage_setback,
+        "x1": width + garage_w, "y1": y0_house + garage_setback + garage_d
+    }
 
-    # Bumpouts
-    bumpouts = []
-    if master_location:
-        # Add rear bumpout for master sitting (8ft wide x 4ft deep)
-        bump_x0 = zones["master"]["x0"] + (mw - 8) / 2
-        bump_x1 = bump_x0 + 8
-        bumpouts.append({
-            "face": "N", "offset_start": bump_x0, "offset_end": bump_x1,
-            "projection": 4, "purpose": "master_sitting",
-        })
+    # Master rear bumpout (sitting room or his/her bath extension)
+    bump_w = _variation(_vid, "rect_bump_w", 10, 16)
+    bump_d = _variation(_vid, "rect_bump_d", 4, 8)
+    bump_x0 = zones["master"]["x0"] + (mw - bump_w) / 2
+    bump_x1 = bump_x0 + bump_w
+    master_rear = zones["master"]["y1"]
 
-    # Build polygon — main rect + bumpouts
-    polygon = _rect_to_polygon_ccw(0, porch_d, width, total_depth)
-    if bumpouts:
-        # Insert bumpout vertices into north face for master sitting
-        b = bumpouts[0]
-        polygon = [
-            {"x": 0,              "y": porch_d},
-            {"x": width,          "y": porch_d},
-            {"x": width,          "y": total_depth},
-            {"x": b["offset_end"],   "y": total_depth},
-            {"x": b["offset_end"],   "y": total_depth + b["projection"]},
-            {"x": b["offset_start"], "y": total_depth + b["projection"]},
-            {"x": b["offset_start"], "y": total_depth},
-            {"x": 0,              "y": total_depth},
-        ]
+    bumpouts = [{
+        "face": "N", "offset_start": bump_x0, "offset_end": bump_x1,
+        "projection": bump_d, "purpose": "master_sitting_or_bath",
+    }]
 
-    actual_sf = width * depth
+    # Great room rear bumpout (view wall push)
+    gr_bump_w = _variation(_vid, "rect_gr_bump_w", 14, 22)
+    gr_bump_d = _variation(_vid, "rect_gr_bump_d", 3, 6)
+    gr_rear = zones["living_core"]["y1"]
+    gr_cx = (zones["living_core"]["x0"] + zones["living_core"]["x1"]) / 2
+    gr_bump_x0 = gr_cx - gr_bump_w / 2
+    gr_bump_x1 = gr_cx + gr_bump_w / 2
+    bumpouts.append({
+        "face": "N", "offset_start": gr_bump_x0, "offset_end": gr_bump_x1,
+        "projection": gr_bump_d, "purpose": "great_room_view_wall_push",
+    })
+
+    # Build articulated polygon tracing the actual stepped rear wall
+    # South face: straight across at y0_house (front of house behind porch)
+    # Rear face: steps per zone depth
+    polygon = [
+        # South face (front of house, west to east)
+        {"x": 0,     "y": y0_house},
+        {"x": width, "y": y0_house},
+        # East face down to service rear, then step to bed rear
+        {"x": width, "y": y0_house + service_d},
+        {"x": mw+lw+bw, "y": y0_house + service_d},
+        {"x": mw+lw+bw, "y": y0_house + bed_d},
+        # Bed rear → great room rear step
+        {"x": mw+lw, "y": y0_house + bed_d},
+        {"x": mw+lw, "y": gr_rear},
+        # Great room rear bumpout
+        {"x": gr_bump_x1, "y": gr_rear},
+        {"x": gr_bump_x1, "y": gr_rear + gr_bump_d},
+        {"x": gr_bump_x0, "y": gr_rear + gr_bump_d},
+        {"x": gr_bump_x0, "y": gr_rear},
+        # Great room → master step
+        {"x": mw,   "y": gr_rear},
+        {"x": mw,   "y": master_rear},
+        # Master rear bumpout
+        {"x": bump_x1, "y": master_rear},
+        {"x": bump_x1, "y": master_rear + bump_d},
+        {"x": bump_x0, "y": master_rear + bump_d},
+        {"x": bump_x0, "y": master_rear},
+        # West face back to start
+        {"x": 0,    "y": master_rear},
+    ]
+
+    actual_sf = mw*master_d + lw*great_d + bw*bed_d + sw*service_d
     for b in bumpouts:
         actual_sf += (b["offset_end"] - b["offset_start"]) * b["projection"]
 
+    max_depth = max(master_rear + bump_d, gr_rear + gr_bump_d, y0_house + bed_d)
+
     return {
-        "shape": "rectangle", "total_width": total_width, "total_depth": total_depth,
+        "shape": "rectangle", "total_width": total_width,
+        "total_depth": max_depth + porch_d,
         "polygon": polygon, "zones": zones, "bumpouts": bumpouts,
-        "total_sf": actual_sf, "width": total_width, "depth": total_depth,
+        "total_sf": actual_sf, "width": total_width, "depth": max_depth + porch_d,
+        "ceiling_heights": {
+            "master": 11, "living_core": 16, "bed_wing": 10, "service": 9,
+        },
     }
 
 
 def _solve_l_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None, garage_attachment="attached_right") -> dict:
-    """L-shape: main_body + wing. Inner corner has 45° chamfer (4ft) for visual interest."""
-    depth = 36
-    main_sf = int(living_sf * 0.70)
-    wing_sf = living_sf - main_sf
-    main_w = math.ceil(main_sf / depth)
-    wing_d = 28
-    wing_w = math.ceil(wing_sf / wing_d)
-    total_width = max(main_w, wing_w + garage_w)
-    total_depth = depth + wing_d
+                   master_location=None, garage_attachment="attached_right",
+                   _vid: str = "") -> dict:
+    """
+    L-shape with real asymmetry and articulation:
+    - Main bar WIDER than it is deep — long horizontal spine
+    - Wing much NARROWER and deeper than the bar — creates strong L
+    - Inner corner has real notch/step, not just chamfer
+    - Wing offset: NOT flush with bar end — steps in 4-6ft
+    - Covered breezeway along inner corner (outdoor covered connection)
+    - Garage set into the crook of the L, face set back
+    """
+    # Main bar: wider, shallower (great room + master along front)
+    bar_depth  = _variation(_vid, "l_bar_depth",  32, 42)
+    bar_frac   = _variation(_vid, "l_bar_frac",   0.62, 0.72)  # % of SF in bar
+    bar_sf     = int(living_sf * bar_frac)
+    wing_sf    = living_sf - bar_sf
 
-    mw = round(main_w * 0.30)
-    lw = round(main_w * 0.40)
-    bw = main_w - mw - lw
+    # Wing: narrower, deeper (bed wing + secondary bath)
+    wing_depth = _variation(_vid, "l_wing_depth", 28, 38)
+    wing_w     = max(18, math.ceil(wing_sf / wing_depth))
+    wing_w     = min(wing_w, 36)  # wings never wider than 36ft
 
-    # Master 2ft deeper than bed wing
-    master_extra = 2
-    chamfer = 4  # 45° notch at inner corner
+    bar_w      = max(wing_w + 20, math.ceil(bar_sf / bar_depth))
+
+    # Wing steps IN from bar end (creates pocket / notch in plan)
+    wing_step_in = _variation(_vid, "l_wing_step", 3, 8)
+    wing_x0    = bar_w - wing_w - wing_step_in
+    wing_x1    = wing_x0 + wing_w
+
+    # Covered breezeway in inner corner (outdoor space in the notch)
+    breeze_d   = _variation(_vid, "l_breeze_d", 8, 14)
+
+    # Zone widths in bar: master left, great room center, service right
+    mw = round(bar_w * _variation(_vid, "l_mw_frac", 0.24, 0.32))
+    lw = round(bar_w * _variation(_vid, "l_lw_frac", 0.38, 0.46))
+    sw = bar_w - mw - lw  # service
+
+    # Master is deeper than bed side of bar
+    master_extra_d = _variation(_vid, "l_master_extra", 3, 7)
+
+    bar_y0 = 0
+    bar_y1 = bar_depth
+    wing_y0 = bar_y1
+    wing_y1 = bar_y1 + wing_depth
 
     zones = {
-        "master":      {"x0": 0,   "y0": 0, "x1": mw,       "y1": depth + master_extra},
-        "living_core": {"x0": mw,  "y0": 0, "x1": mw + lw,  "y1": depth},
-        "bed_wing":    {"x0": mw + lw, "y0": 0, "x1": main_w, "y1": depth},
-        "service":     {"x0": main_w - wing_w, "y0": depth,
-                        "x1": main_w, "y1": depth + wing_d},
-        "garage":      {"x0": main_w, "y0": depth,
-                        "x1": main_w + garage_w, "y1": depth + garage_d},
+        "master":      {"x0": 0,     "y0": bar_y0, "x1": mw,      "y1": bar_y1 + master_extra_d},
+        "living_core": {"x0": mw,    "y0": bar_y0, "x1": mw + lw, "y1": bar_y1},
+        "service":     {"x0": mw+lw, "y0": bar_y0, "x1": bar_w,   "y1": bar_y1},
+        "bed_wing":    {"x0": wing_x0, "y0": wing_y0, "x1": wing_x1, "y1": wing_y1},
+        "breezeway":   {"x0": wing_x1, "y0": wing_y0, "x1": bar_w,   "y1": wing_y0 + breeze_d},
+        "porch":       {"x0": 0,     "y0": -10,    "x1": bar_w,   "y1": 0},
     }
+
+    # Garage sits OUTSIDE the L crook — set back from bar face
+    garage_setback = _variation(_vid, "l_garage_setback", 4, 8)
+    if garage_attachment == "attached_left":
+        zones["garage"] = {
+            "x0": -garage_w, "y0": bar_y0 + garage_setback,
+            "x1": 0,         "y1": bar_y0 + garage_setback + garage_d
+        }
+    else:
+        zones["garage"] = {
+            "x0": bar_w,            "y0": wing_y0 + garage_setback,
+            "x1": bar_w + garage_w, "y1": wing_y0 + garage_setback + garage_d
+        }
+
     zones["living"] = zones["living_core"]
-    zones["beds"] = zones["bed_wing"]
+    zones["beds"]   = zones["bed_wing"]
 
-    # Polygon: L-shape with chamfer at inner corner (where wing meets main body)
-    wing_x0 = main_w - wing_w
+    # Articulated L polygon — traces actual building perimeter
     polygon = [
-        {"x": 0,        "y": 0},
-        {"x": main_w,   "y": 0},
-        {"x": main_w,   "y": depth},
-        {"x": main_w,   "y": depth + wing_d},
-        {"x": wing_x0,  "y": depth + wing_d},
-        {"x": wing_x0,  "y": depth + chamfer},       # chamfer start
-        {"x": wing_x0 - chamfer, "y": depth},        # chamfer end (45° notch)
-        {"x": 0,         "y": depth},
-        {"x": 0,         "y": depth + master_extra},  # master extra depth
-    ]
-    # Fix: master extends north, so adjust polygon
-    polygon = [
-        {"x": 0,                  "y": 0},
-        {"x": main_w,            "y": 0},
-        {"x": main_w,            "y": depth + wing_d},
-        {"x": wing_x0,           "y": depth + wing_d},
-        {"x": wing_x0,           "y": depth + chamfer},
-        {"x": wing_x0 - chamfer, "y": depth},
-        {"x": 0,                  "y": depth + master_extra},
+        # Start SW corner, go clockwise
+        {"x": 0,       "y": bar_y0},
+        {"x": bar_w,   "y": bar_y0},
+        {"x": bar_w,   "y": wing_y0},             # east face of bar drops to wing top
+        {"x": wing_x1 + wing_step_in, "y": wing_y0},   # step at inner corner
+        {"x": wing_x1 + wing_step_in, "y": wing_y0 + breeze_d},  # breezeway pocket
+        {"x": wing_x1, "y": wing_y0 + breeze_d},
+        {"x": wing_x1, "y": wing_y1},             # south face of wing
+        {"x": wing_x0, "y": wing_y1},
+        {"x": wing_x0, "y": wing_y0},             # back up wing west face
+        {"x": 0,       "y": wing_y0},
+        # West face back up (master side is deeper)
+        {"x": 0,       "y": bar_y1 + master_extra_d},
     ]
 
-    actual_sf = main_w * depth + wing_w * wing_d
+    actual_sf = bar_w * bar_depth + wing_w * wing_depth + mw * master_extra_d
+
     return {
-        "shape": "l_shape", "total_width": total_width, "total_depth": total_depth,
+        "shape": "l_shape",
+        "total_width": bar_w + garage_w,
+        "total_depth": wing_y1,
         "polygon": polygon, "zones": zones, "bumpouts": [],
-        "total_sf": actual_sf, "width": total_width, "depth": total_depth,
+        "total_sf": actual_sf, "width": bar_w + garage_w, "depth": wing_y1,
+        "ceiling_heights": {
+            "master": 11, "living_core": 16, "bed_wing": 10, "service": 9,
+        },
     }
 
 
 def _solve_u_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None, garage_attachment="attached_right") -> dict:
-    """U-shape: left_arm + main_body + right_arm with courtyard.
-    One wing 3ft deeper than the other for asymmetry."""
-    arm_depth = 28
-    main_depth = 36
-    main_w = 50
-    arm_w = math.ceil(
-        (living_sf - main_w * main_depth) / (2 * arm_depth))
-    arm_w = max(arm_w, 16)
-    total_width = arm_w + main_w + arm_w
-    # Right wing 3ft deeper for visual interest
-    right_extra = 3
-    total_depth = arm_depth + main_depth
+                   master_location=None, garage_attachment="attached_right",
+                   _vid: str = "") -> dict:
+    """
+    U-shape with real asymmetry:
+    - Arms are DIFFERENT widths (master arm wider and deeper than bed arm)
+    - Courtyard is NOT centered — offset toward the view side
+    - Main bar steps back from arm faces (compression through courtyard, release into bar)
+    - Bar deeper than arms
+    - Covered porch fills courtyard opening (front outdoor living)
+    """
+    # Arms: master arm wider and deeper, bed arm narrower
+    master_arm_w = _variation(_vid, "u_master_arm_w", 20, 30)
+    bed_arm_w    = _variation(_vid, "u_bed_arm_w",    16, 24)
+    master_arm_d = _variation(_vid, "u_master_arm_d", 28, 36)
+    bed_arm_d    = _variation(_vid, "u_bed_arm_d",    24, 32)
+
+    # Main bar: deeper than arms
+    bar_depth    = _variation(_vid, "u_bar_depth",    32, 42)
+    bar_step     = _variation(_vid, "u_bar_step",     4, 8)   # bar face steps back from arm face
+
+    # Courtyard offset — NOT centered, shifted toward bed arm side
+    courtyard_offset = _variation(_vid, "u_court_offset", 2, 6)
+
+    # Total width
+    total_w = master_arm_w + _variation(_vid, "u_court_w", 28, 44) + bed_arm_w
+
+    arm_y0   = 0
+    court_d  = max(master_arm_d, bed_arm_d)
+    bar_y0   = court_d + bar_step
+    bar_y1   = bar_y0 + bar_depth
+
+    # Bar spans full width — arms project forward
+    bar_x0 = 0
+    bar_x1 = total_w
 
     zones = {
-        "master":      {"x0": 0, "y0": 0,
-                        "x1": arm_w, "y1": arm_depth},
-        "living_core": {"x0": 0, "y0": arm_depth,
-                        "x1": total_width, "y1": total_depth},
-        "bed_wing":    {"x0": total_width - arm_w, "y0": 0,
-                        "x1": total_width, "y1": arm_depth + right_extra},
-        "service":     {"x0": total_width, "y0": arm_depth,
-                        "x1": total_width + garage_w,
-                        "y1": arm_depth + garage_d},
-        "garage":      {"x0": total_width, "y0": arm_depth,
-                        "x1": total_width + garage_w,
-                        "y1": arm_depth + garage_d},
-        "courtyard":   {"x0": arm_w, "y0": 0,
-                        "x1": total_width - arm_w, "y1": arm_depth},
-        "porch":       {"x0": arm_w, "y0": 0,
-                        "x1": total_width - arm_w, "y1": arm_depth},
+        "master":      {"x0": 0,                    "y0": arm_y0,
+                        "x1": master_arm_w,          "y1": master_arm_d},
+        "living_core": {"x0": bar_x0,               "y0": bar_y0,
+                        "x1": bar_x1,                "y1": bar_y1},
+        "bed_wing":    {"x0": total_w - bed_arm_w,  "y0": arm_y0,
+                        "x1": total_w,               "y1": bed_arm_d},
+        "service":     {"x0": bar_x0,               "y0": court_d,
+                        "x1": master_arm_w + 8,      "y1": bar_y0},   # service strip between arm and bar
+        "courtyard":   {"x0": master_arm_w,          "y0": arm_y0,
+                        "x1": total_w - bed_arm_w,   "y1": court_d},
+        "porch":       {"x0": master_arm_w,          "y0": arm_y0,
+                        "x1": total_w - bed_arm_w,   "y1": court_d},
+    }
+
+    # Garage at rear of bar or off bed arm end
+    garage_setback = _variation(_vid, "u_garage_setback", 3, 7)
+    zones["garage"] = {
+        "x0": total_w,             "y0": bar_y0 + garage_setback,
+        "x1": total_w + garage_w,  "y1": bar_y0 + garage_setback + garage_d
     }
     zones["living"] = zones["living_core"]
-    zones["beds"] = zones["bed_wing"]
+    zones["beds"]   = zones["bed_wing"]
 
-    # Polygon: U-shape CCW with right arm 3ft deeper
+    # U polygon — two arms + bar, with step at bar face
     polygon = [
-        {"x": 0,                   "y": 0},
-        {"x": arm_w,              "y": 0},
-        {"x": arm_w,              "y": arm_depth},  # courtyard bottom-left
-        {"x": total_width - arm_w, "y": arm_depth},  # courtyard bottom-right
-        {"x": total_width - arm_w, "y": -right_extra},  # right arm deeper
-        {"x": total_width,         "y": -right_extra},
-        {"x": total_width,         "y": total_depth},
-        {"x": 0,                   "y": total_depth},
-        {"x": 0,                   "y": 0},  # close
+        # Master arm (NW): south face at y=0
+        {"x": 0,           "y": arm_y0},
+        {"x": master_arm_w,"y": arm_y0},
+        # Master arm east face drops to courtyard level then steps into bar
+        {"x": master_arm_w,"y": master_arm_d},
+        {"x": 0,           "y": master_arm_d},         # back up west face of master arm?
+        # No — continue east along courtyard front edge
     ]
-    # Remove duplicate close point for clean polygon
-    polygon = polygon[:-1]
+    # Cleaner approach: trace perimeter
+    polygon = [
+        {"x": 0,                   "y": arm_y0},
+        {"x": master_arm_w,        "y": arm_y0},
+        {"x": master_arm_w,        "y": master_arm_d},
+        {"x": bar_x0,              "y": court_d},       # step to bar face
+        {"x": bar_x0,              "y": bar_y1},        # bar north face
+        {"x": bar_x1,              "y": bar_y1},
+        {"x": bar_x1,              "y": court_d},
+        {"x": total_w - bed_arm_w, "y": bed_arm_d},
+        {"x": total_w - bed_arm_w, "y": arm_y0},
+        {"x": total_w,             "y": arm_y0},
+        {"x": total_w,             "y": bed_arm_d},
+        {"x": total_w,             "y": bar_y1},
+        # Back west along bar top already covered — close west
+        {"x": 0,                   "y": bar_y1},
+        {"x": 0,                   "y": master_arm_d},
+        {"x": 0,                   "y": arm_y0},
+    ]
+    # Deduplicate consecutive identical points
+    seen = []
+    for p in polygon:
+        if not seen or seen[-1] != p:
+            seen.append(p)
+    polygon = seen
 
-    actual_sf = arm_w * arm_depth + main_w * main_depth + arm_w * (arm_depth + right_extra)
+    actual_sf = (master_arm_w * master_arm_d + bed_arm_w * bed_arm_d +
+                 total_w * bar_depth)
+
     return {
         "shape": "u_shape",
-        "total_width": total_width + garage_w,
-        "total_depth": total_depth,
+        "total_width": total_w + garage_w,
+        "total_depth": bar_y1,
         "polygon": polygon, "zones": zones, "bumpouts": [],
-        "total_sf": actual_sf, "width": total_width + garage_w, "depth": total_depth,
+        "total_sf": actual_sf, "width": total_w + garage_w, "depth": bar_y1,
+        "ceiling_heights": {
+            "master": 11, "living_core": 16, "bed_wing": 10, "service": 9,
+        },
     }
 
 
 def _solve_h_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None, garage_attachment="attached_right") -> dict:
-    """H-shape: left_wing + center_bridge + right_wing, 8ft breezeways."""
-    breezeway = 8
-    wing_depth = 36
-    bridge_depth = 20
-    bridge_w = 28
-    wing_sf_each = (living_sf - bridge_w * bridge_depth) / 2
-    wing_w = math.ceil(wing_sf_each / wing_depth)
-    wing_w = max(wing_w, 20)
+                   master_location=None, garage_attachment="attached_right",
+                   _vid: str = "") -> dict:
+    """
+    H-shape with real variation:
+    - Left wing (master) WIDER and DEEPER than right wing (beds)
+    - Bridge (great room/kitchen) offset — NOT centered between wings
+    - Breezeways DIFFERENT widths (master side open, bed side tighter)
+    - Bridge pushed toward master side for asymmetry
+    - Each wing has distinct depth variation
+    """
+    # Wing dimensions — master wider and deeper
+    lw_w = _variation(_vid, "h_left_w",  20, 32)   # master wing width
+    rw_w = _variation(_vid, "h_right_w", 18, 28)   # bed wing width
+    lw_d = _variation(_vid, "h_left_d",  34, 44)   # master wing depth
+    rw_d = _variation(_vid, "h_right_d", 28, 38)   # bed wing depth (shallower)
 
-    total_width = wing_w + breezeway + bridge_w + breezeway + wing_w
-    bridge_y0 = (wing_depth - bridge_depth) / 2
-    bridge_y1 = bridge_y0 + bridge_depth
+    # Breezeways — different widths
+    lw_breeze = _variation(_vid, "h_lbreeze", 6, 10)   # master side breezeway
+    rw_breeze = _variation(_vid, "h_rbreeze", 7, 12)   # bed side breezeway
+
+    # Bridge — sized from remaining SF
+    bridge_d  = _variation(_vid, "h_bridge_d", 18, 28)
+    bridge_sf = living_sf - lw_w * lw_d - rw_w * rw_d
+    bridge_w  = max(24, math.ceil(bridge_sf / bridge_d))
+    bridge_w  = min(bridge_w, 44)
+
+    # Total width
+    total_w = lw_w + lw_breeze + bridge_w + rw_breeze + rw_w
+
+    # Bridge positioned — NOT centered between wings. Offset toward master.
+    bridge_offset = _variation(_vid, "h_bridge_offset", -4, 4)  # negative = toward master
+    bridge_x0 = lw_w + lw_breeze + bridge_offset
+    bridge_x1 = bridge_x0 + bridge_w
+
+    # Wing Y extents — different depths, bridge sits between them
+    wing_y0   = 0
+    max_wing_d = max(lw_d, rw_d)
+    # Bridge vertically centered between its shorter dimension
+    bridge_y0 = (max_wing_d - bridge_d) / 2
+    bridge_y1 = bridge_y0 + bridge_d
 
     zones = {
-        "master":      {"x0": 0, "y0": 0,
-                        "x1": wing_w, "y1": wing_depth},
-        "living_core": {"x0": wing_w + breezeway, "y0": bridge_y0,
-                        "x1": wing_w + breezeway + bridge_w,
-                        "y1": bridge_y1},
-        "bed_wing":    {"x0": total_width - wing_w, "y0": 0,
-                        "x1": total_width, "y1": wing_depth},
-        "service":     {"x0": total_width, "y0": 0,
-                        "x1": total_width + garage_w, "y1": garage_d},
-        "garage":      {"x0": total_width, "y0": 0,
-                        "x1": total_width + garage_w, "y1": garage_d},
+        "master":       {"x0": 0,         "y0": wing_y0, "x1": lw_w,        "y1": lw_d},
+        "living_core":  {"x0": bridge_x0, "y0": bridge_y0, "x1": bridge_x1, "y1": bridge_y1},
+        "bed_wing":     {"x0": total_w - rw_w, "y0": wing_y0, "x1": total_w, "y1": rw_d},
+        "service":      {"x0": total_w,   "y0": wing_y0, "x1": total_w + garage_w, "y1": garage_d},
+        "garage":       {"x0": total_w,   "y0": wing_y0 + 4,
+                         "x1": total_w + garage_w, "y1": wing_y0 + 4 + garage_d},
     }
-    zones["living"] = zones["living_core"]
-    zones["beds"] = zones["bed_wing"]
-    zones["left_wing"] = zones["master"]
-    zones["center_bridge"] = zones["living_core"]
-    zones["right_wing"] = zones["bed_wing"]
+    zones["living"]       = zones["living_core"]
+    zones["beds"]         = zones["bed_wing"]
+    zones["left_wing"]    = zones["master"]
+    zones["center_bridge"]= zones["living_core"]
+    zones["right_wing"]   = zones["bed_wing"]
 
-    # H-shape polygon (complex — two wings + bridge)
-    bx0 = wing_w + breezeway
-    bx1 = bx0 + bridge_w
+    # H polygon — trace left wing, bridge, right wing
+    bx0 = bridge_x0
+    bx1 = bridge_x1
     polygon = [
-        {"x": 0,      "y": 0},
-        {"x": wing_w, "y": 0},
-        {"x": wing_w, "y": bridge_y0},
-        {"x": bx1,    "y": bridge_y0},
-        {"x": bx1,    "y": 0},
-        {"x": total_width, "y": 0},
-        {"x": total_width, "y": wing_depth},
-        {"x": bx1,    "y": wing_depth},
-        {"x": bx1,    "y": bridge_y1},
-        {"x": wing_w, "y": bridge_y1},
-        {"x": wing_w, "y": wing_depth},
-        {"x": 0,      "y": wing_depth},
+        # Left wing south face
+        {"x": 0,    "y": wing_y0},
+        {"x": lw_w, "y": wing_y0},
+        # Left wing east face up to bridge
+        {"x": lw_w, "y": bridge_y0},
+        # Bridge south face
+        {"x": bx0,  "y": bridge_y0},
+        # Nudge: left breezeway pocket (slight notch)
+        {"x": bx0,  "y": wing_y0},
+        {"x": bx1,  "y": wing_y0},
+        # Right breezeway and wing south
+        {"x": bx1,  "y": bridge_y0},
+        {"x": total_w - rw_w, "y": bridge_y0},
+        {"x": total_w - rw_w, "y": wing_y0},
+        {"x": total_w, "y": wing_y0},
+        # Right wing north face
+        {"x": total_w, "y": rw_d},
+        {"x": total_w - rw_w, "y": rw_d},
+        # Right wing west face down to bridge north
+        {"x": total_w - rw_w, "y": bridge_y1},
+        {"x": bx1,  "y": bridge_y1},
+        {"x": bx1,  "y": max_wing_d},
+        {"x": bx0,  "y": max_wing_d},
+        {"x": bx0,  "y": bridge_y1},
+        # Left wing east face down from bridge north
+        {"x": lw_w, "y": bridge_y1},
+        {"x": lw_w, "y": lw_d},
+        # Left wing north face back to west
+        {"x": 0,    "y": lw_d},
     ]
 
-    actual_sf = 2 * wing_w * wing_depth + bridge_w * bridge_depth
+    actual_sf = lw_w * lw_d + bridge_w * bridge_d + rw_w * rw_d
+
     return {
         "shape": "h_shape",
-        "total_width": total_width + garage_w,
-        "total_depth": wing_depth,
+        "total_width": total_w + garage_w,
+        "total_depth": max_wing_d,
         "polygon": polygon, "zones": zones, "bumpouts": [],
-        "total_sf": actual_sf, "width": total_width + garage_w, "depth": wing_depth,
+        "total_sf": actual_sf, "width": total_w + garage_w, "depth": max_wing_d,
+        "ceiling_heights": {
+            "master": 11, "living_core": 16, "bed_wing": 10, "service": 9,
+        },
     }
 
 
 def _solve_t_shape(living_sf: int, garage_w: int, garage_d: int,
-                   master_location=None, garage_attachment="attached_right") -> dict:
-    """T-shape: wide main body + rear wing centered on back.
-    Entry/foyer projects 4ft forward as a distinct volume on front face."""
-    porch_d = 8
-    front_porch_d = 8
+                   master_location=None, garage_attachment="attached_right",
+                   _vid: str = "") -> dict:
+    """
+    T-shape with real articulation:
+    - Main bar wider, with master LEFT and service/garage RIGHT
+    - Rear wing is NOT centered — offset toward master or bed side
+    - Wing width varies (not always 45% of bar)
+    - Entry foyer PROJECTS forward as distinct volume with roof break
+    - Great room steps BACK from bar face (view wall bumpout at rear)
+    - Garage face set back from bar face, angled slightly (toe-in)
+    """
+    # Main bar dimensions
+    bar_depth  = _variation(_vid, "t_bar_depth",  32, 42)
+    bar_frac   = _variation(_vid, "t_bar_frac",   0.60, 0.72)  # % SF in bar
+    bar_sf     = int(living_sf * bar_frac)
+    bar_w      = max(56, math.ceil(bar_sf / bar_depth))
 
-    main_sf = round(living_sf * 0.65)
-    wing_sf = living_sf - main_sf
+    # Rear wing — offset from center
+    wing_frac  = _variation(_vid, "t_wing_frac",  0.36, 0.48)  # wing width as % of bar
+    wing_w     = round(bar_w * wing_frac)
+    wing_sf    = living_sf - bar_sf
+    wing_depth = max(20, math.ceil(wing_sf / wing_w))
+    wing_depth = min(wing_depth, 36)
 
-    main_depth = 36
-    main_width = max(60, math.ceil(main_sf / main_depth))
+    # Wing offset from bar center — toward master or bed side
+    wing_bias  = _variation(_vid, "t_wing_bias", -8, 6)  # negative = toward master (left)
+    wing_x0    = round((bar_w - wing_w) / 2 + wing_bias)
+    wing_x0    = max(4, min(wing_x0, bar_w - wing_w - 4))
+    wing_x1    = wing_x0 + wing_w
 
-    wing_depth = round(wing_sf / (main_width * 0.45))
-    wing_depth = max(20, min(wing_depth, 32))
-    wing_width = math.ceil(wing_sf / wing_depth)
-    wing_width = min(wing_width, round(main_width * 0.45))
+    # Covered front porch
+    porch_d    = _variation(_vid, "t_porch_d", 10, 16)
 
-    wing_x0 = round((main_width - wing_width) / 2)
-    wing_x1 = wing_x0 + wing_width
+    # Foyer projection (entry bump on south face)
+    foyer_w    = _variation(_vid, "t_foyer_w", 8, 14)
+    foyer_proj = _variation(_vid, "t_foyer_proj", 3, 6)
+    foyer_bias = _variation(_vid, "t_foyer_bias", -6, 6)  # offset from center
+    foyer_x0   = round(bar_w / 2 - foyer_w / 2 + foyer_bias)
+    foyer_x0   = max(mw := round(bar_w * _variation(_vid, "t_mw", 0.24, 0.32)), foyer_x0)
+    foyer_x1   = foyer_x0 + foyer_w
 
-    total_width = main_width + garage_w
-    total_depth = front_porch_d + main_depth + wing_depth
+    # Zone widths in bar
+    lw_frac    = _variation(_vid, "t_lw_frac", 0.36, 0.46)
+    lw         = round(bar_w * lw_frac)   # great room width
+    sw         = bar_w - mw - lw          # service width
 
-    # Entry foyer projection (4ft forward from front face)
-    foyer_projection = 4
-    foyer_width = 10
-    foyer_x0 = round((main_width - foyer_width) / 2)
-    foyer_x1 = foyer_x0 + foyer_width
+    bar_y0     = porch_d
+    bar_y1     = bar_y0 + bar_depth
+    wing_y0    = bar_y1
+    wing_y1    = wing_y0 + wing_depth
+    porch_y0   = wing_y1
+    rear_porch_d = _variation(_vid, "t_rear_porch_d", 10, 18)
+    porch_y1   = porch_y0 + rear_porch_d
 
-    front_porch_y0 = 0
-    front_porch_y1 = front_porch_d
-    main_y0 = front_porch_y1
-    main_y1 = main_y0 + main_depth
-    wing_y0 = main_y1
-    wing_y1 = wing_y0 + wing_depth
-
-    mw = round(main_width * 0.30)
-    lw = round(main_width * 0.45)
-    sw = main_width - mw - lw
+    # Great room view wall bumpout
+    gr_bump_w  = _variation(_vid, "t_gr_bump_w", 16, 24)
+    gr_bump_d  = _variation(_vid, "t_gr_bump_d", 3, 6)
+    gr_cx      = mw + lw / 2
+    gr_bump_x0 = gr_cx - gr_bump_w / 2
+    gr_bump_x1 = gr_cx + gr_bump_w / 2
 
     zones = {
-        "master":      {"x0": 0,        "y0": main_y0, "x1": mw,         "y1": main_y1},
-        "living_core": {"x0": mw,       "y0": main_y0, "x1": mw + lw,    "y1": main_y1},
-        "service":     {"x0": mw + lw,  "y0": main_y0, "x1": main_width, "y1": main_y1},
-        "bed_wing":    {"x0": wing_x0,  "y0": wing_y0, "x1": wing_x1,    "y1": wing_y1},
-        "garage":      {"x0": main_width, "y0": main_y0 + 3,
-                        "x1": total_width, "y1": main_y0 + garage_d + 3},
-        "front_porch": {"x0": 0,        "y0": front_porch_y0, "x1": main_width,
-                        "y1": front_porch_y1},
-        "porch":       {"x0": wing_x0,  "y0": wing_y1, "x1": wing_x1,
-                        "y1": wing_y1 + porch_d},
+        "master":      {"x0": 0,         "y0": bar_y0, "x1": mw,        "y1": bar_y1},
+        "living_core": {"x0": mw,        "y0": bar_y0, "x1": mw + lw,   "y1": bar_y1},
+        "service":     {"x0": mw + lw,   "y0": bar_y0, "x1": bar_w,     "y1": bar_y1},
+        "bed_wing":    {"x0": wing_x0,   "y0": wing_y0, "x1": wing_x1,  "y1": wing_y1},
+        "porch":       {"x0": wing_x0,   "y0": porch_y0, "x1": wing_x1, "y1": porch_y1},
+        "front_porch": {"x0": 0,         "y0": 0,       "x1": bar_w,    "y1": porch_d},
+        "garage":      {
+            "x0": bar_w, "y0": bar_y0 + _variation(_vid, "t_g_setback", 4, 9),
+            "x1": bar_w + garage_w,
+            "y1": bar_y0 + _variation(_vid, "t_g_setback", 4, 9) + garage_d
+        },
     }
     zones["living"] = zones["living_core"]
-    zones["beds"] = zones["bed_wing"]
+    zones["beds"]   = zones["bed_wing"]
 
-    # Bumpouts: foyer projection on front face
-    bumpouts = [{
-        "face": "S", "offset_start": foyer_x0, "offset_end": foyer_x1,
-        "projection": foyer_projection, "purpose": "entry_foyer",
-    }]
-
-    # T-shape polygon with foyer bump on south face
-    polygon = [
-        {"x": 0,           "y": main_y0},
-        {"x": foyer_x0,   "y": main_y0},
-        {"x": foyer_x0,   "y": main_y0 - foyer_projection},
-        {"x": foyer_x1,   "y": main_y0 - foyer_projection},
-        {"x": foyer_x1,   "y": main_y0},
-        {"x": main_width,  "y": main_y0},
-        {"x": main_width,  "y": main_y1},
-        {"x": wing_x1,    "y": main_y1},
-        {"x": wing_x1,    "y": wing_y1},
-        {"x": wing_x0,    "y": wing_y1},
-        {"x": wing_x0,    "y": main_y1},
-        {"x": 0,           "y": main_y1},
+    bumpouts = [
+        {"face": "S", "offset_start": foyer_x0, "offset_end": foyer_x1,
+         "projection": foyer_proj, "purpose": "entry_foyer"},
+        {"face": "N", "offset_start": gr_bump_x0, "offset_end": gr_bump_x1,
+         "projection": gr_bump_d, "purpose": "great_room_view_wall"},
     ]
 
-    actual_sf = main_width * main_depth + wing_width * wing_depth
+    # Articulated polygon
+    polygon = [
+        # South face with foyer projection
+        {"x": 0,         "y": bar_y0},
+        {"x": foyer_x0,  "y": bar_y0},
+        {"x": foyer_x0,  "y": bar_y0 - foyer_proj},
+        {"x": foyer_x1,  "y": bar_y0 - foyer_proj},
+        {"x": foyer_x1,  "y": bar_y0},
+        {"x": bar_w,     "y": bar_y0},
+        # East face down bar
+        {"x": bar_w,     "y": bar_y1},
+        # North face of bar with great room bumpout
+        {"x": gr_bump_x1, "y": bar_y1},
+        {"x": gr_bump_x1, "y": bar_y1 + gr_bump_d},
+        {"x": gr_bump_x0, "y": bar_y1 + gr_bump_d},
+        {"x": gr_bump_x0, "y": bar_y1},
+        # Bar north → wing
+        {"x": wing_x1,  "y": bar_y1},
+        {"x": wing_x1,  "y": wing_y1},
+        {"x": wing_x0,  "y": wing_y1},
+        {"x": wing_x0,  "y": bar_y1},
+        # Bar north west of wing
+        {"x": 0,        "y": bar_y1},
+    ]
+
+    actual_sf = bar_w * bar_depth + wing_w * wing_depth
+    for b in bumpouts:
+        actual_sf += (b["offset_end"] - b["offset_start"]) * b["projection"]
+
     return {
-        "shape": "t_shape", "total_width": total_width, "total_depth": total_depth,
+        "shape": "t_shape",
+        "total_width": bar_w + garage_w,
+        "total_depth": max(wing_y1, bar_y1 + gr_bump_d),
         "polygon": polygon, "zones": zones, "bumpouts": bumpouts,
-        "total_sf": actual_sf, "width": total_width, "depth": total_depth,
+        "total_sf": actual_sf, "width": bar_w + garage_w,
+        "depth": max(wing_y1, bar_y1 + gr_bump_d),
+        "ceiling_heights": {
+            "master": 11, "living_core": 16, "bed_wing": 10, "service": 9,
+        },
     }
 
 
