@@ -1521,11 +1521,14 @@ def solve_circulation(layout_json: dict, footprint_zones: dict, intake_json: dic
 
     # ── Rule 2: Master approach gallery ──────────────────────────────────
     # Only add gallery if master zone is physically separated from living (gap > 5ft)
+    # Master is "separated" only if there's a physical gap on the connecting axis
+    # Adjacent zones (sharing a wall) do NOT need a gallery
+    _mx0,_my0,_mx1,_my1 = master_zone["x0"],master_zone["y0"],master_zone["x1"],master_zone["y1"] if master_zone else (0,0,0,0)
+    _lx0,_ly0,_lx1,_ly1 = living_zone["x0"],living_zone["y0"],living_zone["x1"],living_zone["y1"] if living_zone else (0,0,0,0)
+    _x_gap = min(abs(_mx1-_lx0), abs(_mx0-_lx1))
+    _y_gap = min(abs(_my1-_ly0), abs(_my0-_ly1))
     master_separated = (master_zone and living_zone and
-        (abs(master_zone["x1"] - living_zone["x0"]) > 5 or
-         abs(master_zone["x0"] - living_zone["x1"]) > 5 or
-         abs(master_zone["y1"] - living_zone["y0"]) > 5 or
-         abs(master_zone["y0"] - living_zone["y1"]) > 5))
+                        _x_gap > 5 and _y_gap > 5)  # must be separated in both axes
     if needs_gallery and master_separated:
         mx0, my0 = master_zone["x0"], master_zone["y0"]
         mx1, my1 = master_zone["x1"], master_zone["y1"]
