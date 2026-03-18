@@ -31,7 +31,7 @@ def zone_for_room(name: str) -> str:
     return "living"
 
 # ── Zone bounds ───────────────────────────────────────────────────────────────
-def get_zone_bounds(shape, fp_w, fp_d, fp_zones):
+def get_zone_bounds(shape, fp_w, fp_d, fp_zones, front_porch_sf=200, back_porch_sf=200):
     s = (shape or "rectangle").lower().replace(" ","-").replace("_","-")
     bounds = {}
 
@@ -48,10 +48,13 @@ def get_zone_bounds(shape, fp_w, fp_d, fp_zones):
         bounds["beds"]        = _z(["bed_wing","right_wing","beds"],    {"x0":fp_w*0.72,  "y0":0,         "x1":fp_w,      "y1":fp_d*0.65})
         bounds["service"]     = _z(["service"],                         {"x0":0,          "y0":fp_d*0.50, "x1":fp_w*0.28, "y1":fp_d*0.70})
         bounds["garage"]      = _z(["garage"],                          {"x0":0,          "y0":fp_d*0.60, "x1":fp_w*0.28, "y1":fp_d})
-        # Porches snap to bridge front/back face
+        # Porches: size from actual SF input, anchored to bridge front/back face
         bz = bounds["living"]
-        bounds["front_porch"] = {"x0":bz["x0"], "y0":0,         "x1":bz["x1"], "y1":fp_d*0.12}
-        bounds["back_porch"]  = {"x0":bz["x0"], "y0":fp_d*0.88, "x1":bz["x1"], "y1":fp_d}
+        bw = max(bz["x1"] - bz["x0"], 1)
+        fp_d_front = max(snap(front_porch_sf / bw), 6.0)
+        fp_d_back  = max(snap(back_porch_sf  / bw), 6.0)
+        bounds["front_porch"] = {"x0":bz["x0"], "y0":0,              "x1":bz["x1"], "y1":fp_d_front}
+        bounds["back_porch"]  = {"x0":bz["x0"], "y0":fp_d-fp_d_back, "x1":bz["x1"], "y1":fp_d}
     elif s in ("l-shape","asymmetric-l"):
         bounds["master"]      = _z(["master","left_wing"],  {"x0":0,         "y0":0,        "x1":fp_w*0.50, "y1":fp_d})
         bounds["living"]      = _z(["living_core","living"],{"x0":fp_w*0.30, "y0":0,        "x1":fp_w,      "y1":fp_d*0.55})
@@ -169,7 +172,11 @@ def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
     fp_w     = footprint.get("width", 89)
     fp_d     = footprint.get("depth", 79)
     fp_zones = footprint.get("zones", {})
-    zb_all   = get_zone_bounds(shape, fp_w, fp_d, fp_zones)
+    front_porch_sf = footprint.get("front_porch_sf", 200)
+    back_porch_sf  = footprint.get("back_porch_sf",  200)
+    zb_all   = get_zone_bounds(shape, fp_w, fp_d, fp_zones,
+                               front_porch_sf=front_porch_sf,
+                               back_porch_sf=back_porch_sf)
 
     # Build room list, skip circulation
     rooms_list = []

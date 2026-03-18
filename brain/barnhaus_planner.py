@@ -2862,10 +2862,14 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
             _shape = intake_json.get("house_shape","rectangle")
             _shape = intake_json.get("house_shape","rectangle")
             from barnhaus_graph_packer import pack as _graph_pack
+            _front_porch_sf = int(intake_json.get("front_porch_sf") or 200)
+            _back_porch_sf  = int(intake_json.get("back_porch_sf")  or 200)
             room_coords = _graph_pack(rooms_out, {
                 "width": fp_w, "depth": fp_d,
                 "zones": footprint.get("zones", {}),
                 "polygon": footprint.get("polygon", []),
+                "front_porch_sf": _front_porch_sf,
+                "back_porch_sf":  _back_porch_sf,
             }, shape=_shape)
             for rname, rc in room_coords.items():
                 rc["dims_source"] = "spatial_v2_packed"

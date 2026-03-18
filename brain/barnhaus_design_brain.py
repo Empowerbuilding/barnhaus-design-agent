@@ -215,6 +215,13 @@ def run(id_prefix: str):
         "brief": brief,
         "layout": layout,
         "exterior": elev,
+        "front_porch_sf": sub.get("front_porch_sf") or 200,
+        "back_porch_sf":  sub.get("back_porch_sf")  or 200,
+        "sqft":           sub.get("sqft") or sub.get("living"),
+        "house_shape":    sub.get("house_shape"),
+        "stories":        sub.get("stories"),
+        "zone_heights":   sub.get("zone_heights"),
+        "bubble_positions": sub.get("bubble_positions"),
     }
 
     # Save to file
