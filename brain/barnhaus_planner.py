@@ -1408,12 +1408,34 @@ def _upload_to_supabase(file_path: str, submission_id: str) -> str:
     return f"Upload failed ({resp.status_code}): {resp.text}"
 
 
+def _normalize_layout(layout_json: dict) -> dict:
+    """Normalize brain output to planner-expected format.
+    
+    Brain outputs rooms as dict: {"great_room": {"sf": 500, ...}}
+    Planner expects rooms as list: [{"name": "Great Room", "sf": 500, ...}]
+    """
+    rooms = layout_json.get("rooms", [])
+    if isinstance(rooms, dict):
+        normalized = []
+        for key, val in rooms.items():
+            if isinstance(val, dict):
+                # Convert snake_case key to Title Case name
+                name = val.get("name") or key.replace("_", " ").title()
+                room = {"name": name, **val}
+                normalized.append(room)
+            else:
+                normalized.append({"name": key.replace("_", " ").title(), "sf": val})
+        return {**layout_json, "rooms": normalized}
+    return layout_json
+
+
 def run_planner(
     submission_id: str,
     layout_json: dict,
     intake_json: dict,
 ) -> dict:
     """Full pipeline: validate -> solve -> assign -> render -> upload."""
+    layout_json = _normalize_layout(layout_json)
     violations = validate_layout(layout_json, intake_json)
     footprint = solve_footprint(layout_json, intake_json)
     room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
