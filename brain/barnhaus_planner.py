@@ -2536,46 +2536,38 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
                 f"{zname}: x={zv['x0']}-{zv['x1']}, y={zv['y0']}-{zv['y1']}"
             )
 
-    # Build per-room dimension hints
-    import math as _m2
+    # Build room list with SF hints (match training prompt format)
     rooms_list_raw = layout_json.get("rooms", [])
     if isinstance(rooms_list_raw, list):
-        dim_lines = []
-        for r in rooms_list_raw:
-            sf = r.get("sf", 100)
-            n = r["name"].lower()
-            asp = next((v for k,v in {"great room":1.4,"kitchen":1.2,"dining":1.3,
-                "master bed":1.2,"master bath":1.0,"master closet":0.8,
-                "bed":1.1,"bath":0.85,"laundry":1.0,"mudroom":1.2,
-                "butler pantry":0.7,"utility":1.0,"home office":1.2,
-                "porch":2.0,"garage":1.5}.items() if k in n), 1.15)
-            w = round(_m2.sqrt(sf * asp))
-            d = round(sf / max(w,1))
-            dim_lines.append(f"  {r['name']}: width={w}ft depth={d}ft (target {sf} SF)")
-        dims_hint = "\nExact room dimensions to use:\n" + "\n".join(dim_lines)
+        room_sf_hints = ", ".join(
+            f"{r['name']} ({r.get('sf',100)} SF)" for r in rooms_list_raw
+        )
     else:
-        dims_hint = ""
+        room_sf_hints = ", ".join(
+            f"{k.replace('_',' ').title()} ({v.get('sf',100) if isinstance(v,dict) else v} SF)"
+            for k, v in rooms_list_raw.items()
+        )
+
+    # Match the original training prompt format — simple brief, no zone constraints
+    # The model learned connectivity from 66 examples; let it use that knowledge
+    garage_attach = intake_json.get("garage_attachment", "attached right")
+    master_loc    = intake_json.get("master_location", "far left, rear corner")
+    street_face   = intake_json.get("street_facing", "south")
+    view_face     = "north" if street_face == "south" else "south"
 
     prompt = f"""Design a new Barnhaus Steel Builders home with the following requirements:
-- Living area: {total_sf} SF, {stories}-story, {shape} footprint
-- Style: {style}
-- Footprint: {fp_w}ft wide x {fp_d}ft deep
-- Zone boundaries:
-{chr(10).join(zone_summary)}
-{dims_hint}
-
-Rules:
-- NO rooms may overlap — every room must be fully separate or just touching
-- Use the EXACT widths and depths listed above (not 10x10 placeholders)
-- All rooms must stay within footprint bounds (x: 0-{fp_w}, y: 0-{fp_d})
-- Rooms snap to 1ft grid
-- Master suite: bed → bath → closet stacked, at far end from entry
-- Entry at south face (lowest y values)
-- Great room, kitchen, dining adjacent to each other (open plan)
-- Secondary bedrooms side by side, each bath directly next to its bed
-- Mudroom shares a wall with garage
-- Front porch at south face, back porch at north/rear face
-- Output ONLY valid JSON, no commentary"""
+- Living area: {total_sf} SF (total under roof)
+- {stories} bedrooms, bathrooms, {stories}-story
+- Footprint: {shape} — {fp_w}ft wide x {fp_d}ft deep
+- Style: {style} barndominium
+- Garage: {garage_attach}
+- Primary view/hero elevation: {view_face} face
+- Client wants: {room_sf_hints}
+- Master suite: {master_loc}
+- All rooms must be connected — no isolated sections
+- Front porch leads directly into foyer or great room (never a bedroom)
+- Corridor stays inside footprint bounds
+- Garage connects to mudroom"""
 
     try:
         client = openai.OpenAI(api_key=api_key)
