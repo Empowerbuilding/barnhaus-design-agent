@@ -1936,6 +1936,12 @@ def generate_spec(
     """
     import hashlib
 
+    # Parse stories from intake
+    _brief_s = intake_json.get("brief","")
+    import re as _re2
+    _sm = _re2.search(r"(\d+)[-\s]story", _brief_s, _re2.IGNORECASE)
+    stories = int(intake_json.get("stories") or (_sm.group(1) if _sm else 1))
+
     # ── Exterior walls from footprint zones ──────────────────────────────
     shape = footprint.get("shape", "rectangle")
     zones = footprint.get("zones", {})
