@@ -39,39 +39,48 @@ Any updates to design rules, templates, or utilities are made to workspace files
 
 ## Mandatory Build Sequence
 
-### Step 1 — Pull submission
-Fetch from Supabase `design_intake_submissions` by ID prefix.
+### Step 1 — Load the approved spec
+Juanito has already run the brain and planner. A fully resolved spec JSON exists at:
+`designs/spec_[id].json` (also available at the Supabase URL Mitch provides)
 
-### Step 2 — Run fine-tuned models
-`python3 barnhaus_design_brain.py [id]`
-Outputs: layout JSON + elevation JSON saved to `designs/design_[id].json`
+**READ THIS FIRST before doing anything else.** It contains:
+- Exact room coordinates (x0, y0, x1, y1) for every room
+- Zone assignments
+- Exterior wall coordinates with EXT_HALF offsets already applied
+- Interior wall positions
+- Door positions (midpoint of every shared wall)
+- Window positions (rear/view walls)
+- Footprint polygon
+- Revit config (wall types, level names, wall heights)
 
-### Step 3 — Validate + solve footprint + solve circulation
-`python3 barnhaus_planner.py [id]`
-- validate_layout() — check room sizes, adjacency, separation
-- solve_footprint() — generates real polygon with bumpouts, zone rects, variation
-- solve_circulation() — routes entry sequence, gallery approach, bed corridor, service path, L2 landing
-- Fix any violations before proceeding
+Load it:
+```python
+import json
+spec = json.load(open(f"designs/spec_{id[:8]}.json"))
+rooms = spec["rooms"]          # {name: {x0,y0,x1,y1,sf,zone}}
+ext_walls = spec["exterior_walls"]
+int_walls = spec["interior_walls"]
+doors = spec["doors"]
+windows = spec["windows"]
+footprint = spec["footprint_polygon"]
+revit = spec["revit_config"]   # wall types, levels, heights
+```
 
-### Step 4 — Design review (answer IN ORDER before writing code)
+### Step 2 — Verify spec against design rules
+Read ALL sections of barnhaus-design-rules.md and run the Section 15 checklist:
 1. Total SF split per floor?
-2. Footprint polygon looks correct?
+2. Footprint polygon correct for shape?
 3. Orientation — which wall is street/entry, which is rear/view?
 4. Master suite at dead end, rear corner?
 5. Garage at opposite end or arm, via mudroom?
-6. Circulation spine from solve_circulation() reviewed — flow makes sense?
+6. Circulation flow makes sense?
 7. Every room from desired_rooms accounted for?
-8. Read ALL sections of barnhaus-design-rules.md — then run Section 15 checklist, all boxes checked?
+8. Section 15 checklist — all boxes checked?
 
-⛔ STOP HERE. Before posting the design review:
-1. Generate a 2D floor plan image using matplotlib (color-coded zones + room labels + north arrow + title)
-2. Upload the PNG to Supabase bucket `design-studio` as `floorplan_[id].png`
-   - POST to: https://hbfjdfxephlczkfgpceg.supabase.co/storage/v1/object/design-studio/floorplan_[id].png
-   - Headers: Authorization: Bearer [SUPABASE_KEY], Content-Type: image/png, x-upsert: true
-   - Public URL: https://hbfjdfxephlczkfgpceg.supabase.co/storage/v1/object/public/design-studio/floorplan_[id].png
-3. Include the public URL in your design review message to Mitch
+If spec has violations or missing rooms, fix them before writing scripts.
+Add rooms that are missing, adjust coordinates that violate rules.
 
-Then WAIT for Mitch to explicitly say "approved" or "looks good" before writing any build scripts or touching Revit. Do not proceed past this point until you receive approval.
+⛔ DO NOT re-run the brain or planner. Work from the spec. Adjust coordinates directly.
 
 ### Step 5 — Write staged build scripts
 - Stage 1: `build_[id]_s1.py` — exterior walls (use create_polygon_exterior() for non-rectangular), floors, roofs, wall attachments, porch posts, garage
