@@ -2499,7 +2499,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
 # ══════════════════════════════════════════════════════════════════════════════
 
 SPATIAL_MODEL_V1 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v1:DIs2DYf4"
-SPATIAL_MODEL_V2 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v2:pending"  # update once training completes
+SPATIAL_MODEL_V2 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v2:pending"  # job: ftjob-5puub8YwRC6kaiQz0AppSSGX — update ID when done
 SPATIAL_MODEL = SPATIAL_MODEL_V1  # switch to V2 once training is done
 
 def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) -> dict:

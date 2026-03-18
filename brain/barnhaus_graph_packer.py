@@ -133,7 +133,7 @@ def pack(adjacency: dict, footprint: dict) -> dict:
         x0 = max(0.0, min(x0, fp_w-w))
         y0 = max(0.0, min(y0, fp_d-d))
         return {"x0":snap(x0),"y0":snap(y0),"x1":snap(x0+w),"y1":snap(y0+d),
-                "sf":rc["sf"],"zone":rc["zone"]}
+                "sf":rc["sf"],"zone":rc["zone"],"level":rc.get("level",1)}
 
     # Placement order: anchors first, then BFS
     PRIORITY_KEYS = ["foyer","great room","master bed","garage","corridor",
