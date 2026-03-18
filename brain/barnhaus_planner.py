@@ -2492,7 +2492,9 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
 #  Calls fine-tuned GPT-4o to generate exact room coordinates from brief
 # ══════════════════════════════════════════════════════════════════════════════
 
-SPATIAL_MODEL = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v1:DIs2DYf4"
+SPATIAL_MODEL_V1 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v1:DIs2DYf4"
+SPATIAL_MODEL_V2 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v2:pending"  # update once training completes
+SPATIAL_MODEL = SPATIAL_MODEL_V1  # switch to V2 once training is done
 
 def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) -> dict:
     """Call barnhaus-spatial-v1 to get exact room x/y coordinates.
@@ -2624,19 +2626,31 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
 
         # Normalize output — model returns {"rooms": {...}} or just {...}
         rooms_out = data.get("rooms", data)
-        room_coords = {}
-        for rname, rv in rooms_out.items():
-            if not isinstance(rv, dict):
-                continue
-            if "x0" not in rv:
-                continue
-            room_coords[rname] = {
-                "x0": float(rv["x0"]), "y0": float(rv["y0"]),
-                "x1": float(rv["x1"]), "y1": float(rv["y1"]),
-                "sf": rv.get("sf", 100),
-                "zone": rv.get("zone", "living"),
-                "dims_source": "spatial_model",
-            }
+
+        # Detect v2 adjacency graph output vs v1 coordinate output
+        first_rv = next((v for v in rooms_out.values() if isinstance(v, dict)), {})
+        is_v2 = "adjacent_to" in first_rv and "x0" not in first_rv
+
+        if is_v2:
+            print("  spatial-v2 adjacency graph detected → running graph packer")
+            from barnhaus_graph_packer import pack as _graph_pack
+            room_coords = _graph_pack(rooms_out, footprint)
+            for rname, rc in room_coords.items():
+                rc["dims_source"] = "spatial_v2_packed"
+        else:
+            room_coords = {}
+            for rname, rv in rooms_out.items():
+                if not isinstance(rv, dict):
+                    continue
+                if "x0" not in rv:
+                    continue
+                room_coords[rname] = {
+                    "x0": float(rv["x0"]), "y0": float(rv["y0"]),
+                    "x1": float(rv["x1"]), "y1": float(rv["y1"]),
+                    "sf": rv.get("sf", 100),
+                    "zone": rv.get("zone", "living"),
+                    "dims_source": "spatial_v1",
+                }
 
         # Apply zone corrections
         for rname, rc in room_coords.items():
