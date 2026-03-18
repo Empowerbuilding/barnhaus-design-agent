@@ -2487,6 +2487,124 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
     print(f"✅ Spec floor plan rendered: {output_path}")
     return output_path
 
+# ══════════════════════════════════════════════════════════════════════════════
+#  SPATIAL MODEL — barnhaus-spatial-v1
+#  Calls fine-tuned GPT-4o to generate exact room coordinates from brief
+# ══════════════════════════════════════════════════════════════════════════════
+
+SPATIAL_MODEL = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v1:DIs2DYf4"
+
+def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) -> dict:
+    """Call barnhaus-spatial-v1 to get exact room x/y coordinates.
+    
+    Returns room_coords dict: {room_name: {x0,y0,x1,y1,sf,zone}}
+    Falls back to assign_rooms_to_zones() if model call fails.
+    """
+    import openai, os, json as _json
+
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        print("⚠️  No OPENAI_API_KEY — falling back to rule-based layout")
+        return None
+
+    # Build brief for spatial model
+    rooms = layout_json.get("rooms", [])
+    if isinstance(rooms, list):
+        room_list = ", ".join(
+            f"{r['name']} ({r.get('sf',100)} SF)" for r in rooms
+        )
+    else:
+        room_list = ", ".join(
+            f"{k.replace('_',' ').title()} ({v.get('sf',100) if isinstance(v,dict) else v} SF)"
+            for k, v in rooms.items()
+        )
+
+    total_sf   = intake_json.get("living") or sum(r.get("sf",100) for r in (rooms if isinstance(rooms,list) else []))
+    shape      = intake_json.get("house_shape") or layout_json.get("footprint", "rectangle")
+    stories    = intake_json.get("stories", 1)
+    style      = intake_json.get("style", "Hill Country")
+    fp_dims    = footprint.get("footprint_dimensions") or {}
+    fp_w       = fp_dims.get("width_ft") or footprint.get("total_width", 80)
+    fp_d       = fp_dims.get("depth_ft") or footprint.get("total_depth", 60)
+
+    # Get zone boundaries from footprint
+    zones = footprint.get("zones", {})
+    zone_summary = []
+    for zname, zv in zones.items():
+        if isinstance(zv, dict):
+            zone_summary.append(
+                f"{zname}: x={zv['x0']}-{zv['x1']}, y={zv['y0']}-{zv['y1']}"
+            )
+
+    prompt = f"""Design a new Barnhaus Steel Builders home with the following requirements:
+- Living area: {total_sf} SF, {stories}-story, {shape} footprint
+- Style: {style}
+- Footprint: {fp_w}ft wide x {fp_d}ft deep
+- Rooms needed: {room_list}
+- Zone boundaries:
+{chr(10).join(zone_summary)}
+
+Rules:
+- No rooms may overlap
+- All rooms must stay within footprint bounds (x: 0-{fp_w}, y: 0-{fp_d})
+- Rooms snap to 1ft grid
+- Master suite at dead end (far from entry)
+- Entry/foyer at south face (y=min)
+- Great room, kitchen, dining are open plan (adjacent, no wall between them)
+- Secondary bedrooms flank a corridor
+- Garage connects to mudroom
+- Porches attach to house face (front porch at south, back porch at north/rear)
+- Output ONLY valid JSON, no commentary"""
+
+    try:
+        client = openai.OpenAI(api_key=api_key)
+        resp = client.chat.completions.create(
+            model=SPATIAL_MODEL,
+            messages=[
+                {"role": "system", "content": "You are a Barnhaus spatial layout engine. Given a design brief, output structured room coordinates as JSON."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.2,
+            max_tokens=2000,
+        )
+        raw = resp.choices[0].message.content.strip()
+        # Strip markdown code fences if present
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        data = _json.loads(raw)
+
+        # Normalize output — model returns {"rooms": {...}} or just {...}
+        rooms_out = data.get("rooms", data)
+        room_coords = {}
+        for rname, rv in rooms_out.items():
+            if not isinstance(rv, dict):
+                continue
+            if "x0" not in rv:
+                continue
+            room_coords[rname] = {
+                "x0": float(rv["x0"]), "y0": float(rv["y0"]),
+                "x1": float(rv["x1"]), "y1": float(rv["y1"]),
+                "sf": rv.get("sf", 100),
+                "zone": rv.get("zone", "living"),
+                "dims_source": "spatial_model",
+            }
+
+        # Apply zone corrections
+        for rname, rc in room_coords.items():
+            correct_zone = _get_zone(rname)
+            if correct_zone != "living":  # living is default — trust model on living
+                rc["zone"] = correct_zone
+
+        print(f"✅ Spatial model placed {len(room_coords)} rooms")
+        return room_coords
+
+    except Exception as e:
+        print(f"⚠️  Spatial model error: {e} — falling back to rule-based layout")
+        return None
+
+
 def run_planner(
     submission_id: str,
     layout_json: dict,
@@ -2498,7 +2616,10 @@ def run_planner(
     violations = validate_layout(layout_json, intake_json)
     footprint = solve_footprint(layout_json, intake_json)
     circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
-    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
+    # Try spatial model first — falls back to rule-based if it fails
+    room_coords = solve_spatial_layout(layout_json, intake_json, footprint)
+    if room_coords is None:
+        room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
     # Generate fully resolved spec for Revit execution
     exterior_json = intake_json.get("exterior", {})
     spec = generate_spec(
