@@ -1433,7 +1433,10 @@ def run_planner(
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
-    import sys
+    import sys, os
+    # Run from workspace root so relative "designs/" path works
+    workspace = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(workspace)
     if len(sys.argv) < 2:
         print("Usage: python3 barnhaus_planner.py <submission_id_prefix>")
         sys.exit(1)

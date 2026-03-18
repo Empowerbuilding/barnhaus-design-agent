@@ -212,9 +212,10 @@ def run(id_prefix: str):
     }
 
     # Save to file
-    out_path = f"/home/mitch/.openclaw/workspace/designs/design_{sub['id'][:8]}.json"
     import os
-    os.makedirs("/home/mitch/.openclaw/workspace/designs", exist_ok=True)
+    designs_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "designs")
+    os.makedirs(designs_dir, exist_ok=True)
+    out_path = os.path.join(designs_dir, f"design_{sub['id'][:8]}.json")
     with open(out_path, "w") as f:
         json.dump(design, f, indent=2)
 
