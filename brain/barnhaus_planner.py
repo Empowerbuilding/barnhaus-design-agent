@@ -2345,7 +2345,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
 
     def _shape_polygon(s, w, d, ox, oy):
         """Return list of (x,y) tuples for the footprint outline."""
-        s = (s or "rectangle").lower().replace(" ","-")
+        s = (s or "rectangle").lower().replace(" ","-").replace("_","-")
         if s == "h-shape":
             lw = w * 0.30; rw = w * 0.70
             by0 = d * 0.25; by1 = d * 0.75
@@ -2374,7 +2374,33 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
         else:  # rectangle, courtyard, default
             return [(ox,oy),(ox+w,oy),(ox+w,oy+d),(ox,oy+d),(ox,oy)]
 
-    shape_pts = _shape_polygon(shape_key, fp_w_r, fp_d_r, ox, oy)
+    # Build H-shape polygon from real zone geometry when available
+    _spec_zones = spec.get("zones", {})
+    from barnhaus_graph_packer import get_real_voids
+    def _shape_polygon_real(s, w, d, ox, oy, zones):
+        """Build shape polygon using actual zone bounds when available."""
+        s = s.lower().replace(" ","-").replace("_","-")
+        if s == "h-shape" and zones:
+            lw = zones.get("master") or zones.get("left_wing")
+            br = zones.get("center_bridge") or zones.get("living_core")
+            rw = zones.get("bed_wing") or zones.get("right_wing")
+            if lw and br and rw:
+                # H polygon: trace clockwise from bottom-left
+                lx1 = lw["x1"]; bx0 = br["x0"]; bx1 = br["x1"]; rx0 = rw["x0"]
+                by0 = br["y0"]; by1 = br["y1"]
+                lyd = max(lw["y1"], by1); ryd = max(rw["y1"], by1)
+                return [
+                    (ox,oy),(ox+lx1,oy),(ox+lx1,oy+by0),(ox+bx0,oy+by0),
+                    (ox+bx0,oy),(ox+rx0,oy),(ox+rx0,oy+by0),(ox+bx1,oy+by0),
+                    (ox+bx1,oy),(ox+w,oy),(ox+w,oy+ryd),(ox+bx1,oy+ryd),
+                    (ox+bx1,oy+by1),(ox+rx0,oy+by1),(ox+rx0,oy+ryd),
+                    # right wing done, now bridge top, then left wing
+                    (ox+bx0,oy+ryd),(ox+bx0,oy+by1),(ox+lx1,oy+by1),
+                    (ox+lx1,oy+lyd),(ox,oy+lyd),(ox,oy)
+                ]
+        return _shape_polygon(s, w, d, ox, oy)
+
+    shape_pts = _shape_polygon_real(shape_key, fp_w_r, fp_d_r, ox, oy, _spec_zones)                 or _shape_polygon(shape_key, fp_w_r, fp_d_r, ox, oy)
     if shape_pts:
         sxs = [p[0] for p in shape_pts]
         sys_ = [p[1] for p in shape_pts]
@@ -2382,14 +2408,16 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
         ax.fill(sxs, sys_, color="#E8E0D4", zorder=0, alpha=0.8)
         # Draw exterior outline (thick)
         ax.plot(sxs, sys_, color="#1A1A1A", linewidth=3.0, zorder=10, solid_capstyle="butt")
-        # White out areas OUTSIDE the footprint (cutouts for H/U/dogtrot)
-        from matplotlib.patches import PathPatch
-        from matplotlib.path import Path
-        # Draw white rectangles over void areas for H/U/dogtrot
-        if shape_key == "h-shape":
-            lw2 = fp_w_r*0.30; rw2 = fp_w_r*0.70; by0_ = fp_d_r*0.25; by1_ = fp_d_r*0.75
-            for vx0,vy0,vx1,vy1 in [(ox+lw2, oy, ox+rw2, oy+by0_),(ox+lw2, oy+by1_, ox+rw2, oy+fp_d_r)]:
-                ax.fill([vx0,vx1,vx1,vx0,vx0],[vy0,vy0,vy1,vy1,vy0], color="#F8F5F0", zorder=5)
+        # White out areas OUTSIDE the bounding box (for rendering — not the footprint fill)
+        _real_voids = get_real_voids(shape_key, fp_w_r, fp_d_r, _spec_zones)
+        if _real_voids:
+            for v in _real_voids:
+                vx0=ox+v["x0"]; vy0=oy+v["y0"]; vx1=ox+v["x1"]; vy1=oy+v["y1"]
+                ax.fill([vx0,vx1,vx1,vx0,vx0],[vy0,vy0,vy1,vy1,vy0],
+                        color="#F8F5F0", zorder=5, linewidth=0)
+                # Also draw a subtle border around void to make cutout visible
+                ax.plot([vx0,vx1,vx1,vx0,vx0],[vy0,vy0,vy1,vy1,vy0],
+                        color="#CCBFB0", linewidth=1.0, zorder=6, linestyle="--")
         elif shape_key == "u-shape":
             cw2 = fp_w_r*0.3
             ax.fill([ox+cw2,ox+fp_w_r-cw2,ox+fp_w_r-cw2,ox+cw2,ox+cw2],
@@ -2678,7 +2706,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
 # ══════════════════════════════════════════════════════════════════════════════
 
 SPATIAL_MODEL_V1 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v1:DIs2DYf4"
-SPATIAL_MODEL_V2 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v2:pending"  # job: ftjob-b5eWQgEnpaauGjc2b9aAoAwo — update ID when done
+SPATIAL_MODEL_V2 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v2:DKckYnrE"  # job: ftjob-b5eWQgEnpaauGjc2b9aAoAwo — update ID when done
 SPATIAL_MODEL = SPATIAL_MODEL_V2  # switch to V2 once training is done
 
 def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) -> dict:

@@ -122,7 +122,7 @@ def zone_for_room(name: str, room_zone: str) -> str:
 
 def get_void_zones(shape: str, fp_w: float, fp_d: float) -> list:
     """Return list of void rectangles (areas rooms must NOT enter)."""
-    s = (shape or "rectangle").lower().replace(" ","-")
+    s = (shape or "rectangle").lower().replace(" ","-").replace("_","-")
     if s == "h-shape":
         lw = fp_w * 0.30; rw = fp_w * 0.70
         by0 = fp_d * 0.25; by1 = fp_d * 0.75
@@ -149,27 +149,25 @@ def get_real_voids(shape: str, fp_w: float, fp_d: float, fp_zones: dict) -> list
     Derive actual void rectangles from real footprint zone geometry.
     Voids = areas inside bounding box but outside any zone.
     """
-    s = (shape or "rectangle").lower().replace(" ","-")
+    s = (shape or "rectangle").lower().replace(" ","-").replace("_","-")
     voids = []
     if s == "h-shape" and fp_zones:
         lw  = fp_zones.get("master") or fp_zones.get("left_wing")
         br  = fp_zones.get("center_bridge") or fp_zones.get("living_core") or fp_zones.get("living")
         rw  = fp_zones.get("bed_wing") or fp_zones.get("right_wing") or fp_zones.get("beds")
         if lw and br and rw:
-            # Front-left void: between left wing east and bridge west, south of bridge
-            voids.append({"x0": lw["x1"], "y0": 0,       "x1": br["x0"], "y1": br["y0"]})
-            # Front-right void: between bridge east and right wing west, south of bridge
-            voids.append({"x0": br["x1"], "y0": 0,       "x1": rw["x0"], "y1": br["y0"]})
-            # Rear-left void: between left wing east and bridge west, north of bridge
-            voids.append({"x0": lw["x1"], "y0": br["y1"], "x1": br["x0"], "y1": lw["y1"]})
-            # Rear-right void: between bridge east and right wing west, north of bridge
-            voids.append({"x0": br["x1"], "y0": br["y1"], "x1": rw["x0"], "y1": rw["y1"]})
-            # Front-center void: south face of bridge (if bridge doesn't reach y=0)
-            if br["y0"] > 2:
-                voids.append({"x0": br["x0"], "y0": 0, "x1": br["x1"], "y1": br["y0"]})
-            # Rear-center void: north face of bridge  
-            if br["y1"] < lw["y1"] - 2:
-                voids.append({"x0": br["x0"], "y0": br["y1"], "x1": br["x1"], "y1": lw["y1"]})
+            # Breezeway voids — the 4 corners between wings and bridge
+            # Front-left: x from left-wing-east to bridge-west, y from 0 to bridge-south
+            voids.append({"x0": lw["x1"], "y0": 0,        "x1": br["x0"], "y1": br["y0"]})
+            # Front-right: x from bridge-east to right-wing-west, y from 0 to bridge-south
+            voids.append({"x0": br["x1"], "y0": 0,        "x1": rw["x0"], "y1": br["y0"]})
+            # Rear-left: x from left-wing-east to bridge-west, y from bridge-north to lw-depth
+            lw_y1 = max(lw.get("y1", fp_d), br["y1"])
+            voids.append({"x0": lw["x1"], "y0": br["y1"], "x1": br["x0"], "y1": lw_y1})
+            # Rear-right: x from bridge-east to right-wing-west, y from bridge-north to rw-depth
+            rw_y1 = max(rw.get("y1", fp_d), br["y1"])
+            voids.append({"x0": br["x1"], "y0": br["y1"], "x1": rw["x0"], "y1": rw_y1})
+            # Note: do NOT add front/rear-center voids — bridge IS the living zone, not empty
     elif s in ("l-shape","asymmetric-l") and fp_zones:
         mw = fp_zones.get("master")
         bw = fp_zones.get("bed_wing") or fp_zones.get("beds")
@@ -196,31 +194,36 @@ def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
             "master":  ["master","left_wing"],
             "living":  ["living_core","center_bridge","living"],
             "beds":    ["bed_wing","right_wing","beds"],
-            "service": ["service"],
+            "service": ["garage","service","master"],  # service falls near garage/master
             "garage":  ["garage"],
-            "porch":   ["porch"],
+            "porch":   ["porch","living_core","center_bridge","living"],
         }
         for key in ZONE_MAP.get(zkey, [zkey]):
             if key in fp_zones_raw:
                 z = fp_zones_raw[key]
-                # Add some padding so rooms don't butt right up against zone edge
-                return {"x0": z["x0"], "y0": z["y0"], "x1": z["x1"], "y1": z["y1"]}
+                # Clamp to footprint bounds
+                return {
+                    "x0": max(0, z["x0"]), "y0": max(0, z["y0"]),
+                    "x1": min(fp_w, z["x1"]), "y1": min(fp_d, z["y1"])
+                }
         return zones.get(zkey, {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d})
 
     def _try_place(x0, y0, w, d, name, zkey=None):
         """Place room, clamped to its zone bounds, avoiding voids."""
         zb = zone_bounds(zkey) if zkey else {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d}
-        x0 = max(zb["x0"], min(snap(x0), zb["x1"] - w))
-        y0 = max(zb["y0"], min(snap(y0), zb["y1"] - d))
+        x0 = max(zb["x0"], min(snap(x0), max(zb["x0"], zb["x1"] - w)))
+        y0 = max(zb["y0"], min(snap(y0), max(zb["y0"], zb["y1"] - d)))
         x1 = snap(min(x0 + w, zb["x1"]))
         y1 = snap(min(y0 + d, zb["y1"]))
         if x1 - x0 < 4 or y1 - y0 < 4:
             return None
         c = {"x0":x0,"y0":y0,"x1":x1,"y1":y1}
-        # Check void zones — rooms must not enter voids
-        for v in voids:
-            if rooms_overlap(c, v, 0.5):
-                return None
+        # Check void zones — rooms must not enter voids (porches exempt — they live in open areas)
+        is_porch = "porch" in name.lower()
+        if not is_porch:
+            for v in voids:
+                if rooms_overlap(c, v, 0.5):
+                    return None
         if any(rooms_overlap(c, p, 0.5) for n,p in placed.items() if n != name):
             return None
         return c
@@ -236,16 +239,16 @@ def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
         w = min(w, zw - 1)
         d = min(d, zh - 1)
 
-        # Porch: snap to zone edge
-        if "front porch" in name.lower():
-            cx = snap((zb["x0"] + zb["x1"]) / 2 - w / 2)
-            r = _try_place(cx, zb["y0"], w, d, name, zkey)
-            if r: return {**r, "sf":rc["sf"], "zone":zkey}
-
-        if "back porch" in name.lower():
-            cx = snap((zb["x0"] + zb["x1"]) / 2 - w / 2)
-            r = _try_place(cx, zb["y1"] - d, w, d, name, zkey)
-            if r: return {**r, "sf":rc["sf"], "zone":zkey}
+        # Porch: ALWAYS snap to footprint edges — never use adjacency or grid scan
+        if "porch" in name.lower():
+            br = fp_zones_raw.get("center_bridge") or fp_zones_raw.get("living_core") or fp_zones_raw.get("living")
+            cx_base = (br["x0"]+br["x1"])/2 if br else fp_w/2
+            x0c = max(0, min(snap(cx_base - w/2), fp_w - w))
+            if "front" in name.lower() or "south" in name.lower():
+                return {"x0":x0c, "y0":0, "x1":snap(x0c+w), "y1":snap(d), "sf":rc["sf"], "zone":"porch"}
+            else:  # back porch
+                y0c = max(0, snap(fp_d - d))
+                return {"x0":x0c, "y0":y0c, "x1":snap(x0c+w), "y1":snap(fp_d), "sf":rc["sf"], "zone":"porch"}
 
         # Try adjacent neighbors first (within same zone preferred)
         for neighbor in rc.get("adjacent_to", []):
@@ -279,11 +282,10 @@ def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
         return {"x0":snap(x0),"y0":snap(y0),"x1":snap(x0+w),"y1":snap(y0+d),
                 "sf":rc["sf"],"zone":zkey}
 
-    # Priority: anchors first
-    PRIORITY = ["great room","foyer","master bed","garage","kitchen",
-                "dining","front porch","back porch","master bath","master closet",
-                "bed 2","bed 3","bed 4","bath 2","bath 3","corridor","gallery",
-                "butler pantry","laundry","utility","mudroom","home office"]
+    # Priority: porches first (anchor edges), then main rooms, then service
+    PRIORITY = ["front porch","back porch","master bed","garage","great room","kitchen",
+                "dining","master bath","master closet","bed 2","bed 3","bed 4",
+                "bath 2","bath 3","butler pantry","laundry","utility","mudroom","home office"]
 
     def _pri(name):
         n = name.lower()
