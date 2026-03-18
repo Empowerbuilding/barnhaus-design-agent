@@ -2321,8 +2321,68 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
     ax.set_xlim(min(all_x) - pad, max(all_x) + pad)
     ax.set_ylim(min(all_y) - pad, max(all_y) + pad + 12)  # top space for title
 
-    # ── Draw footprint shadow ─────────────────────────────────────────────
-    if fp and len(fp) >= 3:
+    # ── Draw footprint shape (H/L/T/etc) ─────────────────────────────────
+    shape_key = spec.get("shape") or spec.get("footprint_shape") or "rectangle"
+    fp_w_r = max(all_x) - min(all_x) if all_x else 100
+    fp_d_r = max(all_y) - min(all_y) if all_y else 80
+    ox = min(all_x) if all_x else 0
+    oy = min(all_y) if all_y else 0
+
+    def _shape_polygon(s, w, d, ox, oy):
+        """Return list of (x,y) tuples for the footprint outline."""
+        s = (s or "rectangle").lower().replace(" ","-")
+        if s == "h-shape":
+            lw = w * 0.30; rw = w * 0.70
+            by0 = d * 0.25; by1 = d * 0.75
+            return [(ox,oy),(ox+lw,oy),(ox+lw,oy+by0),(ox+rw,oy+by0),(ox+rw,oy),
+                    (ox+w,oy),(ox+w,oy+d),(ox+rw,oy+d),(ox+rw,oy+by1),(ox+lw,oy+by1),
+                    (ox+lw,oy+d),(ox,oy+d),(ox,oy)]
+        elif s in ("l-shape","asymmetric-l"):
+            kx = w*0.6
+            return [(ox,oy),(ox+w,oy),(ox+w,oy+d*0.55),(ox+kx,oy+d*0.55),(ox+kx,oy+d),(ox,oy+d),(ox,oy)]
+        elif s == "t-shape":
+            lw=w*0.25; rw=w*0.75; td=d*0.45
+            return [(ox+lw,oy),(ox+rw,oy),(ox+rw,oy+td),(ox+w,oy+td),(ox+w,oy+d),(ox,oy+d),(ox,oy+td),(ox+lw,oy+td),(ox+lw,oy)]
+        elif s == "u-shape":
+            cw=w*0.3
+            return [(ox,oy),(ox+w,oy),(ox+w,oy+d),(ox+w-cw,oy+d),(ox+w-cw,oy+d*0.45),(ox+cw,oy+d*0.45),(ox+cw,oy+d),(ox,oy+d),(ox,oy)]
+        elif s == "dogtrot":
+            bw=w*0.18
+            return [(ox,oy),(ox+w*0.42,oy),(ox+w*0.42,oy+d*0.3),(ox+w*0.58,oy+d*0.3),
+                    (ox+w*0.58,oy),(ox+w,oy),(ox+w,oy+d),(ox+w*0.58,oy+d),
+                    (ox+w*0.58,oy+d*0.7),(ox+w*0.42,oy+d*0.7),(ox+w*0.42,oy+d),(ox,oy+d),(ox,oy)]
+        elif s == "z-shape":
+            return [(ox,oy+d*0.45),(ox+w*0.55,oy+d*0.45),(ox+w*0.55,oy),(ox+w,oy),
+                    (ox+w,oy+d*0.55),(ox+w*0.45,oy+d*0.55),(ox+w*0.45,oy+d),(ox,oy+d),(ox,oy+d*0.45)]
+        elif s == "barndominium-bar":
+            return [(ox,oy),(ox+w,oy),(ox+w,oy+d),(ox,oy+d),(ox,oy)]
+        else:  # rectangle, courtyard, default
+            return [(ox,oy),(ox+w,oy),(ox+w,oy+d),(ox,oy+d),(ox,oy)]
+
+    shape_pts = _shape_polygon(shape_key, fp_w_r, fp_d_r, ox, oy)
+    if shape_pts:
+        sxs = [p[0] for p in shape_pts]
+        sys_ = [p[1] for p in shape_pts]
+        # Fill footprint background
+        ax.fill(sxs, sys_, color="#E8E0D4", zorder=0, alpha=0.8)
+        # Draw exterior outline (thick)
+        ax.plot(sxs, sys_, color="#1A1A1A", linewidth=3.0, zorder=10, solid_capstyle="butt")
+        # White out areas OUTSIDE the footprint (cutouts for H/U/dogtrot)
+        from matplotlib.patches import PathPatch
+        from matplotlib.path import Path
+        # Draw white rectangles over void areas for H/U/dogtrot
+        if shape_key == "h-shape":
+            lw2 = fp_w_r*0.30; rw2 = fp_w_r*0.70; by0_ = fp_d_r*0.25; by1_ = fp_d_r*0.75
+            for vx0,vy0,vx1,vy1 in [(ox+lw2, oy, ox+rw2, oy+by0_),(ox+lw2, oy+by1_, ox+rw2, oy+fp_d_r)]:
+                ax.fill([vx0,vx1,vx1,vx0,vx0],[vy0,vy0,vy1,vy1,vy0], color="#F8F5F0", zorder=5)
+        elif shape_key == "u-shape":
+            cw2 = fp_w_r*0.3
+            ax.fill([ox+cw2,ox+fp_w_r-cw2,ox+fp_w_r-cw2,ox+cw2,ox+cw2],
+                    [oy+fp_d_r*0.45,oy+fp_d_r*0.45,oy+fp_d_r,oy+fp_d_r,oy+fp_d_r*0.45],
+                    color="#F8F5F0", zorder=5)
+
+    # ── Draw footprint shadow (legacy fallback) ───────────────────────────
+    if fp and len(fp) >= 3 and not shape_pts:
         xs = [p["x"] for p in fp] + [fp[0]["x"]]
         ys = [p["y"] for p in fp] + [fp[0]["y"]]
         ax.fill(xs, ys, color="#E0D8CC", zorder=0, alpha=0.5)
