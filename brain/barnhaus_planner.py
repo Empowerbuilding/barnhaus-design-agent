@@ -2364,8 +2364,9 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
             else:
                 lw, color, ls = 2.0, "#222222", "-"   # exterior wall
 
-            ax.plot([ex0,ex1],[ey0,ey1], color=color, linewidth=lw,
-                    linestyle=ls, zorder=3, solid_capstyle="butt")
+            if lw > 0:
+                ax.plot([ex0,ex1],[ey0,ey1], color=color, linewidth=lw,
+                        linestyle=ls, zorder=3, solid_capstyle="butt")
 
         # Room label
         cx = (r["x0"] + r["x1"]) / 2
