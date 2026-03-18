@@ -1292,6 +1292,24 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
             }
             px0 += rw
 
+    # ── Snap foyer to align with front porch center ───────────────────────
+    # Foyer is in circulation spine — make it contiguous with front porch entry
+    front_porch_coord = next(
+        (v for k, v in room_coords.items() if "front porch" in k.lower()), None
+    )
+    if front_porch_coord and circulation_spine:
+        fp_cx = (front_porch_coord["x0"] + front_porch_coord["x1"]) / 2
+        foyer_w = 10  # standard foyer width
+        foyer_d = 8
+        # Place foyer at house south face, centered on front porch
+        house_south = front_porch_coord["y1"]
+        foyer_coord = {
+            "x0": round(fp_cx - foyer_w/2, 1), "y0": round(house_south, 1),
+            "x1": round(fp_cx + foyer_w/2, 1), "y1": round(house_south + foyer_d, 1),
+            "sf": 80, "zone": "living", "dims_source": "derived",
+        }
+        room_coords["Foyer"] = foyer_coord
+
     return room_coords
 
 
@@ -1918,6 +1936,49 @@ def generate_spec(
                     "rooms": [rname, adj],
                 })
 
+    # ── Hardcoded architectural doors (garage→mudroom, etc.) ────────────
+    # Always add a door between garage and mudroom if both exist and adjacent
+    garage_coord = next((v for k, v in room_coords.items() if "garage" in k.lower()), None)
+    mudroom_coord = next((v for k, v in room_coords.items() if "mudroom" in k.lower() or "mud room" in k.lower()), None)
+    if garage_coord and mudroom_coord:
+        # Check adjacency
+        gx0,gy0,gx1,gy1 = garage_coord["x0"],garage_coord["y0"],garage_coord["x1"],garage_coord["y1"]
+        mx0,my0,mx1,my1 = mudroom_coord["x0"],mudroom_coord["y0"],mudroom_coord["x1"],mudroom_coord["y1"]
+        # Shared vertical edge
+        for gx, mx in [(gx0, mx1), (gx1, mx0)]:
+            if abs(gx - mx) < 2.0:
+                shared_y0 = max(gy0, my0)
+                shared_y1 = min(gy1, my1)
+                if shared_y1 - shared_y0 > 3:
+                    mid_y = (shared_y0 + shared_y1) / 2
+                    shared_x = (gx + mx) / 2
+                    doors.append({
+                        "label": "DOOR-Garage-Mudroom",
+                        "wall_label": "INT-Garage-Mudroom",
+                        "x": round(shared_x, 1), "y": round(mid_y, 1), "z": 0,
+                        "family": "Door-Interior-Single-1_Panel-Wood",
+                        "type": '36" x 96"',
+                        "rooms": ["Garage", "Mudroom"],
+                    })
+                    break
+        # Shared horizontal edge
+        for gy, my in [(gy0, my1), (gy1, my0)]:
+            if abs(gy - my) < 2.0:
+                shared_x0 = max(gx0, mx0)
+                shared_x1 = min(gx1, mx1)
+                if shared_x1 - shared_x0 > 3:
+                    mid_x = (shared_x0 + shared_x1) / 2
+                    shared_y = (gy + my) / 2
+                    doors.append({
+                        "label": "DOOR-Garage-Mudroom",
+                        "wall_label": "INT-Garage-Mudroom",
+                        "x": round(mid_x, 1), "y": round(shared_y, 1), "z": 0,
+                        "family": "Door-Interior-Single-1_Panel-Wood",
+                        "type": '36" x 96"',
+                        "rooms": ["Garage", "Mudroom"],
+                    })
+                    break
+
     # ── Windows — rear/view wall gets max glass, others standard ─────────
     windows = []
     if all_y:
@@ -2108,10 +2169,30 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
         "foyer":    "#E8D5B0",
         "gallery":  "#DDD0B8",
         "corridor": "#D8CCB0",
-        "landing":  "#E0D8C8",
     }
     for hr in hall_rects:
         htype = hr.get("type", "corridor")
+        
+        # Landing = L2 open railing — render as dashed outline, no fill
+        if htype == "landing":
+            hrect = patches.Rectangle(
+                (hr["x0"], hr["y0"]),
+                hr["x1"] - hr["x0"],
+                hr["y1"] - hr["y0"],
+                linewidth=1.5,
+                edgecolor="#AAAAAA",
+                facecolor="none",
+                linestyle="--",
+                zorder=3,
+            )
+            ax.add_patch(hrect)
+            hcx = (hr["x0"] + hr["x1"]) / 2
+            hcy = (hr["y0"] + hr["y1"]) / 2
+            ax.text(hcx, hcy, "open
+to below", ha="center", va="center",
+                    fontsize=6, color="#999999", style="italic", zorder=4)
+            continue
+
         hcolor = HALL_COLORS.get(htype, "#DDD5C0")
         hrect = patches.Rectangle(
             (hr["x0"], hr["y0"]),
