@@ -1486,8 +1486,19 @@ def solve_circulation(layout_json: dict, footprint_zones: dict, intake_json: dic
     service_zone = footprint_zones.get("service")
     garage_zone = footprint_zones.get("garage")
 
+    # Check what rooms actually exist in the layout
+    has_master = any("master bed" in r.lower() for r in rooms)
+    has_beds   = any("bed" in r.lower() and "master" not in r.lower() and "bath" not in r.lower() for r in rooms)
+    has_garage = any("garage" in r.lower() for r in rooms)
+    # Only generate foyer if there's a clear entry zone and enough SF to warrant it
+    total_sf = sum(r.get("sf",100) for r in layout_json.get("rooms",[]))
+    needs_foyer   = total_sf >= 2000  # smaller homes skip formal foyer
+    needs_gallery = has_master and living_zone and master_zone  # only if master is in separate zone
+    needs_corridor = has_beds  # only if secondary beds exist
+    needs_landing  = stories >= 2 and has_beds  # only 2-story with upstairs beds
+
     # ── Rule 1: Entry → foyer ────────────────────────────────────────────
-    if living_zone:
+    if living_zone and needs_foyer:
         lx0, ly0 = living_zone["x0"], living_zone["y0"]
         lx1, ly1 = living_zone["x1"], living_zone["y1"]
         # Foyer at south face of living zone (front of house)
@@ -1509,7 +1520,13 @@ def solve_circulation(layout_json: dict, footprint_zones: dict, intake_json: dic
         rules_applied.append("R1: Foyer transitions to great room via threshold (no wall)")
 
     # ── Rule 2: Master approach gallery ──────────────────────────────────
-    if master_zone and living_zone:
+    # Only add gallery if master zone is physically separated from living (gap > 5ft)
+    master_separated = (master_zone and living_zone and
+        (abs(master_zone["x1"] - living_zone["x0"]) > 5 or
+         abs(master_zone["x0"] - living_zone["x1"]) > 5 or
+         abs(master_zone["y1"] - living_zone["y0"]) > 5 or
+         abs(master_zone["y0"] - living_zone["y1"]) > 5))
+    if needs_gallery and master_separated:
         mx0, my0 = master_zone["x0"], master_zone["y0"]
         mx1, my1 = master_zone["x1"], master_zone["y1"]
 
@@ -1562,7 +1579,7 @@ def solve_circulation(layout_json: dict, footprint_zones: dict, intake_json: dic
         rules_applied.append("R6: Master suite at dead end — corridor terminates at master door")
 
     # ── Rule 3: Secondary bed corridor ───────────────────────────────────
-    if bed_zone:
+    if bed_zone and needs_corridor:
         bx0, by0 = bed_zone["x0"], bed_zone["y0"]
         bx1, by1 = bed_zone["x1"], bed_zone["y1"]
         corridor_width = 4
@@ -1615,7 +1632,7 @@ def solve_circulation(layout_json: dict, footprint_zones: dict, intake_json: dic
                     "verify garage→mudroom→pantry path stays in service zone")
 
     # ── Rule 5: L2 landing ───────────────────────────────────────────────
-    if stories >= 2:
+    if needs_landing:
         if living_zone:
             # Landing above service zone or at stair location
             landing_w = 12
