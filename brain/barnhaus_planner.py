@@ -2605,6 +2605,81 @@ Rules:
         return None
 
 
+def _post_process_room_coords(room_coords: dict, intake_json: dict) -> dict:
+    """Post-process spatial model output:
+    1. Resize rooms to match target SF while keeping anchor position
+    2. Snap edges to 1ft grid
+    3. Detect and flag overlaps
+    """
+    # Target SFs from original layout
+    rooms_list = intake_json.get("layout", {}).get("rooms", [])
+    if isinstance(rooms_list, dict):
+        target_sf = {k.replace("_"," ").title(): v.get("sf", 100) if isinstance(v,dict) else v
+                     for k,v in rooms_list.items()}
+    else:
+        target_sf = {r["name"]: r.get("sf", 100) for r in rooms_list if isinstance(r, dict)}
+
+    # Also use sf already in room_coords as fallback
+    for rname, rc in room_coords.items():
+        if rname not in target_sf:
+            target_sf[rname] = rc.get("sf", 100)
+
+    ASPECT = {
+        "great room": 1.4, "kitchen": 1.2, "dining": 1.3,
+        "master bed": 1.2, "master bath": 1.0, "master closet": 0.8,
+        "bed": 1.1, "bath": 0.85, "laundry": 1.0,
+        "mudroom": 1.2, "butler pantry": 0.7, "utility": 1.0,
+        "home office": 1.2, "porch": 2.0, "garage": 1.5,
+    }
+    def _asp(name):
+        n = name.lower()
+        for k, v in ASPECT.items():
+            if k in n: return v
+        return 1.15
+
+    result = {}
+    for rname, rc in room_coords.items():
+        sf = target_sf.get(rname, rc.get("sf", 100))
+        x0, y0 = rc["x0"], rc["y0"]
+        current_w = rc["x1"] - x0
+        current_d = rc["y1"] - y0
+        current_sf = current_w * current_d
+
+        # Only resize if more than 20% off target
+        if sf > 0 and abs(current_sf - sf) / sf > 0.20:
+            asp = _asp(rname)
+            new_w = math.sqrt(sf * asp)
+            new_d = sf / max(new_w, 1)
+            new_w = max(8.0, new_w)
+            new_d = max(8.0, new_d)
+            # Snap to 1ft grid
+            x1 = round(x0 + new_w)
+            y1 = round(y0 + new_d)
+        else:
+            x1 = round(rc["x1"])
+            y1 = round(rc["y1"])
+
+        result[rname] = {
+            **rc,
+            "x0": round(x0), "y0": round(y0),
+            "x1": x1, "y1": y1,
+            "sf": sf,
+        }
+
+    # Log any remaining overlaps as warnings
+    names = list(result.keys())
+    for i, a in enumerate(names):
+        ra = result[a]
+        for b in names[i+1:]:
+            rb = result[b]
+            ox = min(ra["x1"],rb["x1"]) - max(ra["x0"],rb["x0"])
+            oy = min(ra["y1"],rb["y1"]) - max(ra["y0"],rb["y0"])
+            if ox > 2 and oy > 2:
+                print(f"  ⚠️  Overlap: {a} ↔ {b} ({ox:.0f}x{oy:.0f}ft)")
+
+    return result
+
+
 def run_planner(
     submission_id: str,
     layout_json: dict,
@@ -2620,6 +2695,8 @@ def run_planner(
     room_coords = solve_spatial_layout(layout_json, intake_json, footprint)
     if room_coords is None:
         room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
+    else:
+        room_coords = _post_process_room_coords(room_coords, {**intake_json, "layout": layout_json})
     # Generate fully resolved spec for Revit execution
     exterior_json = intake_json.get("exterior", {})
     spec = generate_spec(
