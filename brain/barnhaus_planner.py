@@ -1911,6 +1911,27 @@ def _correct_layout(layout_json: dict) -> dict:
         corrected.append({"name": "Mudroom", "sf": 100, "zone": "service",
                            "adjacencies": ["Garage", "Kitchen"]})
 
+    # ── Add second corridor for 2-story homes ────────────────────────────
+    # If 2-story and secondary beds exist, need both L1 hallway and L2 hallway
+    stories = layout_json.get("stories", 1)
+    try: stories = int(str(stories).split()[0])
+    except: stories = 1
+    has_corridor = any("corridor" in r["name"].lower() or "hallway" in r["name"].lower() for r in corrected)
+    bed_count = sum(1 for r in corrected if "bed" in r["name"].lower() and "master" not in r["name"].lower() and "bath" not in r["name"].lower())
+    if stories >= 2 and bed_count >= 2:
+        # Add L1 gallery/hall connecting living to stairs
+        if not any("gallery" in r["name"].lower() for r in corrected):
+            corrected.append({"name": "Gallery", "sf": 80, "zone": "living",
+                               "adjacencies": ["Great Room", "Foyer"]})
+        # Add L2 corridor for bedroom wing
+        if not has_corridor:
+            corrected.append({"name": "Corridor", "sf": 120, "zone": "beds",
+                               "adjacencies": ["Bed 2", "Bed 3", "Bed 4", "Bath 2", "Bath 3"]})
+        elif bed_count >= 3:
+            # Already has one corridor — add a second for L2 if 2-story
+            corrected.append({"name": "Hallway", "sf": 80, "zone": "beds",
+                               "adjacencies": ["Bed 2", "Bed 3", "Bath 2"]})
+
     return {**layout_json, "rooms": corrected}
 
 
@@ -2737,6 +2758,17 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
         for rname, rc in room_coords.items():
             if rname in sf_lookup:
                 rc["sf"] = sf_lookup[rname]
+
+        # Clamp all rooms to footprint bounds
+        fp_w = footprint.get("total_width", footprint.get("width", 89))
+        fp_d = footprint.get("total_depth", footprint.get("depth", 79))
+        for rname, rc in room_coords.items():
+            w = rc["x1"] - rc["x0"]
+            d = rc["y1"] - rc["y0"]
+            rc["x0"] = max(0.0, min(rc["x0"], fp_w - w))
+            rc["y0"] = max(0.0, min(rc["y0"], fp_d - d))
+            rc["x1"] = rc["x0"] + w
+            rc["y1"] = rc["y0"] + d
 
         print(f"✅ Spatial model placed {len(room_coords)} rooms")
         return room_coords
