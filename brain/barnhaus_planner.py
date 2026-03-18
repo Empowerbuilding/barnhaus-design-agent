@@ -1766,9 +1766,6 @@ def run_planner(
     footprint = solve_footprint(layout_json, intake_json)
     room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
     circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
-    image_path = generate_floorplan_image(room_coords, submission_id)
-    floorplan_url = _upload_to_supabase(image_path, submission_id)
-
     # Generate fully resolved spec for Revit execution
     exterior_json = intake_json.get("exterior", {})
     spec = generate_spec(
@@ -1777,6 +1774,12 @@ def run_planner(
     )
     spec_url = _upload_spec_to_supabase(spec, submission_id)
     print(f"Spec URL: {spec_url}")
+
+    # Render precise floor plan from spec (walls, doors, windows, labels)
+    sid8 = submission_id[:8]
+    image_path = f"designs/floorplan_{sid8}.png"
+    render_spec_floorplan(spec, image_path)
+    floorplan_url = _upload_to_supabase(image_path, submission_id)
 
     return {
         "violations": violations,
@@ -1841,3 +1844,224 @@ if __name__ == "__main__":
               f"{rc['y1']:.0f})  {rc['sf']} SF")
 
     print(f"\nFloor plan: {result['floorplan_url']}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SPEC-BASED FLOOR PLAN RENDERER
+#  Draws precise walls, door openings, window marks, room labels from spec JSON
+# ══════════════════════════════════════════════════════════════════════════════
+
+def render_spec_floorplan(spec: dict, output_path: str) -> str:
+    """
+    Render a precise architectural floor plan from a resolved spec JSON.
+    Shows: room outlines + labels, interior walls, door openings, window marks.
+    Returns output_path.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as patches
+    from matplotlib.patches import FancyArrowPatch
+    import numpy as np
+
+    rooms      = spec.get("rooms", {})
+    int_walls  = spec.get("interior_walls", [])
+    ext_walls  = spec.get("exterior_walls", [])
+    doors      = spec.get("doors", [])
+    windows    = spec.get("windows", [])
+    fp         = spec.get("footprint_polygon", [])
+    name       = spec.get("name", "Floor Plan")
+    sid        = spec.get("submission_id", "")[:8]
+
+    # ── Canvas ──────────────────────────────────────────────────────────────
+    fig, ax = plt.subplots(figsize=(14, 14))
+    ax.set_aspect("equal")
+    ax.axis("off")
+    fig.patch.set_facecolor("#F8F5F0")
+    ax.set_facecolor("#F8F5F0")
+
+    # ── Zone colors (light fill for rooms) ───────────────────────────────
+    ZONE_FILL = {
+        "master":      "#D6E8F5",
+        "living":      "#FFF3E0",
+        "beds":        "#E8F5E9",
+        "service":     "#ECEFF1",
+        "porch":       "#FFF9C4",
+        "garage":      "#ECEFF1",
+    }
+    ZONE_DEFAULT = "#F5F5F5"
+
+    # ── Collect all coords for axis limits ───────────────────────────────
+    all_x, all_y = [], []
+    for r in rooms.values():
+        all_x += [r["x0"], r["x1"]]
+        all_y += [r["y0"], r["y1"]]
+    if not all_x:
+        plt.close(fig)
+        return output_path
+
+    pad = 6
+    ax.set_xlim(min(all_x) - pad, max(all_x) + pad)
+    ax.set_ylim(min(all_y) - pad, max(all_y) + pad + 12)  # top space for title
+
+    # ── Draw footprint shadow ─────────────────────────────────────────────
+    if fp and len(fp) >= 3:
+        xs = [p["x"] for p in fp] + [fp[0]["x"]]
+        ys = [p["y"] for p in fp] + [fp[0]["y"]]
+        ax.fill(xs, ys, color="#E0D8CC", zorder=0, alpha=0.5)
+
+    # ── Draw rooms (filled rect + thin border) ────────────────────────────
+    OPEN_ZONES = {"porch", "front_porch", "back_porch", "outdoor"}
+    for rname, r in rooms.items():
+        zone = r.get("zone", "living")
+        fill = ZONE_FILL.get(zone, ZONE_DEFAULT)
+        is_open = zone in OPEN_ZONES
+
+        rect = patches.Rectangle(
+            (r["x0"], r["y0"]),
+            r["x1"] - r["x0"],
+            r["y1"] - r["y0"],
+            linewidth=0.5 if is_open else 1.0,
+            edgecolor="#AAAAAA" if is_open else "#888888",
+            facecolor=fill,
+            linestyle="--" if is_open else "-",
+            zorder=1,
+        )
+        ax.add_patch(rect)
+
+        # Room label
+        cx = (r["x0"] + r["x1"]) / 2
+        cy = (r["y0"] + r["y1"]) / 2
+        sf = r.get("sf", 0)
+        label = f"{rname}\n{sf} SF" if sf else rname
+        fontsize = 7.5 if (r["x1"]-r["x0"]) > 10 else 6
+        ax.text(cx, cy, label, ha="center", va="center",
+                fontsize=fontsize, color="#333333",
+                fontfamily="monospace", zorder=4,
+                multialignment="center")
+
+    # ── Draw interior walls (thick lines) ─────────────────────────────────
+    for w in int_walls:
+        ax.plot(
+            [w["x0"], w["x1"]], [w["y0"], w["y1"]],
+            color="#555555", linewidth=2.5, solid_capstyle="butt", zorder=3
+        )
+
+    # ── Draw door openings (gap + arc) ────────────────────────────────────
+    DOOR_W = 3.0  # ft
+    for d in doors:
+        dx, dy = d["x"], d["y"]
+        # Find which wall this door is on to determine orientation
+        wall_label = d.get("wall_label", "")
+        wall = next((w for w in int_walls if w["label"] == wall_label), None)
+        if wall is None:
+            # guess orientation from door position
+            is_horiz = True
+        else:
+            is_horiz = (wall["y0"] == wall["y1"])  # horizontal wall
+
+        # Draw gap (erase wall segment) as white rectangle
+        hw = DOOR_W / 2
+        if is_horiz:
+            gap = patches.Rectangle((dx - hw, dy - 0.3), DOOR_W, 0.6,
+                                     facecolor="#F8F5F0", edgecolor="none", zorder=5)
+            # Arc showing swing direction
+            arc = patches.Arc((dx - hw, dy), DOOR_W, DOOR_W,
+                               angle=0, theta1=0, theta2=90,
+                               color="#888888", linewidth=1.0, zorder=5)
+        else:
+            gap = patches.Rectangle((dx - 0.3, dy - hw), 0.6, DOOR_W,
+                                     facecolor="#F8F5F0", edgecolor="none", zorder=5)
+            arc = patches.Arc((dx, dy - hw), DOOR_W, DOOR_W,
+                               angle=0, theta1=0, theta2=90,
+                               color="#888888", linewidth=1.0, zorder=5)
+        ax.add_patch(gap)
+        ax.add_patch(arc)
+
+    # ── Draw exterior walls (heavy lines) ─────────────────────────────────
+    EXT_LW = 4.0
+    for w in ext_walls:
+        ax.plot(
+            [w["x0"], w["x1"]], [w["y0"], w["y1"]],
+            color="#222222", linewidth=EXT_LW, solid_capstyle="butt", zorder=6
+        )
+
+    # ── Draw window marks (dashed lines on ext walls) ─────────────────────
+    WIN_W = 3.0
+    for win in windows:
+        wx, wy = win["x"], win["y"]
+        # Determine orientation from wall label
+        wlabel = win.get("wall", "")
+        if "EXT-S" in wlabel or "EXT-N" in wlabel:
+            # horizontal window mark
+            ax.plot([wx - WIN_W/2, wx + WIN_W/2], [wy, wy],
+                    color="#4FC3F7", linewidth=3, zorder=7)
+            ax.plot([wx - WIN_W/2, wx + WIN_W/2], [wy, wy],
+                    color="white", linewidth=1, linestyle="--", zorder=8)
+        else:
+            ax.plot([wx, wx], [wy - WIN_W/2, wy + WIN_W/2],
+                    color="#4FC3F7", linewidth=3, zorder=7)
+            ax.plot([wx, wx], [wy - WIN_W/2, wy + WIN_W/2],
+                    color="white", linewidth=1, linestyle="--", zorder=8)
+
+    # ── North arrow ───────────────────────────────────────────────────────
+    ax_xmin = min(all_x) - pad
+    ax_ymax = max(all_y) + pad + 10
+    ax.annotate("", xy=(ax_xmin + 2, ax_ymax - 1),
+                xytext=(ax_xmin + 2, ax_ymax - 5),
+                arrowprops=dict(arrowstyle="->", color="#333333", lw=2))
+    ax.text(ax_xmin + 2, ax_ymax, "N", ha="center", va="top",
+            fontsize=11, fontweight="bold", color="#333333")
+
+    # ── Legend ────────────────────────────────────────────────────────────
+    legend_x = max(all_x) + 0.5
+    legend_y = max(all_y) + pad + 9
+    legend_items = [
+        ("Master", ZONE_FILL["master"]),
+        ("Living",  ZONE_FILL["living"]),
+        ("Beds",    ZONE_FILL["beds"]),
+        ("Service", ZONE_FILL["service"]),
+        ("Porch",   ZONE_FILL["porch"]),
+    ]
+    for i, (lbl, clr) in enumerate(legend_items):
+        lx = legend_x
+        ly = legend_y - i * 2.5
+        rect = patches.Rectangle((lx, ly - 1), 3, 2,
+                                   facecolor=clr, edgecolor="#888888", linewidth=0.8)
+        ax.add_patch(rect)
+        ax.text(lx + 3.5, ly, lbl, va="center", fontsize=8, color="#333333")
+
+    # ── Title block ───────────────────────────────────────────────────────
+    title_y = max(all_y) + pad + 11
+    title_cx = (min(all_x) + max(all_x)) / 2
+    dims = spec.get("footprint_dimensions", {})
+    sf_total = spec.get("total_sf", 0)
+    stories = spec.get("stories", 1)
+    rooms_list = list(rooms.keys())
+    beds = sum(1 for r in rooms_list if "bed" in r.lower() and "bath" not in r.lower() and "master" not in r.lower())
+    baths = sum(1 for r in rooms_list if "bath" in r.lower())
+
+    ax.text(title_cx, title_y + 1, name, ha="center", va="bottom",
+            fontsize=16, fontweight="bold", color="#1A1A1A")
+    ax.text(title_cx, title_y - 0.5,
+            f"{sf_total:,} SF  |  {stories}-story  |  {beds+1} bed / {baths} bath  |  {dims.get('width_ft',0)}ft × {dims.get('depth_ft',0)}ft",
+            ha="center", va="bottom", fontsize=9, color="#555555")
+    ax.text(title_cx, title_y - 2.5, f"ID: {sid}",
+            ha="center", va="bottom", fontsize=7, color="#AAAAAA")
+
+    # ── Scale bar ─────────────────────────────────────────────────────────
+    sb_x = min(all_x)
+    sb_y = min(all_y) - pad + 1
+    scale_len = 20
+    ax.plot([sb_x, sb_x + scale_len], [sb_y, sb_y], color="#333333", lw=2)
+    ax.plot([sb_x, sb_x], [sb_y - 0.5, sb_y + 0.5], color="#333333", lw=2)
+    ax.plot([sb_x + scale_len, sb_x + scale_len], [sb_y - 0.5, sb_y + 0.5], color="#333333", lw=2)
+    ax.text(sb_x + scale_len/2, sb_y - 1.5, "20 ft", ha="center", fontsize=8, color="#333333")
+
+    plt.tight_layout(pad=0.5)
+    plt.savefig(output_path, dpi=150, bbox_inches="tight",
+                facecolor=fig.get_facecolor())
+    plt.close(fig)
+    print(f"✅ Spec floor plan rendered: {output_path}")
+    return output_path
+
