@@ -113,7 +113,7 @@ def _get_zone(room_name: str) -> str:
         return "beds"
     if any(kw in low for kw in ("bathroom", "bath ")):
         return "beds"
-    if any(kw in low for kw in ("garage", "mudroom", "laundry", "pantry")):
+    if any(kw in low for kw in ("garage", "mudroom", "laundry", "pantry", "utility", "mechanical", "storage")):
         return "service"
     if any(kw in low for kw in ("porch", "outdoor", "patio", "courtyard")):
         return "porch"
