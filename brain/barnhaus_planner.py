@@ -1283,28 +1283,32 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
 
         if vert_corr:
             # Two columns: left of corridor and right of corridor
-            left  = {"x0": bx0, "y0": by0, "x1": vert_corr["x0"], "y1": by1}
-            right = {"x0": vert_corr["x1"], "y0": by0, "x1": bx1, "y1": by1}
+            left  = {"x0": bx0,              "y0": by0, "x1": vert_corr["x0"], "y1": by1}
+            right = {"x0": vert_corr["x1"],  "y0": by0, "x1": bx1,             "y1": by1}
 
-            # Separate beds from baths — pair each bed with its bath
-            beds_only  = [r for r in bed_rooms if "bath" not in r["name"].lower()]
-            baths_only = [r for r in bed_rooms if "bath" in r["name"].lower()]
-            beds_only.sort(key=lambda r: r.get("sf", 100), reverse=True)
+            # Pair beds with baths: Bed 2+Bath 2, Bed 3+Bath 3, etc.
+            beds_only  = sorted([r for r in bed_rooms if "bath" not in r["name"].lower()],
+                                 key=lambda r: r["name"])
+            baths_only = sorted([r for r in bed_rooms if "bath" in r["name"].lower()],
+                                 key=lambda r: r["name"])
 
-            # Distribute beds: odd-indexed → left column, even-indexed → right column
-            left_rooms, right_rooms = [], []
+            # Build paired groups: [(bed, bath_or_None), ...]
+            pairs = []
             for i, bed in enumerate(beds_only):
-                if i % 2 == 0:
-                    left_rooms.append(bed)
-                else:
-                    right_rooms.append(bed)
+                bath = baths_only[i] if i < len(baths_only) else None
+                pairs.append((bed, bath))
 
-            # Pair baths with beds in same column
-            for i, bath in enumerate(baths_only):
-                if i % 2 == 0:
-                    left_rooms.append(bath)
-                else:
-                    right_rooms.append(bath)
+            # Alternate pairs between left/right columns
+            left_rooms, right_rooms = [], []
+            for i, (bed, bath) in enumerate(pairs):
+                col = left_rooms if i % 2 == 0 else right_rooms
+                col.append(bed)
+                if bath:
+                    col.append(bath)
+
+            # Any extra baths go into the column with more space
+            for bath in baths_only[len(beds_only):]:
+                left_rooms.append(bath)
 
             if left_rooms:
                 room_coords.update(_pack_rooms(left_rooms,
@@ -1313,9 +1317,19 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
                 room_coords.update(_pack_rooms(right_rooms,
                     right["x0"], right["y0"], right["x1"], right["y1"], "beds"))
         else:
-            # No corridor — pack normally
-            bed_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
-            room_coords.update(_pack_rooms(bed_rooms, bx0, by0, bx1, by1, "beds"))
+            # No corridor — pair beds+baths and pack normally
+            beds_only  = sorted([r for r in bed_rooms if "bath" not in r["name"].lower()],
+                                 key=lambda r: r["name"])
+            baths_only = sorted([r for r in bed_rooms if "bath" in r["name"].lower()],
+                                 key=lambda r: r["name"])
+            ordered = []
+            for i, bed in enumerate(beds_only):
+                ordered.append(bed)
+                if i < len(baths_only):
+                    ordered.append(baths_only[i])
+            for b in baths_only[len(beds_only):]:
+                ordered.append(b)
+            room_coords.update(_pack_rooms(ordered, bx0, by0, bx1, by1, "beds"))
 
     # ── 6. Back porch — use porch zone (attached to rear/north face) ────────
     back_porch_zone = _zone(["porch"])
@@ -1959,6 +1973,23 @@ def generate_spec(
                 continue
             pair = tuple(sorted([rname, adj]))
             if pair in processed:
+                continue
+            # Skip walls between rooms in very different zones
+            # (garage↔living, garage↔master, service↔master etc.)
+            ZONE_NO_WALL = {
+                frozenset({"service", "master"}),
+                frozenset({"service", "living"}),
+                frozenset({"garage", "master"}),
+                frozenset({"garage", "living"}),
+                frozenset({"garage", "beds"}),
+            }
+            rzone = rc.get("zone", "living")
+            azone = ac.get("zone", "living")
+            # Treat garage rooms as "service" for this check
+            if "garage" in rname.lower(): rzone = "garage"
+            if "garage" in adj.lower(): azone = "garage"
+            if frozenset({rzone, azone}) in ZONE_NO_WALL:
+                processed.add(pair)
                 continue
             
             shared_wall = None
