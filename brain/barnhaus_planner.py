@@ -951,7 +951,40 @@ _ZONE_KEY_MAP = {
 }
 
 
-def assign_rooms_to_zones(layout_json: dict, zones: dict) -> dict:
+
+
+def _expand_circulation_to_rects(spine: list) -> list:
+    """Convert circulation spine segments to rect dicts {x0,y0,x1,y1,type}.
+    Handles both area segments (x0≠x1) and centerline segments (x0==x1 or y0==y1).
+    """
+    rects = []
+    for seg in spine:
+        seg_type = seg.get("type", "corridor")
+        x0, y0 = seg.get("x0", 0), seg.get("y0", 0)
+        x1, y1 = seg.get("x1", x0), seg.get("y1", y0)
+        w = float(seg.get("width", 4))
+        hw = w / 2
+
+        # Already a proper rect
+        if abs(x1 - x0) > 1 and abs(y1 - y0) > 1:
+            rects.append({"x0": min(x0,x1), "y0": min(y0,y1),
+                          "x1": max(x0,x1), "y1": max(y0,y1),
+                          "type": seg_type, "width": w})
+        # Vertical centerline (x0==x1, runs N-S)
+        elif abs(x1 - x0) < 0.5:
+            cx = (x0 + x1) / 2
+            rects.append({"x0": cx - hw, "y0": min(y0,y1),
+                          "x1": cx + hw, "y1": max(y0,y1),
+                          "type": seg_type, "width": w})
+        # Horizontal centerline (y0==y1, runs E-W)
+        elif abs(y1 - y0) < 0.5:
+            cy = (y0 + y1) / 2
+            rects.append({"x0": min(x0,x1), "y0": cy - hw,
+                          "x1": max(x0,x1), "y1": cy + hw,
+                          "type": seg_type, "width": w})
+    return rects
+
+def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: list = None) -> dict:
     """Place each room into its zone and compute sub-coordinates.
 
     Uses actual room dimensions (w, d) from the fine-tuned model output when
@@ -987,6 +1020,53 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict) -> dict:
         # Sort largest rooms first
         z_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
         total_sf = sum(r.get("sf", 100) for r in z_rooms)
+
+        # ── Carve hallway corridors out of this zone before packing ────────
+        hall_rects = []
+        if circulation_spine:
+            for hr in _expand_circulation_to_rects(circulation_spine):
+                # Only affect rooms whose zone overlaps this hallway rect
+                hx0, hy0, hx1, hy1 = hr["x0"], hr["y0"], hr["x1"], hr["y1"]
+                overlap = (hx0 < zx1 and hx1 > zx0 and hy0 < zy1 and hy1 > zy0)
+                if overlap:
+                    hall_rects.append(hr)
+
+        # Adjust zone packing to avoid hallways
+        # For now: split zone into left/right sub-columns if corridor runs N-S
+        # and top/bottom sub-rows if corridor runs E-W
+        vert_corridors  = [h for h in hall_rects if (h["x1"]-h["x0"]) <= (h["y1"]-h["y0"])]
+        horiz_corridors = [h for h in hall_rects if (h["x1"]-h["x0"]) > (h["y1"]-h["y0"])]
+
+        # Use sub-packing regions (split on first corridor)
+        pack_regions = [{"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}]
+        for vc in vert_corridors:
+            new_regions = []
+            for reg in pack_regions:
+                if vc["x0"] > reg["x0"] + 2:
+                    new_regions.append({"x0": reg["x0"], "y0": reg["y0"],
+                                        "x1": vc["x0"], "y1": reg["y1"]})
+                if vc["x1"] < reg["x1"] - 2:
+                    new_regions.append({"x0": vc["x1"], "y0": reg["y0"],
+                                        "x1": reg["x1"], "y1": reg["y1"]})
+            if new_regions:
+                pack_regions = new_regions
+        for hc in horiz_corridors:
+            new_regions = []
+            for reg in pack_regions:
+                if hc["y0"] > reg["y0"] + 2:
+                    new_regions.append({"x0": reg["x0"], "y0": reg["y0"],
+                                        "x1": reg["x1"], "y1": hc["y0"]})
+                if hc["y1"] < reg["y1"] - 2:
+                    new_regions.append({"x0": reg["x0"], "y0": hc["y1"],
+                                        "x1": reg["x1"], "y1": reg["y1"]})
+            if new_regions:
+                pack_regions = new_regions
+
+        # Use first region as primary packing area
+        primary = pack_regions[0] if pack_regions else {"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}
+        zx0, zy0, zx1, zy1 = primary["x0"], primary["y0"], primary["x1"], primary["y1"]
+        zone_w = zx1 - zx0
+        zone_d = zy1 - zy0
 
         cursor_x = zx0
         cursor_y = zy0
@@ -1843,6 +1923,39 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
                 fontfamily="monospace", zorder=4,
                 multialignment="center")
 
+    # ── Draw circulation / hallways ──────────────────────────────────────
+    HALL_COLORS = {
+        "foyer":    "#E8D5B0",
+        "gallery":  "#DDD0B8",
+        "corridor": "#D8CCB0",
+        "landing":  "#E0D8C8",
+    }
+    for hr in hall_rects:
+        htype = hr.get("type", "corridor")
+        hcolor = HALL_COLORS.get(htype, "#DDD5C0")
+        hrect = patches.Rectangle(
+            (hr["x0"], hr["y0"]),
+            hr["x1"] - hr["x0"],
+            hr["y1"] - hr["y0"],
+            linewidth=1.0,
+            edgecolor="#999999",
+            facecolor=hcolor,
+            linestyle=":",
+            zorder=2,
+            alpha=0.8,
+        )
+        ax.add_patch(hrect)
+        # Label
+        hcx = (hr["x0"] + hr["x1"]) / 2
+        hcy = (hr["y0"] + hr["y1"]) / 2
+        hlabel = htype.title()
+        hl = hr["x1"] - hr["x0"]
+        hd = hr["y1"] - hr["y0"]
+        if hl > 3 and hd > 3:
+            ax.text(hcx, hcy, hlabel, ha="center", va="center",
+                    fontsize=6, color="#666666", style="italic",
+                    rotation=90 if hd > hl else 0, zorder=4)
+
     # ── Draw interior walls (thick lines) ─────────────────────────────────
     for w in int_walls:
         ax.plot(
@@ -1978,7 +2091,7 @@ def run_planner(
     layout_json = _correct_layout(layout_json)
     violations = validate_layout(layout_json, intake_json)
     footprint = solve_footprint(layout_json, intake_json)
-    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
+    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
     circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
     # Generate fully resolved spec for Revit execution
     exterior_json = intake_json.get("exterior", {})
