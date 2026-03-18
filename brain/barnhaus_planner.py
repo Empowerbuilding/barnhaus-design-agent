@@ -2749,8 +2749,10 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
             # Normalize flat list format to {room: {"adjacent_to": [...]}} for packer
             if isinstance(first_val, list):
                 rooms_out = {k: {"adjacent_to": v, "sf": next((r.get("sf",100) for r in layout_json.get("rooms",[]) if r["name"].lower().replace(" ","_") == k.lower().replace(" ","_")), 100)} for k,v in rooms_out.items()}
+            _shape = intake_json.get("house_shape","rectangle")
+            _shape = intake_json.get("house_shape","rectangle")
             from barnhaus_graph_packer import pack as _graph_pack
-            room_coords = _graph_pack(rooms_out, footprint)
+            room_coords = _graph_pack(rooms_out, {"width": fp_w, "depth": fp_d}, shape=_shape)
             for rname, rc in room_coords.items():
                 rc["dims_source"] = "spatial_v2_packed"
         else:

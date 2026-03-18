@@ -2,7 +2,7 @@
 barnhaus_graph_packer.py
 
 Takes a room adjacency graph (spatial-v2 output) + footprint
-and produces x/y room coordinates using constraint-based packing.
+and produces x/y room coordinates using shape-zone-aware packing.
 """
 import math
 from collections import deque
@@ -20,7 +20,7 @@ def dims_from_sf(name: str, sf: int) -> tuple:
         "great room":1.4,"kitchen":1.2,"dining":1.3,"master bed":1.2,
         "master bath":1.0,"master closet":0.8,"bed":1.1,"bath":0.85,
         "laundry":1.0,"mudroom":1.2,"butler pantry":0.7,"utility":1.0,
-        "home office":1.2,"porch":2.0,"garage":1.5,"foyer":1.0,
+        "home office":1.2,"porch":2.5,"garage":1.5,"foyer":1.2,
         "corridor":4.0,"gallery":3.0,"study":1.1,
     }
     n = name.lower()
@@ -29,139 +29,192 @@ def dims_from_sf(name: str, sf: int) -> tuple:
     d = max(8.0, sf / w)
     return snap(w), snap(d)
 
-def pack(adjacency: dict, footprint: dict) -> dict:
+def get_shape_zones(shape: str, fp_w: float, fp_d: float) -> dict:
+    """
+    Return zone boundaries per shape.
+    Each zone: {x0, y0, x1, y1}
+    """
+    s = (shape or "rectangle").lower().replace(" ", "-")
+
+    if s == "h-shape":
+        lw = fp_w * 0.30  # left wing 30%
+        rw = fp_w * 0.70  # right wing starts at 70%
+        bridge_y0 = fp_d * 0.25
+        bridge_y1 = fp_d * 0.75
+        return {
+            "master":   {"x0": 0,   "y0": 0,         "x1": lw,   "y1": fp_d},
+            "living":   {"x0": lw,  "y0": bridge_y0, "x1": rw,   "y1": bridge_y1},
+            "beds":     {"x0": rw,  "y0": 0,         "x1": fp_w, "y1": fp_d},
+            "service":  {"x0": lw,  "y0": 0,         "x1": rw,   "y1": bridge_y0},
+            "garage":   {"x0": 0,   "y0": fp_d*0.6,  "x1": lw,   "y1": fp_d},
+            "porch":    {"x0": lw,  "y0": 0,         "x1": rw,   "y1": fp_d},
+        }
+    elif s in ("l-shape", "asymmetric-l"):
+        return {
+            "master":   {"x0": 0,        "y0": fp_d*0.4, "x1": fp_w*0.35, "y1": fp_d},
+            "living":   {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.7,  "y1": fp_d},
+            "beds":     {"x0": fp_w*0.65,"y0": 0,        "x1": fp_w,      "y1": fp_d},
+            "service":  {"x0": 0,        "y0": 0,        "x1": fp_w*0.3,  "y1": fp_d*0.45},
+            "garage":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.25, "y1": fp_d*0.4},
+            "porch":    {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.8,  "y1": fp_d},
+        }
+    elif s == "t-shape":
+        return {
+            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.28, "y1": fp_d*0.6},
+            "living":   {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.75, "y1": fp_d},
+            "beds":     {"x0": fp_w*0.72,"y0": 0,        "x1": fp_w,      "y1": fp_d*0.6},
+            "service":  {"x0": fp_w*0.25,"y0": fp_d*0.6, "x1": fp_w*0.75, "y1": fp_d},
+            "garage":   {"x0": 0,        "y0": fp_d*0.55,"x1": fp_w*0.28, "y1": fp_d},
+            "porch":    {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.75, "y1": fp_d},
+        }
+    elif s == "u-shape":
+        return {
+            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.28, "y1": fp_d},
+            "living":   {"x0": fp_w*0.25,"y0": fp_d*0.4, "x1": fp_w*0.75, "y1": fp_d},
+            "beds":     {"x0": fp_w*0.72,"y0": 0,        "x1": fp_w,      "y1": fp_d},
+            "service":  {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.75, "y1": fp_d*0.45},
+            "garage":   {"x0": 0,        "y0": fp_d*0.6, "x1": fp_w*0.28, "y1": fp_d},
+            "porch":    {"x0": fp_w*0.3, "y0": fp_d*0.4, "x1": fp_w*0.7,  "y1": fp_d},
+        }
+    elif s == "dogtrot":
+        return {
+            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.4,  "y1": fp_d},
+            "living":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.4,  "y1": fp_d},
+            "beds":     {"x0": fp_w*0.6, "y0": 0,        "x1": fp_w,      "y1": fp_d},
+            "service":  {"x0": fp_w*0.6, "y0": 0,        "x1": fp_w,      "y1": fp_d},
+            "garage":   {"x0": fp_w*0.6, "y0": fp_d*0.5, "x1": fp_w,      "y1": fp_d},
+            "porch":    {"x0": fp_w*0.4, "y0": 0,        "x1": fp_w*0.6,  "y1": fp_d},
+        }
+    elif s == "z-shape":
+        return {
+            "master":   {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.5,  "y1": fp_d},
+            "living":   {"x0": fp_w*0.15,"y0": 0,        "x1": fp_w*0.85, "y1": fp_d},
+            "beds":     {"x0": fp_w*0.5, "y0": 0,        "x1": fp_w,      "y1": fp_d*0.5},
+            "service":  {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.5,  "y1": fp_d},
+            "garage":   {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.3,  "y1": fp_d},
+            "porch":    {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.8,  "y1": fp_d},
+        }
+    else:  # rectangle, barn-bar, courtyard, default
+        return {
+            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.28, "y1": fp_d},
+            "living":   {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.65, "y1": fp_d},
+            "beds":     {"x0": fp_w*0.62,"y0": 0,        "x1": fp_w,      "y1": fp_d},
+            "service":  {"x0": fp_w*0.62,"y0": 0,        "x1": fp_w,      "y1": fp_d},
+            "garage":   {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.28, "y1": fp_d},
+            "porch":    {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.8,  "y1": fp_d},
+        }
+
+def zone_for_room(name: str, room_zone: str) -> str:
+    """Map brain zone name → shape zone key."""
+    n = name.lower()
+    if "garage" in n:             return "garage"
+    if "porch" in n:              return "porch"
+    if "master" in n:             return "master"
+    if "bed" in n and "bath" not in n and "master" not in n: return "beds"
+    if "bath" in n and "master" not in n: return "beds"
+    if room_zone in ("service","utility","laundry","mudroom"): return "service"
+    if room_zone == "master":     return "master"
+    if room_zone == "beds":       return "beds"
+    if room_zone == "garage":     return "garage"
+    return "living"
+
+def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
     fp_w = footprint.get("width", 89)
     fp_d = footprint.get("depth", 79)
+    zones = get_shape_zones(shape, fp_w, fp_d)
     placed = {}
 
-    def _try_place(x0, y0, w, d, name):
-        """Clamp to footprint, return rect or None if overlaps."""
-        x0 = max(0.0, min(snap(x0), fp_w - w))
-        y0 = max(0.0, min(snap(y0), fp_d - d))
-        x1, y1 = snap(x0 + w), snap(y0 + d)
+    def zone_bounds(zkey: str) -> dict:
+        return zones.get(zkey, {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d})
+
+    def _try_place(x0, y0, w, d, name, zkey=None):
+        """Place room, clamped to its zone bounds."""
+        zb = zone_bounds(zkey) if zkey else {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d}
+        x0 = max(zb["x0"], min(snap(x0), zb["x1"] - w))
+        y0 = max(zb["y0"], min(snap(y0), zb["y1"] - d))
+        x1 = snap(min(x0 + w, zb["x1"]))
+        y1 = snap(min(y0 + d, zb["y1"]))
+        if x1 - x0 < 4 or y1 - y0 < 4:
+            return None
         c = {"x0":x0,"y0":y0,"x1":x1,"y1":y1}
-        if any(rooms_overlap(c, p) for n,p in placed.items() if n != name):
+        if any(rooms_overlap(c, p, 0.5) for n,p in placed.items() if n != name):
             return None
         return c
 
     def _place_room(name, rc):
         w, d = dims_from_sf(name, rc.get("sf", 100))
-        pos_tags = rc.get("position", [])
+        zkey = zone_for_room(name, rc.get("zone","living"))
+        zb = zone_bounds(zkey)
+        zw = zb["x1"] - zb["x0"]
+        zh = zb["y1"] - zb["y0"]
 
-        # --- Special cluster rules ---
+        # Clamp w/d to zone size
+        w = min(w, zw - 1)
+        d = min(d, zh - 1)
 
-        # PORCH: snap to named face, centered
-        if "porch" in name.lower():
-            if "south_face" in pos_tags or "front" in name.lower():
-                # Try to sit adjacent to foyer/great room x-center
-                anchor = next((placed[n] for n in ["Foyer","Great Room"] if n in placed), None)
-                cx = ((anchor["x0"]+anchor["x1"])/2) if anchor else fp_w/2
-                x0 = snap(cx - w/2)
-                r = _try_place(x0, 0, w, d, name)
-                if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
-            if "north_face" in pos_tags or "back" in name.lower():
-                anchor = next((placed[n] for n in ["Great Room","Back Porch"] if n in placed and n!=name), None)
-                cx = ((anchor["x0"]+anchor["x1"])/2) if anchor else fp_w/2
-                x0 = snap(cx - w/2)
-                r = _try_place(x0, fp_d - d, w, d, name)
-                if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
+        # Porch: snap to zone edge
+        if "front porch" in name.lower():
+            cx = snap((zb["x0"] + zb["x1"]) / 2 - w / 2)
+            r = _try_place(cx, zb["y0"], w, d, name, zkey)
+            if r: return {**r, "sf":rc["sf"], "zone":zkey}
 
-        # MASTER SUITE: force sequential chain west_face/rear
-        if "master" in name.lower():
-            if "Master Bath" in placed and "closet" in name.lower():
-                mb = placed["Master Bath"]
-                for r in [_try_place(mb["x1"], mb["y0"], w, d, name),
-                           _try_place(mb["x0"]-w, mb["y0"], w, d, name),
-                           _try_place(mb["x0"], mb["y1"], w, d, name)]:
-                    if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
-            if "Master Bed" in placed and "bath" in name.lower():
-                mb = placed["Master Bed"]
-                for r in [_try_place(mb["x0"], mb["y1"], w, d, name),
-                           _try_place(mb["x1"], mb["y0"], w, d, name),
-                           _try_place(mb["x0"]-w, mb["y0"], w, d, name)]:
-                    if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
+        if "back porch" in name.lower():
+            cx = snap((zb["x0"] + zb["x1"]) / 2 - w / 2)
+            r = _try_place(cx, zb["y1"] - d, w, d, name, zkey)
+            if r: return {**r, "sf":rc["sf"], "zone":zkey}
 
-        # BED ZONE: pack beds side-by-side in rear zone
-        if rc.get("zone") == "beds" and "bed" in name.lower() and "bath" not in name.lower():
-            beds_placed = [(n,p) for n,p in placed.items() if "bed" in n.lower() and "bath" not in n.lower() and "master" not in n.lower()]
-            if beds_placed:
-                last_n, last_p = max(beds_placed, key=lambda x: x[1]["x1"])
-                r = _try_place(last_p["x1"], last_p["y0"], w, d, name)
-                if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
-                r = _try_place(last_p["x0"]-w, last_p["y0"], w, d, name)
-                if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
-
-        # BATH in bed zone: snap to adjacent bed
-        if rc.get("zone") == "beds" and "bath" in name.lower():
-            bed_num = next((c for c in name if c.isdigit()), None)
-            if bed_num:
-                bed_name = next((n for n in placed if f"Bed {bed_num}" in n), None)
-                if bed_name:
-                    bp = placed[bed_name]
-                    for r in [_try_place(bp["x1"], bp["y0"], w, d, name),
-                               _try_place(bp["x0"]-w, bp["y0"], w, d, name),
-                               _try_place(bp["x0"], bp["y1"], w, d, name),
-                               _try_place(bp["x0"], bp["y0"]-d, w, d, name)]:
-                        if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
-
-        # GENERIC: try each adjacent neighbor's 4 faces
+        # Try adjacent neighbors first (within same zone preferred)
         for neighbor in rc.get("adjacent_to", []):
             if neighbor not in placed: continue
-            n = placed[neighbor]
-            for (tx, ty) in [(n["x1"], n["y0"]), (n["x0"], n["y1"]),
-                              (n["x0"]-w, n["y0"]), (n["x0"], n["y0"]-d)]:
-                r = _try_place(tx, ty, w, d, name)
-                if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
+            nb = placed[neighbor]
+            for (tx, ty) in [
+                (nb["x1"], nb["y0"]),
+                (nb["x0"] - w, nb["y0"]),
+                (nb["x0"], nb["y1"]),
+                (nb["x0"], nb["y0"] - d),
+                (nb["x1"], nb["y1"] - d),
+                (nb["x0"] - w, nb["y1"] - d),
+            ]:
+                r = _try_place(tx, ty, w, d, name, zkey)
+                if r: return {**r, "sf":rc["sf"], "zone":zkey}
 
-        # FALLBACK: position-tag based
-        if "south_face" in pos_tags:   x0,y0 = snap(fp_w/2-w/2), 0.0
-        elif "north_face" in pos_tags: x0,y0 = snap(fp_w/2-w/2), snap(fp_d-d)
-        elif "west_face" in pos_tags:  x0,y0 = 0.0, snap(fp_d/2-d/2)
-        elif "east_face" in pos_tags:  x0,y0 = snap(fp_w-w), snap(fp_d/2-d/2)
-        elif "left_third" in pos_tags: x0,y0 = snap(fp_w*0.1), snap(fp_d/2-d/2)
-        elif "right_third" in pos_tags:x0,y0 = snap(fp_w*0.65), snap(fp_d/2-d/2)
-        elif "rear_zone" in pos_tags:  x0,y0 = snap(fp_w/2-w/2), snap(fp_d-d)
-        else:                           x0,y0 = snap(fp_w/2-w/2), snap(fp_d/2-d/2)
+        # Grid scan within zone
+        step = GRID * 2
+        y = zb["y0"]
+        while y + d <= zb["y1"]:
+            x = zb["x0"]
+            while x + w <= zb["x1"]:
+                r = _try_place(x, y, w, d, name, zkey)
+                if r: return {**r, "sf":rc["sf"], "zone":zkey}
+                x += step
+            y += step
 
-        # Nudge until no overlap
-        for _ in range(30):
-            r = _try_place(x0, y0, w, d, name)
-            if r: return {**r, "sf":rc["sf"], "zone":rc["zone"]}
-            x0 += w + 1  # push right
-            if x0 + w > fp_w: x0 = 0; y0 += d + 1
-
-        x0 = max(0.0, min(x0, fp_w-w))
-        y0 = max(0.0, min(y0, fp_d-d))
+        # Last resort: zone top-left
+        x0 = zb["x0"]
+        y0 = zb["y0"]
         return {"x0":snap(x0),"y0":snap(y0),"x1":snap(x0+w),"y1":snap(y0+d),
-                "sf":rc["sf"],"zone":rc["zone"],"level":rc.get("level",1)}
+                "sf":rc["sf"],"zone":zkey}
 
-    # Placement order: anchors first, then BFS
-    PRIORITY_KEYS = ["foyer","great room","master bed","garage","corridor",
-                     "kitchen","dining","front porch","back porch","master bath",
-                     "master closet","bed 2","bed 3","bed 4","bath 2","bath 3"]
+    # Priority: anchors first
+    PRIORITY = ["great room","foyer","master bed","garage","kitchen",
+                "dining","front porch","back porch","master bath","master closet",
+                "bed 2","bed 3","bed 4","bath 2","bath 3","corridor","gallery",
+                "butler pantry","laundry","utility","mudroom","home office"]
 
-    def _priority(name):
+    def _pri(name):
         n = name.lower()
-        for i,k in enumerate(PRIORITY_KEYS):
+        for i,k in enumerate(PRIORITY):
             if k == n: return i
-        return 50
+        return 99
 
-    ordered = sorted(adjacency.keys(), key=_priority)
-
-    for name in ordered:
-        rc = adjacency[name]
-        placed[name] = _place_room(name, rc)
-
-    # Any remaining (shouldn't happen)
-    for name, rc in adjacency.items():
-        if name not in placed:
-            placed[name] = _place_room(name, rc)
+    for name in sorted(adjacency.keys(), key=_pri):
+        placed[name] = _place_room(name, adjacency[name])
 
     # Report overlaps
     names = list(placed.keys())
     for i,a in enumerate(names):
         for b in names[i+1:]:
-            if rooms_overlap(placed[a], placed[b], tol=1.0):
+            if rooms_overlap(placed[a], placed[b], 1.0):
                 print(f"  ⚠️  Overlap: {a} ↔ {b}")
 
     return placed
