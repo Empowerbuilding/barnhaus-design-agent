@@ -2188,8 +2188,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
             ax.add_patch(hrect)
             hcx = (hr["x0"] + hr["x1"]) / 2
             hcy = (hr["y0"] + hr["y1"]) / 2
-            ax.text(hcx, hcy, "open
-to below", ha="center", va="center",
+            ax.text(hcx, hcy, "open\\nto below", ha="center", va="center",
                     fontsize=6, color="#999999", style="italic", zorder=4)
             continue
 
