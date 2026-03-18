@@ -1211,18 +1211,89 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
     # ── 4. Living core ────────────────────────────────────────────────────
     if living_rooms and living_zone:
         lz = living_zone
-        living_carved = _carve_zone(lz["x0"], lz["y0"], lz["x1"], lz["y1"])
-        living_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
-        room_coords.update(_pack_rooms(living_rooms, living_carved["x0"], living_carved["y0"],
-                                        living_carved["x1"], living_carved["y1"], "living"))
+        lx0, ly0, lx1, ly1 = lz["x0"], lz["y0"], lz["x1"], lz["y1"]
+        living_carved = _carve_zone(lx0, ly0, lx1, ly1)
 
-    # ── 5. Secondary bedrooms — split around corridor ─────────────────────
+        # Pull home office out — place it as a separate side room
+        # (adjacent to entry/foyer, not stacked with great room)
+        office_rooms = [r for r in living_rooms
+                        if "office" in r["name"].lower() or "study" in r["name"].lower()]
+        main_living  = [r for r in living_rooms if r not in office_rooms]
+
+        main_living.sort(key=lambda r: r.get("sf", 100), reverse=True)
+        room_coords.update(_pack_rooms(main_living,
+            living_carved["x0"], living_carved["y0"],
+            living_carved["x1"], living_carved["y1"], "living"))
+
+        # Home office: carve a side slice from service zone or master zone edge
+        if office_rooms:
+            # Place office between master zone and living zone (x = master.x1 to living.x0)
+            # Or use a right-side slice of living zone
+            for office in office_rooms:
+                sf = office.get("sf", 150)
+                aspect = 1.2
+                ow = math.sqrt(sf * aspect)
+                od = sf / max(ow, 1)
+                ow = max(10.0, ow)
+                od = max(10.0, od)
+                # Place at entry level (near foyer), on the service side of living
+                ox0 = lx1  # right edge of living zone
+                oy0 = ly0
+                room_coords[office["name"]] = {
+                    "x0": round(ox0, 1), "y0": round(oy0, 1),
+                    "x1": round(ox0 + ow, 1), "y1": round(oy0 + od, 1),
+                    "sf": sf, "zone": "living", "dims_source": "derived",
+                }
+
+    # ── 5. Secondary bedrooms — place on BOTH sides of corridor ──────────
     if bed_rooms and bed_zone:
         bz = bed_zone
-        bed_carved = _carve_zone(bz["x0"], bz["y0"], bz["x1"], bz["y1"])
-        bed_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
-        room_coords.update(_pack_rooms(bed_rooms, bed_carved["x0"], bed_carved["y0"],
-                                        bed_carved["x1"], bed_carved["y1"], "beds"))
+        bx0, by0, bx1, by1 = bz["x0"], bz["y0"], bz["x1"], bz["y1"]
+
+        # Find vertical corridor in this zone
+        vert_corr = next(
+            (h for h in hall_rects
+             if h.get("type") == "corridor"
+             and h["x0"] > bx0 + 2 and h["x1"] < bx1 - 2
+             and h["y0"] <= by1 and h["y1"] >= by0),
+            None
+        )
+
+        if vert_corr:
+            # Two columns: left of corridor and right of corridor
+            left  = {"x0": bx0, "y0": by0, "x1": vert_corr["x0"], "y1": by1}
+            right = {"x0": vert_corr["x1"], "y0": by0, "x1": bx1, "y1": by1}
+
+            # Separate beds from baths — pair each bed with its bath
+            beds_only  = [r for r in bed_rooms if "bath" not in r["name"].lower()]
+            baths_only = [r for r in bed_rooms if "bath" in r["name"].lower()]
+            beds_only.sort(key=lambda r: r.get("sf", 100), reverse=True)
+
+            # Distribute beds: odd-indexed → left column, even-indexed → right column
+            left_rooms, right_rooms = [], []
+            for i, bed in enumerate(beds_only):
+                if i % 2 == 0:
+                    left_rooms.append(bed)
+                else:
+                    right_rooms.append(bed)
+
+            # Pair baths with beds in same column
+            for i, bath in enumerate(baths_only):
+                if i % 2 == 0:
+                    left_rooms.append(bath)
+                else:
+                    right_rooms.append(bath)
+
+            if left_rooms:
+                room_coords.update(_pack_rooms(left_rooms,
+                    left["x0"], left["y0"], left["x1"], left["y1"], "beds"))
+            if right_rooms:
+                room_coords.update(_pack_rooms(right_rooms,
+                    right["x0"], right["y0"], right["x1"], right["y1"], "beds"))
+        else:
+            # No corridor — pack normally
+            bed_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
+            room_coords.update(_pack_rooms(bed_rooms, bx0, by0, bx1, by1, "beds"))
 
     # ── 6. Back porch — use porch zone (attached to rear/north face) ────────
     back_porch_zone = _zone(["porch"])
