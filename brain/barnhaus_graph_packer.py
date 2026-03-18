@@ -118,17 +118,42 @@ def zone_for_room(name: str, room_zone: str) -> str:
     if room_zone == "garage":     return "garage"
     return "living"
 
+def get_void_zones(shape: str, fp_w: float, fp_d: float) -> list:
+    """Return list of void rectangles (areas rooms must NOT enter)."""
+    s = (shape or "rectangle").lower().replace(" ","-")
+    if s == "h-shape":
+        lw = fp_w * 0.30; rw = fp_w * 0.70
+        by0 = fp_d * 0.25; by1 = fp_d * 0.75
+        return [
+            {"x0": lw, "y0": 0,   "x1": rw, "y1": by0},   # front void
+            {"x0": lw, "y0": by1, "x1": rw, "y1": fp_d},   # rear void
+        ]
+    elif s in ("l-shape","asymmetric-l"):
+        return [{"x0": fp_w*0.6, "y0": fp_d*0.55, "x1": fp_w, "y1": fp_d}]
+    elif s == "t-shape":
+        return [
+            {"x0": 0,       "y0": fp_d*0.6, "x1": fp_w*0.25, "y1": fp_d},
+            {"x0": fp_w*0.75,"y0": fp_d*0.6,"x1": fp_w,      "y1": fp_d},
+        ]
+    elif s == "u-shape":
+        return [{"x0": fp_w*0.3, "y0": fp_d*0.45, "x1": fp_w*0.7, "y1": fp_d}]
+    elif s == "dogtrot":
+        return [{"x0": fp_w*0.42, "y0": 0, "x1": fp_w*0.58, "y1": fp_d*0.3},
+                {"x0": fp_w*0.42, "y0": fp_d*0.7, "x1": fp_w*0.58, "y1": fp_d}]
+    return []
+
 def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
     fp_w = footprint.get("width", 89)
     fp_d = footprint.get("depth", 79)
     zones = get_shape_zones(shape, fp_w, fp_d)
+    voids = get_void_zones(shape, fp_w, fp_d)
     placed = {}
 
     def zone_bounds(zkey: str) -> dict:
         return zones.get(zkey, {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d})
 
     def _try_place(x0, y0, w, d, name, zkey=None):
-        """Place room, clamped to its zone bounds."""
+        """Place room, clamped to its zone bounds, avoiding voids."""
         zb = zone_bounds(zkey) if zkey else {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d}
         x0 = max(zb["x0"], min(snap(x0), zb["x1"] - w))
         y0 = max(zb["y0"], min(snap(y0), zb["y1"] - d))
@@ -137,6 +162,10 @@ def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
         if x1 - x0 < 4 or y1 - y0 < 4:
             return None
         c = {"x0":x0,"y0":y0,"x1":x1,"y1":y1}
+        # Check void zones — rooms must not enter voids
+        for v in voids:
+            if rooms_overlap(c, v, 0.5):
+                return None
         if any(rooms_overlap(c, p, 0.5) for n,p in placed.items() if n != name):
             return None
         return c
