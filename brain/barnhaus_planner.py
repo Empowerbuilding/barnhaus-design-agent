@@ -2091,8 +2091,8 @@ def run_planner(
     layout_json = _correct_layout(layout_json)
     violations = validate_layout(layout_json, intake_json)
     footprint = solve_footprint(layout_json, intake_json)
-    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
     circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
+    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
     # Generate fully resolved spec for Revit execution
     exterior_json = intake_json.get("exterior", {})
     spec = generate_spec(
