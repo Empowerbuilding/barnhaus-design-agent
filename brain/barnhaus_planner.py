@@ -1090,14 +1090,20 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
                 cursor_y += row_height
                 row_height = 0.0
 
-            # Clamp width to zone — never exceed
+            # Clamp width to zone
             if cursor_x + room_w > zx1:
                 room_w = max(8.0, zx1 - cursor_x)
                 room_d = sf / room_w  # recompute depth to preserve SF
 
+            # Clamp depth to zone — scale down proportionally if overflowing
+            if zy1 > zy0 and cursor_y + room_d > zy1 + 2:
+                room_d = max(8.0, zy1 - cursor_y)
+                room_w = min(zone_w, sf / room_d)
+
             coords[r["name"]] = {
                 "x0": round(cursor_x, 1), "y0": round(cursor_y, 1),
-                "x1": round(cursor_x + room_w, 1), "y1": round(cursor_y + room_d, 1),
+                "x1": round(min(cursor_x + room_w, zx1), 1),
+                "y1": round(min(cursor_y + room_d, zy1 + 5), 1),
                 "sf": sf, "zone": zone_name,
                 "dims_source": "model" if r.get("w") else "derived",
             }
