@@ -1224,41 +1224,70 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
         room_coords.update(_pack_rooms(bed_rooms, bed_carved["x0"], bed_carved["y0"],
                                         bed_carved["x1"], bed_carved["y1"], "beds"))
 
-    # ── 6. Back porch — attach to rear (north/max-Y) face ────────────────
-    if back_porches:
-        porch_y0 = fp_y1  # rear face
-        total_porch_sf = sum(r.get("sf", 200) for r in back_porches)
-        porch_d = max(10, total_porch_sf / max(fp_x1 - fp_x0, 1))
-        porch_d = min(porch_d, 20)
-        # Center on rear face of main house
-        house_cx = (fp_x0 + fp_x1) / 2
-        porch_w = min(total_porch_sf / porch_d, fp_x1 - fp_x0)
-        px0 = house_cx - porch_w / 2
-        px1 = house_cx + porch_w / 2
+    # ── 6. Back porch — use porch zone (attached to rear/north face) ────────
+    back_porch_zone = _zone(["porch"])
+    if back_porches and back_porch_zone:
+        bpz = back_porch_zone
+        total_sf = sum(r.get("sf", 200) for r in back_porches)
+        zpw = bpz["x1"] - bpz["x0"]
+        zpd = bpz["y1"] - bpz["y0"]
+        px0 = bpz["x0"]
         for r in back_porches:
             sf = r.get("sf", 200)
-            rw = min(sf / porch_d, porch_w)
+            rw = min(zpw, sf / max(zpd, 1))
+            rw = max(10, rw)
             room_coords[r["name"]] = {
-                "x0": round(px0, 1), "y0": round(porch_y0, 1),
-                "x1": round(px0 + rw, 1), "y1": round(porch_y0 + porch_d, 1),
+                "x0": round(px0, 1), "y0": round(bpz["y0"], 1),
+                "x1": round(px0 + rw, 1), "y1": round(bpz["y1"], 1),
+                "sf": sf, "zone": "porch", "dims_source": "derived",
+            }
+            px0 += rw
+    elif back_porches:
+        # Fallback: attach directly to north face of footprint
+        porch_d = 12
+        house_cx = (fp_x0 + fp_x1) / 2
+        px0 = house_cx - 15
+        for r in back_porches:
+            sf = r.get("sf", 200)
+            rw = sf / porch_d
+            room_coords[r["name"]] = {
+                "x0": round(px0, 1), "y0": round(fp_y1, 1),
+                "x1": round(px0 + rw, 1), "y1": round(fp_y1 + porch_d, 1),
                 "sf": sf, "zone": "porch", "dims_source": "derived",
             }
             px0 += rw
 
-    # ── 7. Front porch — attach to entry (south/min-Y) face ──────────────
-    if front_porches:
-        porch_y1 = fp_y0  # entry face
-        porch_d = 10
+    # ── 7. Front porch — use front_porch zone (attached to south/entry face) ──
+    front_porch_zone = _zone(["front_porch"])
+    if front_porches and front_porch_zone:
+        fpz = front_porch_zone
+        zpw = fpz["x1"] - fpz["x0"]
+        zpd = fpz["y1"] - fpz["y0"]
         house_cx = (fp_x0 + fp_x1) / 2
-        total_porch_sf = sum(r.get("sf", 150) for r in front_porches)
-        porch_w = min(total_porch_sf / porch_d, (fp_x1 - fp_x0) * 0.6)
+        total_fp_sf = sum(r.get("sf", 150) for r in front_porches)
+        porch_w = min(total_fp_sf / max(zpd, 1), zpw * 0.7)
         px0 = house_cx - porch_w / 2
         for r in front_porches:
             sf = r.get("sf", 150)
-            rw = min(sf / porch_d, porch_w)
+            rw = min(sf / max(zpd, 1), porch_w)
+            rw = max(10, rw)
             room_coords[r["name"]] = {
-                "x0": round(px0, 1), "y0": round(porch_y1 - porch_d, 1),
-                "x1": round(px0 + rw, 1), "y1": round(porch_y1, 1),
+                "x0": round(px0, 1), "y0": round(fpz["y0"], 1),
+                "x1": round(px0 + rw, 1), "y1": round(fpz["y1"], 1),
+                "sf": sf, "zone": "porch", "dims_source": "derived",
+            }
+            px0 += rw
+    elif front_porches:
+        # Fallback: attach to south face
+        porch_d = 10
+        house_cx = (fp_x0 + fp_x1) / 2
+        px0 = house_cx - 12
+        for r in front_porches:
+            sf = r.get("sf", 150)
+            rw = sf / porch_d
+            room_coords[r["name"]] = {
+                "x0": round(px0, 1), "y0": round(fp_y0 - porch_d, 1),
+                "x1": round(px0 + rw, 1), "y1": round(fp_y0, 1),
                 "sf": sf, "zone": "porch", "dims_source": "derived",
             }
             px0 += rw
@@ -1799,6 +1828,15 @@ def generate_spec(
     # ── Interior walls + doors — derived geometrically from shared edges ──
     # Works even when room_coords have no adjacencies key
     EDGE_TOL = 1.5  # rooms within 1.5ft are considered adjacent
+
+    # Open-plan pairs — no wall between these rooms (just open space)
+    OPEN_PLAN_PAIRS = {
+        frozenset({"Great Room", "Kitchen"}),
+        frozenset({"Great Room", "Dining"}),
+        frozenset({"Kitchen", "Dining"}),
+        frozenset({"Great Room", "Dining Room"}),
+        frozenset({"Kitchen", "Dining Room"}),
+    }
     int_walls = []
     doors = []
     processed = set()
@@ -1860,6 +1898,16 @@ def generate_spec(
                         break
             
             if shared_wall:
+                # Skip wall if this is an open-plan pair
+                pair_set = frozenset([rname, adj])
+                is_open_plan = any(
+                    all(r.lower() in p_name.lower() or p_name.lower() in r.lower()
+                        for r, p_name in zip(sorted(pair_set), sorted(p)))
+                    for p in OPEN_PLAN_PAIRS
+                    if len(p) == 2
+                ) or pair_set in OPEN_PLAN_PAIRS
+                if is_open_plan:
+                    continue
                 int_walls.append(shared_wall)
                 doors.append({
                     "label": f"DOOR-{rname[:6]}-{adj[:6]}",
