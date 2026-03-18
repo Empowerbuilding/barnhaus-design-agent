@@ -2159,7 +2159,7 @@ def generate_spec(
         "name": intake_json.get("name", ""),
         "shape": shape,
         "total_sf": intake_json.get("living") or intake_json.get("total_sf") or sum(v.get("sf",0) for v in room_coords.values()),
-        "stories": intake_json.get("stories", 1),
+        "stories": stories,
         "footprint_polygon": footprint_polygon,
         "footprint_dimensions": {
             "width_ft": footprint.get("total_width"),
