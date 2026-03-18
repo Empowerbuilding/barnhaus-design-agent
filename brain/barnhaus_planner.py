@@ -1075,10 +1075,16 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
                 room_d = room_d or dims.get("d") or dims.get("depth")
 
             if not room_w or not room_d:
-                # Size from SF using aspect ratio
+                # Size from SF using aspect ratio, but fit within zone width
                 aspect = _get_aspect(r["name"])
                 room_w = math.sqrt(sf * aspect)
-                room_d = sf / max(room_w, 1)
+                # If room would be > 70% of zone width, make it full-width
+                # and compute depth from SF — this prevents tiny sliver widths
+                if room_w > zone_w * 0.7:
+                    room_w = zone_w
+                    room_d = sf / zone_w
+                else:
+                    room_d = sf / max(room_w, 1)
                 room_w = max(8.0, min(room_w, zone_w))
                 room_d = max(8.0, room_d)
             else:
