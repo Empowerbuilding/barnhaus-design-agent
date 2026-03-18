@@ -11,56 +11,48 @@ Your workspace is: `/home/node/.openclaw/workspace/`
 ## Every Heartbeat
 Run all checks in HEARTBEAT.md automatically without being asked.
 
-## Design Pipeline — How It Works
+## Design Pipeline — EXACT COMMANDS, NO IMPROVISING
 
 ### Step 1: New Submission Alert
-When a new design_intake_submissions row appears:
-- Post to Discord with key details (name, shape, SF, beds, budget)
-- Ask Mitch: "Ready to run design brain?"
+Query Supabase for latest submission. Post key details to Discord. Ask Mitch: "Ready to run?"
 
-### Step 2: Run Design Brain (only when Mitch says go)
+### Step 2: Run Design Brain
+Run this EXACT command — do not modify it:
 ```bash
 cd /home/node/.openclaw/workspace && python3 brain/barnhaus_design_brain.py <submission_id>
 ```
-This outputs a design JSON to `designs/design_XXXX.json`
+This saves `designs/design_<id[:8]>.json`
 
-### Step 3: Run Planner (generates floor plan PNG + spec JSON + uploads both to Supabase)
+### Step 3: Run Planner
+Run this EXACT command — do not modify it:
 ```bash
-cd /home/node/.openclaw/workspace && python3 brain/barnhaus_planner.py <submission_id>
+cd /home/node/.openclaw/workspace && python3 brain/barnhaus_planner.py <id[:8]>
 ```
-The planner does ALL of the following automatically:
-- Validates room sizes and adjacencies
-- Solves the footprint with exact zone coordinates
-- Assigns all rooms to zones with x/y/w/d coordinates
-- Routes circulation (foyer, gallery hall, bed corridor, service path)
-- Generates a color-coded PNG floor plan
-- Generates a fully resolved `spec_XXXX.json` with:
-  - Exact room coordinates (x0,y0,x1,y1) for every room
-  - Exterior wall coordinates with EXT_HALF offsets applied
-  - Interior wall positions derived from room adjacencies
-  - Door positions at midpoint of every shared wall
-  - Window positions on rear/view walls
-  - Footprint polygon
-  - Revit config (wall types, levels, heights)
-- Uploads both PNG and spec JSON to Supabase storage
-- Prints the public URLs for both
+Example: `python3 brain/barnhaus_planner.py 7ae086e1`
 
-### Step 4: Post Floor Plan for Review
-- Post the Supabase PNG URL as a Discord image embed
-- Include the design brief summary (SF, rooms, shape, exterior style)
-- Include any violations found (room too small, adjacency issues)
+The planner does EVERYTHING automatically:
+- Validates rooms
+- Solves footprint
+- Generates PNG floor plan → saves to `designs/floorplan_<id[:8]>.png`
+- Generates spec JSON → saves to `designs/spec_<id[:8]>.json`
+- Uploads both to Supabase
+- Prints two URLs at the end:
+  - `Floor plan: https://...`
+  - `Spec URL: https://...`
+
+### Step 4: Post to Discord
+Post BOTH URLs from the planner output:
+- The floor plan image URL as a Discord image embed
+- The spec URL as text: "Spec: [url]"
+- Include design brief summary
 - Ask Mitch: "Approve or request changes?"
 
-### Step 5: Handle Feedback
-- If approved → post: "✅ Design approved. Spec ready at: [spec_url] — say 'start revit [id]' to begin execution."
-- If changes requested → note the changes, re-run brain with updated parameters, then re-run planner
+### Step 5: On Approval
+Post: "✅ Approved. Say 'start revit <id>' to begin Revit execution."
 
-### Step 6: Track Status
-Keep track of each submission status in memory/pipeline-state.json:
-- pending → brain_running → planner_running → review → approved → building → complete
-
-## Important Notes
-- NEVER generate your own floor plan images — always use barnhaus_planner.py
-- The spec JSON is what Mitch's local Revit agent uses — never skip generating it
-- Always run brain FIRST, then planner
-- The spec_url goes to Mitch when design is approved so he can pass it to his local agent
+## ⚠️ CRITICAL RULES
+- NEVER write your own rendering scripts
+- NEVER write your own upload scripts  
+- NEVER call any script other than `barnhaus_design_brain.py` and `barnhaus_planner.py`
+- If a script doesn't exist, DO NOT create it — ask Mitch instead
+- The planner handles ALL rendering and uploading — trust it
