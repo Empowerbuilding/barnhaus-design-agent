@@ -86,8 +86,8 @@ def build_brief(sub: dict) -> str:
     style = sub.get("aesthetic_style") or sub.get("style")
     if style: lines.append(f"- Style: {style}")
 
-    cars = sub.get("garage_cars")
-    gtype = sub.get("garage_type", "")
+    cars = sub.get("garage_cars") or sub.get("garage_count", "").replace("-car","") if sub.get("garage_count") else sub.get("garage_cars")
+    gtype = sub.get("garage_type") or sub.get("garage_attachment", "")
     gorient = sub.get("garage_orientation", "")
     if cars and str(cars) != "0":
         garage_str = f"- Garage: {cars}-car {gtype}"
@@ -95,7 +95,13 @@ def build_brief(sub: dict) -> str:
         lines.append(garage_str)
 
     porch = sub.get("porch_type")
-    if porch and porch != "none": lines.append(f"- Porch: {porch}")
+    if porch and porch != "none":
+        fp_sf = sub.get("front_porch_sf")
+        bp_sf = sub.get("back_porch_sf")
+        porch_detail = f"- Porch: {porch}"
+        if fp_sf: porch_detail += f" (front ~{fp_sf} SF)"
+        if bp_sf: porch_detail += f" (back ~{bp_sf} SF)"
+        lines.append(porch_detail)
 
     features = sub.get("desired_rooms") or {}
     if isinstance(features, dict):
