@@ -2358,7 +2358,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
                     if oy > 1.0: is_interior = True; break
 
             if is_open:
-                lw, color, ls = 0.8, "#AAAAAA", "--"
+                lw, color, ls = 0.8, "#BBBBBB", "-"
             elif is_interior:
                 lw, color, ls = 1.2, "#555555", "-"   # interior wall
             else:
