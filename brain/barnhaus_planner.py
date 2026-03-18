@@ -2536,25 +2536,51 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
                 f"{zname}: x={zv['x0']}-{zv['x1']}, y={zv['y0']}-{zv['y1']}"
             )
 
+    # Build per-room dimension hints
+    rooms_list_raw = layout_json.get("rooms", [])
+    if isinstance(rooms_list_raw, list):
+        room_dims = []
+        for r in rooms_list_raw:
+            sf = r.get("sf", 100)
+            asp = {"great room":1.4,"kitchen":1.2,"dining":1.3,"master bed":1.2,
+                   "master bath":1.0,"master closet":0.8,"bed":1.1,"bath":0.85,
+                   "laundry":1.0,"mudroom":1.2,"butler pantry":0.7,"utility":1.0,
+                   "home office":1.2,"porch":2.0,"garage":1.5}.get(
+                next((k for k in ["great room","kitchen","dining","master bed","master bath",
+                    "master closet","bed","bath","laundry","mudroom","butler pantry",
+                    "utility","home office","porch","garage"]
+                    if k in r["name"].lower()), "other"), 1.15)
+            import math as _m
+            w = round(_m.sqrt(sf * asp))
+            d = round(sf / max(w, 1))
+            room_dims.append(f"  {r['name']}: {sf} SF → {w}ft wide x {d}ft deep")
+        room_dims_str = "\n".join(room_dims)
+    else:
+        room_dims_str = ""
+
     prompt = f"""Design a new Barnhaus Steel Builders home with the following requirements:
 - Living area: {total_sf} SF, {stories}-story, {shape} footprint
 - Style: {style}
 - Footprint: {fp_w}ft wide x {fp_d}ft deep
-- Rooms needed: {room_list}
 - Zone boundaries:
 {chr(10).join(zone_summary)}
 
+Rooms with EXACT target dimensions (use these widths and depths):
+{room_dims_str}
+
 Rules:
-- No rooms may overlap
+- NO rooms may overlap — rooms must be adjacent or separated, never overlapping
 - All rooms must stay within footprint bounds (x: 0-{fp_w}, y: 0-{fp_d})
+- Use the EXACT room dimensions provided above — do not use 10x10 placeholders
 - Rooms snap to 1ft grid
-- Master suite at dead end (far from entry)
-- Entry/foyer at south face (y=min)
-- Great room, kitchen, dining are open plan (adjacent, no wall between them)
-- Secondary bedrooms flank a corridor
-- Garage connects to mudroom
-- Porches attach to house face (front porch at south, back porch at north/rear)
-- Output ONLY valid JSON, no commentary"""
+- Master suite at dead end (far from entry), stacked: Master Bed → Master Bath → Master Closet
+- Entry/foyer at south face (y closest to 0)
+- Great room, kitchen, dining MUST be adjacent (touching edges), open plan
+- Secondary bedrooms side-by-side, each with bath directly adjacent
+- Garage shares a wall with Mudroom (door between them)
+- Front porch attaches to south face centered on foyer
+- Back porch attaches to north/rear face
+- Output ONLY valid JSON with room coordinates, no commentary"""
 
     try:
         client = openai.OpenAI(api_key=api_key)
