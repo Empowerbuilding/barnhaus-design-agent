@@ -1434,19 +1434,31 @@ def run_planner(
     layout_json: dict,
     intake_json: dict,
 ) -> dict:
-    """Full pipeline: validate -> solve -> assign -> render -> upload."""
+    """Full pipeline: validate -> solve -> assign -> render -> upload -> spec."""
     layout_json = _normalize_layout(layout_json)
     violations = validate_layout(layout_json, intake_json)
     footprint = solve_footprint(layout_json, intake_json)
     room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
+    circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
     image_path = generate_floorplan_image(room_coords, submission_id)
     floorplan_url = _upload_to_supabase(image_path, submission_id)
+
+    # Generate fully resolved spec for Revit execution
+    exterior_json = intake_json.get("exterior", {})
+    spec = generate_spec(
+        submission_id, layout_json, intake_json,
+        footprint, room_coords, circulation, exterior_json
+    )
+    spec_url = _upload_spec_to_supabase(spec, submission_id)
+    print(f"Spec URL: {spec_url}")
 
     return {
         "violations": violations,
         "footprint": footprint,
         "room_coords": room_coords,
+        "circulation": circulation,
         "floorplan_url": floorplan_url,
+        "spec_url": spec_url,
     }
 
 
@@ -1502,3 +1514,243 @@ if __name__ == "__main__":
               f"{rc['y1']:.0f})  {rc['sf']} SF")
 
     print(f"\nFloor plan: {result['floorplan_url']}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  SPEC GENERATOR — Full resolved design spec for Revit execution
+# ══════════════════════════════════════════════════════════════════════════════
+
+def generate_spec(
+    submission_id: str,
+    layout_json: dict,
+    intake_json: dict,
+    footprint: dict,
+    room_coords: dict,
+    circulation: dict,
+    exterior_json: dict,
+) -> dict:
+    """
+    Generate a fully resolved design spec JSON that the Revit sub-agent
+    can use directly — no re-designing from scratch.
+
+    Returns a dict saved as spec_[id].json in designs/.
+    """
+    import hashlib
+
+    # ── Exterior walls from footprint zones ──────────────────────────────
+    shape = footprint.get("shape", "rectangle")
+    zones = footprint.get("zones", {})
+    ext_walls = []
+    EXT_HALF = 0.3125  # half of 7.5" exterior wall
+
+    def wall(label, x0, y0, x1, y1, face):
+        """face = 'S'|'N'|'E'|'W' — exterior face direction"""
+        offsets = {
+            'S': (0, EXT_HALF, 0, EXT_HALF),
+            'N': (0, -EXT_HALF, 0, -EXT_HALF),
+            'W': (EXT_HALF, 0, EXT_HALF, 0),
+            'E': (-EXT_HALF, 0, -EXT_HALF, 0),
+        }
+        dx0, dy0, dx1, dy1 = offsets[face]
+        return {
+            "label": label,
+            "x0": round(x0 + dx0, 4), "y0": round(y0 + dy0, 4),
+            "x1": round(x1 + dx1, 4), "y1": round(y1 + dy1, 4),
+            "type": "Wall 7.5\" EXT PBR",
+            "face": face,
+        }
+
+    # Build exterior walls from room_coords bounding box
+    all_x = [v["x0"] for v in room_coords.values()] + [v["x1"] for v in room_coords.values()]
+    all_y = [v["y0"] for v in room_coords.values()] + [v["y1"] for v in room_coords.values()]
+    if all_x and all_y:
+        bx0, bx1 = min(all_x), max(all_x)
+        by0, by1 = min(all_y), max(all_y)
+        ext_walls = [
+            wall("EXT-S", bx0, by0, bx1, by0, 'S'),
+            wall("EXT-N", bx0, by1, bx1, by1, 'N'),
+            wall("EXT-W", bx0, by0, bx0, by1, 'W'),
+            wall("EXT-E", bx1, by0, bx1, by1, 'E'),
+        ]
+
+    # ── Interior walls from room adjacencies ─────────────────────────────
+    int_walls = []
+    processed = set()
+    for rname, rc in room_coords.items():
+        for adj in rc.get("adjacencies", []):
+            pair = tuple(sorted([rname, adj]))
+            if pair in processed or adj not in room_coords:
+                continue
+            processed.add(pair)
+            ac = room_coords[adj]
+            # Find shared edge
+            # Vertical shared edge (same x)
+            if abs(rc["x1"] - ac["x0"]) < 1.0:
+                shared_x = (rc["x1"] + ac["x0"]) / 2
+                y0 = max(rc["y0"], ac["y0"])
+                y1 = min(rc["y1"], ac["y1"])
+                if y1 - y0 > 2:
+                    int_walls.append({
+                        "label": f"INT-{rname[:4]}-{adj[:4]}",
+                        "x0": round(shared_x, 1), "y0": round(y0, 1),
+                        "x1": round(shared_x, 1), "y1": round(y1, 1),
+                        "type": "Wall 4.5 Interior\"",
+                    })
+            elif abs(rc["x0"] - ac["x1"]) < 1.0:
+                shared_x = (rc["x0"] + ac["x1"]) / 2
+                y0 = max(rc["y0"], ac["y0"])
+                y1 = min(rc["y1"], ac["y1"])
+                if y1 - y0 > 2:
+                    int_walls.append({
+                        "label": f"INT-{rname[:4]}-{adj[:4]}",
+                        "x0": round(shared_x, 1), "y0": round(y0, 1),
+                        "x1": round(shared_x, 1), "y1": round(y1, 1),
+                        "type": "Wall 4.5 Interior\"",
+                    })
+            # Horizontal shared edge (same y)
+            elif abs(rc["y1"] - ac["y0"]) < 1.0:
+                shared_y = (rc["y1"] + ac["y0"]) / 2
+                x0 = max(rc["x0"], ac["x0"])
+                x1 = min(rc["x1"], ac["x1"])
+                if x1 - x0 > 2:
+                    int_walls.append({
+                        "label": f"INT-{rname[:4]}-{adj[:4]}",
+                        "x0": round(x0, 1), "y0": round(shared_y, 1),
+                        "x1": round(x1, 1), "y1": round(shared_y, 1),
+                        "type": "Wall 4.5 Interior\"",
+                    })
+            elif abs(rc["y0"] - ac["y1"]) < 1.0:
+                shared_y = (rc["y0"] + ac["y1"]) / 2
+                x0 = max(rc["x0"], ac["x0"])
+                x1 = min(rc["x1"], ac["x1"])
+                if x1 - x0 > 2:
+                    int_walls.append({
+                        "label": f"INT-{rname[:4]}-{adj[:4]}",
+                        "x0": round(x0, 1), "y0": round(shared_y, 1),
+                        "x1": round(x1, 1), "y1": round(shared_y, 1),
+                        "type": "Wall 4.5 Interior\"",
+                    })
+
+    # ── Doors — one per room adjacency (interior) + exterior entries ─────
+    doors = []
+    door_processed = set()
+    for rname, rc in room_coords.items():
+        for adj in rc.get("adjacencies", []):
+            pair = tuple(sorted([rname, adj]))
+            if pair in door_processed or adj not in room_coords:
+                continue
+            door_processed.add(pair)
+            ac = room_coords[adj]
+            # Place door at midpoint of shared edge
+            if abs(rc["x1"] - ac["x0"]) < 1.0 or abs(rc["x0"] - ac["x1"]) < 1.0:
+                shared_x = rc["x1"] if abs(rc["x1"] - ac["x0"]) < 1.0 else rc["x0"]
+                mid_y = (max(rc["y0"], ac["y0"]) + min(rc["y1"], ac["y1"])) / 2
+                doors.append({
+                    "label": f"DOOR-{rname[:6]}-{adj[:6]}",
+                    "wall": f"INT-{rname[:4]}-{adj[:4]}",
+                    "x": round(shared_x, 1), "y": round(mid_y, 1), "z": 0,
+                    "family": "Door-Interior-Single-1_Panel-Wood",
+                    "type": "36\" x 96\"",
+                })
+            elif abs(rc["y1"] - ac["y0"]) < 1.0 or abs(rc["y0"] - ac["y1"]) < 1.0:
+                shared_y = rc["y1"] if abs(rc["y1"] - ac["y0"]) < 1.0 else rc["y0"]
+                mid_x = (max(rc["x0"], ac["x0"]) + min(rc["x1"], ac["x1"])) / 2
+                doors.append({
+                    "label": f"DOOR-{rname[:6]}-{adj[:6]}",
+                    "wall": f"INT-{rname[:4]}-{adj[:4]}",
+                    "x": round(mid_x, 1), "y": round(shared_y, 1), "z": 0,
+                    "family": "Door-Interior-Single-1_Panel-Wood",
+                    "type": "36\" x 96\"",
+                })
+
+    # ── Windows — rear/view wall gets max glass, others standard ─────────
+    windows = []
+    if all_y:
+        rear_y = by0  # south face = rear/view wall
+        for rname, rc in room_coords.items():
+            if abs(rc["y0"] - rear_y) < 2.0:
+                w = rc["x1"] - rc["x0"]
+                if w >= 8:
+                    windows.append({
+                        "label": f"WIN-{rname[:8]}-rear",
+                        "wall": "EXT-S",
+                        "x": round((rc["x0"] + rc["x1"]) / 2, 1),
+                        "y": round(rear_y, 1), "z": 2.5,
+                        "family": "Instance-Window-Fixed",
+                        "type": "72\" x 36\"",
+                    })
+
+    # ── Footprint polygon ─────────────────────────────────────────────────
+    footprint_polygon = []
+    if all_x and all_y:
+        footprint_polygon = [
+            {"x": round(bx0, 1), "y": round(by0, 1)},
+            {"x": round(bx1, 1), "y": round(by0, 1)},
+            {"x": round(bx1, 1), "y": round(by1, 1)},
+            {"x": round(bx0, 1), "y": round(by1, 1)},
+        ]
+
+    # ── Assemble spec ─────────────────────────────────────────────────────
+    spec = {
+        "spec_version": "1.0",
+        "submission_id": submission_id,
+        "name": intake_json.get("name", ""),
+        "shape": shape,
+        "total_sf": intake_json.get("living", 0),
+        "stories": intake_json.get("stories", 1),
+        "footprint_polygon": footprint_polygon,
+        "footprint_dimensions": {
+            "width_ft": footprint.get("total_width"),
+            "depth_ft": footprint.get("total_depth"),
+        },
+        "zones": footprint.get("zones", {}),
+        "rooms": room_coords,
+        "exterior_walls": ext_walls,
+        "interior_walls": int_walls,
+        "doors": doors,
+        "windows": windows,
+        "circulation": circulation,
+        "exterior_style": exterior_json,
+        "revit_config": {
+            "level_1": "Level 1.0",
+            "level_2": "Level 2.0",
+            "ext_wall_type": "Wall 7.5\" EXT PBR",
+            "int_wall_type": "Wall 4.5 Interior\"",
+            "wall_height_l1": 11,
+            "wall_height_garage": 12,
+            "upper_limit_l1": "Level 2.0",
+            "upper_limit_l2": "L2 Roof",
+            "ext_half": EXT_HALF,
+        },
+    }
+
+    # Save to file
+    spec_path = os.path.join("designs", f"spec_{submission_id[:8]}.json")
+    os.makedirs("designs", exist_ok=True)
+    with open(spec_path, "w") as f:
+        json.dump(spec, f, indent=2)
+
+    print(f"✅ Spec saved: {spec_path}")
+    return spec
+
+
+def _upload_spec_to_supabase(spec: dict, submission_id: str) -> str:
+    """Upload spec JSON to Supabase storage and return public URL."""
+    bucket = "temp"
+    storage_path = f"{submission_id}/spec_{submission_id[:8]}.json"
+    url = f"{SUPABASE_URL}/storage/v1/object/{bucket}/{storage_path}"
+
+    data = json.dumps(spec, indent=2).encode()
+    headers = {
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "apikey": SUPABASE_KEY,
+        "Content-Type": "application/json",
+        "x-upsert": "true",
+    }
+    resp = requests.post(url, headers=headers, data=data)
+    if resp.status_code == 400:
+        resp = requests.put(url, headers=headers, data=data)
+
+    if resp.status_code in (200, 201):
+        return f"{SUPABASE_URL}/storage/v1/object/public/{bucket}/{storage_path}"
+    return f"Spec upload failed ({resp.status_code}): {resp.text}"
