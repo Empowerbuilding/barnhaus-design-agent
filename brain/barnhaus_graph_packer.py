@@ -107,15 +107,17 @@ def get_shape_zones(shape: str, fp_w: float, fp_d: float) -> dict:
 def zone_for_room(name: str, room_zone: str) -> str:
     """Map brain zone name → shape zone key."""
     n = name.lower()
-    if "garage" in n:             return "garage"
-    if "porch" in n:              return "porch"
-    if "master" in n:             return "master"
-    if "bed" in n and "bath" not in n and "master" not in n: return "beds"
-    if "bath" in n and "master" not in n: return "beds"
-    if room_zone in ("service","utility","laundry","mudroom"): return "service"
-    if room_zone == "master":     return "master"
-    if room_zone == "beds":       return "beds"
-    if room_zone == "garage":     return "garage"
+    if "garage" in n:                                          return "garage"
+    if "porch" in n:                                           return "porch"
+    if "master" in n:                                          return "master"
+    if "bed" in n and "bath" not in n and "master" not in n:  return "beds"
+    if "bath" in n and "master" not in n:                      return "beds"
+    if n in ("mudroom","laundry","utility","utility room"):     return "master"   # near garage/master
+    if "pantry" in n or "butler" in n:                         return "living"   # near kitchen
+    if room_zone in ("service",):                              return "master"
+    if room_zone == "master":                                  return "master"
+    if room_zone == "beds":                                    return "beds"
+    if room_zone == "garage":                                  return "garage"
     return "living"
 
 def get_void_zones(shape: str, fp_w: float, fp_d: float) -> list:
@@ -261,7 +263,7 @@ def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
                 if r: return {**r, "sf":rc["sf"], "zone":zkey}
 
         # Grid scan within zone
-        step = GRID * 2
+        step = GRID * 1
         y = zb["y0"]
         while y + d <= zb["y1"]:
             x = zb["x0"]
