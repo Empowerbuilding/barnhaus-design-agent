@@ -1429,6 +1429,106 @@ def _normalize_layout(layout_json: dict) -> dict:
     return layout_json
 
 
+def _correct_layout(layout_json: dict) -> dict:
+    """
+    Rules-based corrector for brain output mistakes.
+    Fixes zone assignments, room naming, and orientation issues.
+    """
+    rooms = layout_json.get("rooms", [])
+    if not isinstance(rooms, list):
+        return layout_json
+
+    # ── Zone correction rules ─────────────────────────────────────────────
+    # Room name keywords → correct zone
+    ZONE_RULES = {
+        "master": [
+            "master bed", "master bath", "master closet", "his closet",
+            "hers closet", "wic", "walk-in closet", "master sitting",
+            "master suite", "sitting room",
+        ],
+        "service": [
+            "garage", "mudroom", "mud room", "laundry", "utility",
+            "butler pantry", "pantry", "mechanical", "hvac", "storage",
+        ],
+        "beds": [
+            "bed 2", "bed 3", "bed 4", "bed 5", "bedroom 2", "bedroom 3",
+            "bedroom 4", "bedroom 5", "bath 2", "bath 3", "bath 4",
+            "bathroom 2", "bathroom 3", "bathroom 4", "bonus room",
+            "hallway", "corridor", "landing",
+        ],
+        "living": [
+            "great room", "kitchen", "dining", "living room", "office",
+            "home office", "study", "foyer", "entry",
+        ],
+        "porch": [
+            "porch", "back porch", "front porch", "covered porch",
+            "outdoor", "patio", "breezeway",
+        ],
+    }
+
+    # ── Room name standardization ─────────────────────────────────────────
+    NAME_MAP = {
+        "wic": "Master Closet",
+        "his wic": "His Closet",
+        "hers wic": "Hers Closet",
+        "walk in closet": "Master Closet",
+        "walk-in closet": "Master Closet",
+        "sitting": "Master Sitting Room",
+        "mud room": "Mudroom",
+        "half bath": "Half Bath",
+        "powder room": "Half Bath",
+        "powder": "Half Bath",
+        "utility room": "Utility",
+        "mechanical": "Utility",
+        "family room": "Great Room",
+        "living room": "Great Room",
+    }
+
+    corrected = []
+    for room in rooms:
+        r = dict(room)
+        name_lower = r["name"].lower().strip()
+
+        # Standardize name
+        for old_name, new_name in NAME_MAP.items():
+            if name_lower == old_name:
+                r["name"] = new_name
+                name_lower = new_name.lower()
+                break
+
+        # Fix zone
+        for zone, keywords in ZONE_RULES.items():
+            if any(kw in name_lower for kw in keywords):
+                r["zone"] = zone
+                break
+
+        corrected.append(r)
+
+    # ── Ensure master suite has required components ───────────────────────
+    room_names = {r["name"].lower() for r in corrected}
+    master_bed = next((r for r in corrected if "master bed" in r["name"].lower()), None)
+
+    if master_bed:
+        # Add Master Bath if missing
+        if not any("master bath" in r["name"].lower() or "master bath" in r["name"].lower() for r in corrected):
+            corrected.append({"name": "Master Bath", "sf": 160, "zone": "master",
+                               "adjacencies": ["Master Bed"]})
+
+        # Add Master Closet if no WIC/closet
+        if not any("closet" in r["name"].lower() or "wic" in r["name"].lower() for r in corrected):
+            corrected.append({"name": "Master Closet", "sf": 80, "zone": "master",
+                               "adjacencies": ["Master Bed", "Master Bath"]})
+
+    # ── Ensure mudroom if garage present ─────────────────────────────────
+    has_garage = any("garage" in r["name"].lower() for r in corrected)
+    has_mudroom = any("mudroom" in r["name"].lower() or "mud room" in r["name"].lower() for r in corrected)
+    if has_garage and not has_mudroom:
+        corrected.append({"name": "Mudroom", "sf": 100, "zone": "service",
+                           "adjacencies": ["Garage", "Kitchen"]})
+
+    return {**layout_json, "rooms": corrected}
+
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SPEC GENERATOR — Full resolved design spec for Revit execution
@@ -1661,6 +1761,7 @@ def run_planner(
 ) -> dict:
     """Full pipeline: validate -> solve -> assign -> render -> upload -> spec."""
     layout_json = _normalize_layout(layout_json)
+    layout_json = _correct_layout(layout_json)
     violations = validate_layout(layout_json, intake_json)
     footprint = solve_footprint(layout_json, intake_json)
     room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
