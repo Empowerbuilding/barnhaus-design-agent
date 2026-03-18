@@ -2300,7 +2300,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
             linewidth=0,       # no border — walls drawn as lines below
             edgecolor="none",
             facecolor=fill,
-            linestyle="--" if is_open else "-",
+            linestyle="-",
             zorder=1,
         )
         ax.add_patch(rect)
