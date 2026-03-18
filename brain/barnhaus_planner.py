@@ -1433,7 +1433,17 @@ def run_planner(
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
-    design_path = "designs/design_a3fe564b.json"
+    import sys
+    if len(sys.argv) < 2:
+        print("Usage: python3 barnhaus_planner.py <submission_id_prefix>")
+        sys.exit(1)
+    prefix = sys.argv[1]
+    import glob
+    matches = glob.glob(f"designs/design_{prefix}*.json")
+    if not matches:
+        print(f"No design file found for prefix: {prefix}")
+        sys.exit(1)
+    design_path = matches[0]
     with open(design_path) as f:
         data = json.load(f)
 
