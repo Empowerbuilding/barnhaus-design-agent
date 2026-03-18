@@ -2604,7 +2604,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
 
 SPATIAL_MODEL_V1 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v1:DIs2DYf4"
 SPATIAL_MODEL_V2 = "ft:gpt-4o-2024-08-06:personal:barnhaus-spatial-v2:pending"  # job: ftjob-b5eWQgEnpaauGjc2b9aAoAwo — update ID when done
-SPATIAL_MODEL = SPATIAL_MODEL_V1  # switch to V2 once training is done
+SPATIAL_MODEL = SPATIAL_MODEL_V2  # switch to V2 once training is done
 
 def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) -> dict:
     """Call barnhaus-spatial-v1 to get exact room x/y coordinates.
