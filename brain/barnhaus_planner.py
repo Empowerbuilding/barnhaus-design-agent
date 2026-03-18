@@ -1038,16 +1038,35 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
         return pack_regions[0] if pack_regions else {"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}
 
     def _pack_rooms(room_list, zx0, zy0, zx1, zy1, zone_name):
-        """Simple row-wrap packer within a zone rect."""
+        """Row-wrap packer: size rooms from SF first, then fit into zone.
+        
+        Rooms are sized by SF with a target aspect ratio, then packed
+        left-to-right wrapping at zone edge. Zone expands northward if needed.
+        """
         zone_w = zx1 - zx0
-        zone_d = zy1 - zy0
-        total_sf = sum(r.get("sf", 100) for r in room_list)
         cursor_x, cursor_y = zx0, zy0
         row_height = 0.0
         coords = {}
 
+        # Standard room aspect ratios (w:d) — wider than deep for most rooms
+        ASPECT = {
+            "great room": 1.4, "kitchen": 1.2, "dining": 1.3,
+            "master bed": 1.2, "master bath": 1.0, "master closet": 0.8,
+            "bed": 1.1, "bath": 0.9, "laundry": 1.0,
+            "mudroom": 1.2, "butler pantry": 0.7, "utility": 1.0,
+            "home office": 1.2, "office": 1.2, "study": 1.2,
+        }
+
+        def _get_aspect(name):
+            n = name.lower()
+            for k, v in ASPECT.items():
+                if k in n:
+                    return v
+            return 1.15
+
         for r in room_list:
             sf = r.get("sf", 100)
+            # Try model-provided dimensions first
             room_w = r.get("w") or r.get("width")
             room_d = r.get("d") or r.get("depth")
             dims = r.get("dimensions") or {}
@@ -1056,28 +1075,31 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
                 room_d = room_d or dims.get("d") or dims.get("depth")
 
             if not room_w or not room_d:
-                frac = sf / max(total_sf, 1)
-                area = frac * zone_w * zone_d
-                room_w = math.sqrt(area * (zone_w / max(zone_d, 1)))
-                room_w = max(8, min(float(room_w), zone_w))
-                room_d = area / max(room_w, 1)
-                room_d = max(8, min(float(room_d), zone_d))
+                # Size from SF using aspect ratio
+                aspect = _get_aspect(r["name"])
+                room_w = math.sqrt(sf * aspect)
+                room_d = sf / max(room_w, 1)
+                room_w = max(8.0, min(room_w, zone_w))
+                room_d = max(8.0, room_d)
             else:
                 room_w, room_d = float(room_w), float(room_d)
 
+            # Wrap to next row if past zone edge
             if cursor_x + room_w > zx1 + 0.5:
                 cursor_x = zx0
                 cursor_y += row_height
                 row_height = 0.0
-            if cursor_y + room_d > zy1:
-                room_d = max(4, zy1 - cursor_y)
+
+            # Clamp width to zone — never exceed
             if cursor_x + room_w > zx1:
-                room_w = max(4, zx1 - cursor_x)
+                room_w = max(8.0, zx1 - cursor_x)
+                room_d = sf / room_w  # recompute depth to preserve SF
 
             coords[r["name"]] = {
                 "x0": round(cursor_x, 1), "y0": round(cursor_y, 1),
                 "x1": round(cursor_x + room_w, 1), "y1": round(cursor_y + room_d, 1),
-                "sf": sf, "zone": zone_name, "dims_source": "model" if r.get("w") else "derived",
+                "sf": sf, "zone": zone_name,
+                "dims_source": "model" if r.get("w") else "derived",
             }
             cursor_x += room_w
             row_height = max(row_height, room_d)
