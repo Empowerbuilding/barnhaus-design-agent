@@ -1043,17 +1043,20 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
         return pack_regions[0] if pack_regions else {"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}
 
     def _pack_rooms(room_list, zx0, zy0, zx1, zy1, zone_name):
-        """Row-wrap packer: size rooms from SF first, then fit into zone.
+        """Pack rooms into a zone rect.
         
-        Rooms are sized by SF with a target aspect ratio, then packed
-        left-to-right wrapping at zone edge. Zone expands northward if needed.
+        - Sizes rooms from SF with aspect ratio targets (not hard constraints)
+        - Wraps rows left-to-right within zone width
+        - After packing, scales all rooms proportionally to fit zone depth
+        - Snaps all coords to 1ft grid so walls always connect cleanly
+        - NEVER places a room outside the zone boundary
         """
-        zone_w = zx1 - zx0
-        cursor_x, cursor_y = zx0, zy0
-        row_height = 0.0
-        coords = {}
+        if not room_list:
+            return {}
 
-        # Standard room aspect ratios (w:d) — wider than deep for most rooms
+        zone_w = max(zx1 - zx0, 8.0)
+        zone_d = max(zy1 - zy0, 8.0)
+
         ASPECT = {
             "great room": 1.4, "kitchen": 1.2, "dining": 1.3,
             "master bed": 1.2, "master bath": 1.0, "master closet": 0.8,
@@ -1061,65 +1064,88 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
             "mudroom": 1.2, "butler pantry": 0.7, "utility": 1.0,
             "home office": 1.2, "office": 1.2, "study": 1.2,
         }
-
         def _get_aspect(name):
             n = name.lower()
             for k, v in ASPECT.items():
-                if k in n:
-                    return v
+                if k in n: return v
             return 1.15
 
+        # ── Step 1: Compute natural room dimensions from SF ───────────────
+        raw = []
         for r in room_list:
             sf = r.get("sf", 100)
-            # Try model-provided dimensions first
-            room_w = r.get("w") or r.get("width")
-            room_d = r.get("d") or r.get("depth")
+            rw = r.get("w") or r.get("width")
+            rd = r.get("d") or r.get("depth")
             dims = r.get("dimensions") or {}
             if isinstance(dims, dict):
-                room_w = room_w or dims.get("w") or dims.get("width")
-                room_d = room_d or dims.get("d") or dims.get("depth")
+                rw = rw or dims.get("w") or dims.get("width")
+                rd = rd or dims.get("d") or dims.get("depth")
+            if not rw or not rd:
+                asp = _get_aspect(r["name"])
+                rw = min(math.sqrt(sf * asp), zone_w)
+                rw = max(8.0, rw)
+                rd = max(8.0, sf / rw)
+            raw.append((r, float(rw), float(rd)))
 
-            if not room_w or not room_d:
-                # Size from SF using aspect ratio, but fit within zone width
-                aspect = _get_aspect(r["name"])
-                room_w = math.sqrt(sf * aspect)
-                # If room would be > 70% of zone width, make it full-width
-                # and compute depth from SF — this prevents tiny sliver widths
-                if room_w > zone_w * 0.7:
-                    room_w = zone_w
-                    room_d = sf / zone_w
-                else:
-                    room_d = sf / max(room_w, 1)
-                room_w = max(8.0, min(room_w, zone_w))
-                room_d = max(8.0, room_d)
-            else:
-                room_w, room_d = float(room_w), float(room_d)
+        # ── Step 2: Row-wrap layout ───────────────────────────────────────
+        rows = []   # list of rows, each row = [(room, w, d), ...]
+        cur_row = []
+        cur_row_w = 0.0
+        for (r, rw, rd) in raw:
+            if rw > zone_w:
+                rw = zone_w
+                rd = r.get("sf", 100) / zone_w
+            if cur_row_w + rw > zone_w + 0.5 and cur_row:
+                rows.append(cur_row)
+                cur_row = []
+                cur_row_w = 0.0
+            cur_row.append((r, rw, rd))
+            cur_row_w += rw
+        if cur_row:
+            rows.append(cur_row)
 
-            # Wrap to next row if past zone edge
-            if cursor_x + room_w > zx1 + 0.5:
-                cursor_x = zx0
-                cursor_y += row_height
-                row_height = 0.0
+        # ── Step 3: Scale rows proportionally to fit zone_d ──────────────
+        total_natural_d = sum(max(rd for (_, _, rd) in row) for row in rows)
+        if total_natural_d > zone_d and total_natural_d > 0:
+            scale = zone_d / total_natural_d
+        else:
+            scale = 1.0
 
-            # Clamp width to zone
-            if cursor_x + room_w > zx1:
-                room_w = max(8.0, zx1 - cursor_x)
-                room_d = sf / room_w  # recompute depth to preserve SF
-
-            # Clamp depth to zone — scale down proportionally if overflowing
-            if zy1 > zy0 and cursor_y + room_d > zy1 + 2:
-                room_d = max(8.0, zy1 - cursor_y)
-                room_w = min(zone_w, sf / room_d)
-
-            coords[r["name"]] = {
-                "x0": round(cursor_x, 1), "y0": round(cursor_y, 1),
-                "x1": round(min(cursor_x + room_w, zx1), 1),
-                "y1": round(min(cursor_y + room_d, zy1 + 5), 1),
-                "sf": sf, "zone": zone_name,
-                "dims_source": "model" if r.get("w") else "derived",
-            }
-            cursor_x += room_w
-            row_height = max(row_height, room_d)
+        # ── Step 4: Place rooms, snapping to 1ft grid ─────────────────────
+        coords = {}
+        cursor_y = zy0
+        for row in rows:
+            row_h = max(rd for (_, _, rd) in row) * scale
+            row_h = max(8.0, row_h)
+            # Clamp row to zone
+            if cursor_y + row_h > zy1:
+                row_h = max(4.0, zy1 - cursor_y)
+            cursor_x = zx0
+            for (r, rw, rd) in row:
+                rw_scaled = rw * min(zone_w / max(sum(w for (_, w, _) in row), 1), 1.0)
+                rw_scaled = max(8.0, rw_scaled)
+                # Clamp to zone
+                if cursor_x + rw_scaled > zx1:
+                    rw_scaled = max(4.0, zx1 - cursor_x)
+                # 1ft grid snap
+                x0 = round(cursor_x)
+                y0 = round(cursor_y)
+                x1 = round(cursor_x + rw_scaled)
+                y1 = round(cursor_y + row_h)
+                # Hard clamp — NEVER outside zone
+                x0 = max(x0, round(zx0))
+                y0 = max(y0, round(zy0))
+                x1 = min(x1, round(zx1))
+                y1 = min(y1, round(zy1))
+                coords[r["name"]] = {
+                    "x0": x0, "y0": y0, "x1": x1, "y1": y1,
+                    "sf": r.get("sf", 100), "zone": zone_name,
+                    "dims_source": "model" if r.get("w") else "derived",
+                }
+                cursor_x += rw_scaled
+            cursor_y += row_h
+            if cursor_y >= zy1:
+                break  # zone full — remaining rooms skipped
 
         return coords
 
@@ -1247,23 +1273,26 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
             living_carved["x0"], living_carved["y0"],
             living_carved["x1"], living_carved["y1"], "living"))
 
-        # Home office: carve a side slice from service zone or master zone edge
+        # Home office: place inside living zone, at entry corner (south side)
         if office_rooms:
-            # Place office between master zone and living zone (x = master.x1 to living.x0)
-            # Or use a right-side slice of living zone
             for office in office_rooms:
                 sf = office.get("sf", 150)
-                aspect = 1.2
-                ow = math.sqrt(sf * aspect)
+                ow = math.sqrt(sf * 1.2)
                 od = sf / max(ow, 1)
+                ow = min(ow, lx1 - lx0)
+                od = min(od, ly1 - ly0)
                 ow = max(10.0, ow)
                 od = max(10.0, od)
-                # Place at entry level (near foyer), on the service side of living
-                ox0 = lx1  # right edge of living zone
-                oy0 = ly0
+                # Place at SE corner of living zone (near entry/foyer)
+                ox0 = round(lx1 - ow)
+                oy0 = round(ly0)
+                ox1 = round(lx1)
+                oy1 = round(ly0 + od)
+                # Hard clamp to living zone
+                ox0 = max(round(lx0), ox0)
+                oy1 = min(round(ly1), oy1)
                 room_coords[office["name"]] = {
-                    "x0": round(ox0, 1), "y0": round(oy0, 1),
-                    "x1": round(ox0 + ow, 1), "y1": round(oy0 + od, 1),
+                    "x0": ox0, "y0": oy0, "x1": ox1, "y1": oy1,
                     "sf": sf, "zone": "living", "dims_source": "derived",
                 }
 
