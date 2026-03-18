@@ -1448,7 +1448,7 @@ def _correct_layout(layout_json: dict) -> dict:
         ],
         "service": [
             "garage", "mudroom", "mud room", "laundry", "utility",
-            "butler pantry", "pantry", "mechanical", "hvac", "storage",
+            "butler pantry", "pantry", "mechanical", "hvac", "storage", "utility",
         ],
         "beds": [
             "bed 2", "bed 3", "bed 4", "bed 5", "bedroom 2", "bedroom 3",
