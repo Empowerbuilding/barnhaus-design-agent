@@ -142,14 +142,67 @@ def get_void_zones(shape: str, fp_w: float, fp_d: float) -> list:
                 {"x0": fp_w*0.42, "y0": fp_d*0.7, "x1": fp_w*0.58, "y1": fp_d}]
     return []
 
+def get_real_voids(shape: str, fp_w: float, fp_d: float, fp_zones: dict) -> list:
+    """
+    Derive actual void rectangles from real footprint zone geometry.
+    Voids = areas inside bounding box but outside any zone.
+    """
+    s = (shape or "rectangle").lower().replace(" ","-")
+    voids = []
+    if s == "h-shape" and fp_zones:
+        lw  = fp_zones.get("master") or fp_zones.get("left_wing")
+        br  = fp_zones.get("center_bridge") or fp_zones.get("living_core") or fp_zones.get("living")
+        rw  = fp_zones.get("bed_wing") or fp_zones.get("right_wing") or fp_zones.get("beds")
+        if lw and br and rw:
+            # Front-left void: between left wing east and bridge west, south of bridge
+            voids.append({"x0": lw["x1"], "y0": 0,       "x1": br["x0"], "y1": br["y0"]})
+            # Front-right void: between bridge east and right wing west, south of bridge
+            voids.append({"x0": br["x1"], "y0": 0,       "x1": rw["x0"], "y1": br["y0"]})
+            # Rear-left void: between left wing east and bridge west, north of bridge
+            voids.append({"x0": lw["x1"], "y0": br["y1"], "x1": br["x0"], "y1": lw["y1"]})
+            # Rear-right void: between bridge east and right wing west, north of bridge
+            voids.append({"x0": br["x1"], "y0": br["y1"], "x1": rw["x0"], "y1": rw["y1"]})
+            # Front-center void: south face of bridge (if bridge doesn't reach y=0)
+            if br["y0"] > 2:
+                voids.append({"x0": br["x0"], "y0": 0, "x1": br["x1"], "y1": br["y0"]})
+            # Rear-center void: north face of bridge  
+            if br["y1"] < lw["y1"] - 2:
+                voids.append({"x0": br["x0"], "y0": br["y1"], "x1": br["x1"], "y1": lw["y1"]})
+    elif s in ("l-shape","asymmetric-l") and fp_zones:
+        mw = fp_zones.get("master")
+        bw = fp_zones.get("bed_wing") or fp_zones.get("beds")
+        if mw and bw:
+            voids.append({"x0": bw["x0"], "y0": bw["y1"], "x1": fp_w, "y1": fp_d})
+    elif s == "u-shape" and fp_zones:
+        br = fp_zones.get("living_core") or fp_zones.get("living")
+        if br:
+            voids.append({"x0": br["x0"], "y0": br["y1"], "x1": br["x1"], "y1": fp_d})
+    return [v for v in voids if v["x1"]-v["x0"] > 2 and v["y1"]-v["y0"] > 2]
+
 def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
     fp_w = footprint.get("width", 89)
     fp_d = footprint.get("depth", 79)
+    fp_zones_raw = footprint.get("zones", {})
     zones = get_shape_zones(shape, fp_w, fp_d)
-    voids = get_void_zones(shape, fp_w, fp_d)
+    # Use real voids from actual footprint geometry if available
+    voids = get_real_voids(shape, fp_w, fp_d, fp_zones_raw) or get_void_zones(shape, fp_w, fp_d)
     placed = {}
 
     def zone_bounds(zkey: str) -> dict:
+        # Prefer real footprint zone geometry over computed percentages
+        ZONE_MAP = {
+            "master":  ["master","left_wing"],
+            "living":  ["living_core","center_bridge","living"],
+            "beds":    ["bed_wing","right_wing","beds"],
+            "service": ["service"],
+            "garage":  ["garage"],
+            "porch":   ["porch"],
+        }
+        for key in ZONE_MAP.get(zkey, [zkey]):
+            if key in fp_zones_raw:
+                z = fp_zones_raw[key]
+                # Add some padding so rooms don't butt right up against zone edge
+                return {"x0": z["x0"], "y0": z["y0"], "x1": z["x1"], "y1": z["y1"]}
         return zones.get(zkey, {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d})
 
     def _try_place(x0, y0, w, d, name, zkey=None):

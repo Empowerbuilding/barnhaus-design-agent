@@ -2834,7 +2834,11 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
             _shape = intake_json.get("house_shape","rectangle")
             _shape = intake_json.get("house_shape","rectangle")
             from barnhaus_graph_packer import pack as _graph_pack
-            room_coords = _graph_pack(rooms_out, {"width": fp_w, "depth": fp_d}, shape=_shape)
+            room_coords = _graph_pack(rooms_out, {
+                "width": fp_w, "depth": fp_d,
+                "zones": footprint.get("zones", {}),
+                "polygon": footprint.get("polygon", []),
+            }, shape=_shape)
             for rname, rc in room_coords.items():
                 rc["dims_source"] = "spatial_v2_packed"
         else:
