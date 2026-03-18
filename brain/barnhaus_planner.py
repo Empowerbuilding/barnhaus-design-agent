@@ -2286,7 +2286,7 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
         ys = [p["y"] for p in fp] + [fp[0]["y"]]
         ax.fill(xs, ys, color="#E0D8CC", zorder=0, alpha=0.5)
 
-    # ── Draw rooms (filled rect + thin border) ────────────────────────────
+    # ── Draw rooms (filled rect, NO individual borders — walls drawn separately) ──
     OPEN_ZONES = {"porch", "front_porch", "back_porch", "outdoor"}
     for rname, r in rooms.items():
         zone = r.get("zone", "living")
@@ -2297,13 +2297,75 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
             (r["x0"], r["y0"]),
             r["x1"] - r["x0"],
             r["y1"] - r["y0"],
-            linewidth=0.5 if is_open else 1.0,
-            edgecolor="#AAAAAA" if is_open else "#888888",
+            linewidth=0,       # no border — walls drawn as lines below
+            edgecolor="none",
             facecolor=fill,
             linestyle="--" if is_open else "-",
             zorder=1,
         )
         ax.add_patch(rect)
+
+    # ── Draw walls as lines on room edges ─────────────────────────────────
+    # For each room edge, check if it's shared with another room (interior wall)
+    # or exposed (exterior/partition wall). Draw accordingly.
+    room_list = list(rooms.items())
+    EDGE_TOL = 1.5
+    def _shared_edge(ra, rb):
+        """Return True if ra and rb share a wall edge."""
+        # X-aligned shared wall
+        if (abs(ra["x1"]-rb["x0"]) < EDGE_TOL or abs(rb["x1"]-ra["x0"]) < EDGE_TOL):
+            oy = min(ra["y1"],rb["y1"]) - max(ra["y0"],rb["y0"])
+            if oy > 1.0: return True
+        # Y-aligned shared wall
+        if (abs(ra["y1"]-rb["y0"]) < EDGE_TOL or abs(rb["y1"]-ra["y0"]) < EDGE_TOL):
+            ox = min(ra["x1"],rb["x1"]) - max(ra["x0"],rb["x0"])
+            if ox > 1.0: return True
+        return False
+
+    drawn_walls = set()
+    for rname, r in room_list:
+        is_open = r.get("zone","living") in OPEN_ZONES
+        neighbors = {on for on,or_ in room_list if on != rname and _shared_edge(r, or_)}
+
+        # Draw each of 4 edges
+        edges = [
+            ("S", r["x0"], r["y0"], r["x1"], r["y0"]),
+            ("N", r["x0"], r["y1"], r["x1"], r["y1"]),
+            ("W", r["x0"], r["y0"], r["x0"], r["y1"]),
+            ("E", r["x1"], r["y0"], r["x1"], r["y1"]),
+        ]
+        for face, ex0, ey0, ex1, ey1 in edges:
+            wall_key = (round(ex0,1), round(ey0,1), round(ex1,1), round(ey1,1))
+            if wall_key in drawn_walls:
+                continue
+            drawn_walls.add(wall_key)
+
+            # Check if this edge is shared with a neighbor
+            is_interior = False
+            for on, or_ in room_list:
+                if on == rname: continue
+                if face == "S" and abs(or_["y1"]-r["y0"]) < EDGE_TOL:
+                    ox = min(r["x1"],or_["x1"]) - max(r["x0"],or_["x0"])
+                    if ox > 1.0: is_interior = True; break
+                if face == "N" and abs(or_["y0"]-r["y1"]) < EDGE_TOL:
+                    ox = min(r["x1"],or_["x1"]) - max(r["x0"],or_["x0"])
+                    if ox > 1.0: is_interior = True; break
+                if face == "W" and abs(or_["x1"]-r["x0"]) < EDGE_TOL:
+                    oy = min(r["y1"],or_["y1"]) - max(r["y0"],or_["y0"])
+                    if oy > 1.0: is_interior = True; break
+                if face == "E" and abs(or_["x0"]-r["x1"]) < EDGE_TOL:
+                    oy = min(r["y1"],or_["y1"]) - max(r["y0"],or_["y0"])
+                    if oy > 1.0: is_interior = True; break
+
+            if is_open:
+                lw, color, ls = 0.8, "#AAAAAA", "--"
+            elif is_interior:
+                lw, color, ls = 1.2, "#555555", "-"   # interior wall
+            else:
+                lw, color, ls = 2.0, "#222222", "-"   # exterior wall
+
+            ax.plot([ex0,ex1],[ey0,ey1], color=color, linewidth=lw,
+                    linestyle=ls, zorder=3, solid_capstyle="butt")
 
         # Room label
         cx = (r["x0"] + r["x1"]) / 2
