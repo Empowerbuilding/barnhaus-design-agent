@@ -2400,35 +2400,10 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
                 ]
         return _shape_polygon(s, w, d, ox, oy)
 
-    shape_pts = _shape_polygon_real(shape_key, fp_w_r, fp_d_r, ox, oy, _spec_zones)                 or _shape_polygon(shape_key, fp_w_r, fp_d_r, ox, oy)
-    if shape_pts:
-        sxs = [p[0] for p in shape_pts]
-        sys_ = [p[1] for p in shape_pts]
-        # Fill footprint background
-        ax.fill(sxs, sys_, color="#E8E0D4", zorder=0, alpha=0.8)
-        # Draw exterior outline (thick)
-        ax.plot(sxs, sys_, color="#1A1A1A", linewidth=3.0, zorder=10, solid_capstyle="butt")
-        # White out areas OUTSIDE the bounding box (for rendering — not the footprint fill)
-        _real_voids = get_real_voids(shape_key, fp_w_r, fp_d_r, _spec_zones)
-        if _real_voids:
-            for v in _real_voids:
-                vx0=ox+v["x0"]; vy0=oy+v["y0"]; vx1=ox+v["x1"]; vy1=oy+v["y1"]
-                ax.fill([vx0,vx1,vx1,vx0,vx0],[vy0,vy0,vy1,vy1,vy0],
-                        color="#F8F5F0", zorder=5, linewidth=0)
-                # Also draw a subtle border around void to make cutout visible
-                ax.plot([vx0,vx1,vx1,vx0,vx0],[vy0,vy0,vy1,vy1,vy0],
-                        color="#CCBFB0", linewidth=1.0, zorder=6, linestyle="--")
-        elif shape_key == "u-shape":
-            cw2 = fp_w_r*0.3
-            ax.fill([ox+cw2,ox+fp_w_r-cw2,ox+fp_w_r-cw2,ox+cw2,ox+cw2],
-                    [oy+fp_d_r*0.45,oy+fp_d_r*0.45,oy+fp_d_r,oy+fp_d_r,oy+fp_d_r*0.45],
-                    color="#F8F5F0", zorder=5)
-
-    # ── Draw footprint shadow (legacy fallback) ───────────────────────────
-    if fp and len(fp) >= 3 and not shape_pts:
-        xs = [p["x"] for p in fp] + [fp[0]["x"]]
-        ys = [p["y"] for p in fp] + [fp[0]["y"]]
-        ax.fill(xs, ys, color="#E0D8CC", zorder=0, alpha=0.5)
+    # ── Background fill from actual room extents (drawn before rooms) ───────
+    # We'll draw the house outline AFTER rooms using the actual room bounding union
+    # (outline drawn at end of function, after rooms are placed)
+    _outline_deferred = True  # signal to draw outline at end
 
     # ── Draw rooms (filled rect, NO individual borders — walls drawn separately) ──
     OPEN_ZONES = {"porch", "front_porch", "back_porch", "outdoor"}
@@ -2692,6 +2667,33 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
     ax.plot([sb_x, sb_x], [sb_y - 0.5, sb_y + 0.5], color="#333333", lw=2)
     ax.plot([sb_x + scale_len, sb_x + scale_len], [sb_y - 0.5, sb_y + 0.5], color="#333333", lw=2)
     ax.text(sb_x + scale_len/2, sb_y - 1.5, "20 ft", ha="center", fontsize=8, color="#333333")
+
+    # ── Draw house outline from actual room extents ──────────────────────
+    # Build union of all room rectangles (exclude porches for main outline)
+    PORCH_ZONES = {"front_porch","back_porch","porch","outdoor"}
+    house_rooms = {n:r for n,r in rooms.items() if r.get("zone","") not in PORCH_ZONES}
+    porch_rooms  = {n:r for n,r in rooms.items() if r.get("zone","") in PORCH_ZONES}
+
+    if house_rooms:
+        hx0 = min(r["x0"] for r in house_rooms.values())
+        hx1 = max(r["x1"] for r in house_rooms.values())
+        hy0 = min(r["y0"] for r in house_rooms.values())
+        hy1 = max(r["y1"] for r in house_rooms.values())
+        # Background fill
+        ax.fill([hx0,hx1,hx1,hx0,hx0],[hy0,hy0,hy1,hy1,hy0],
+                color="#E8E0D4", zorder=0, alpha=0.6)
+        # Thick exterior outline
+        ax.plot([hx0,hx1,hx1,hx0,hx0],[hy0,hy0,hy1,hy1,hy0],
+                color="#1A1A1A", linewidth=4.0, zorder=20, solid_capstyle="butt")
+
+    # Porch outlines — slightly lighter, dashed
+    for pname, pr in porch_rooms.items():
+        ax.fill([pr["x0"],pr["x1"],pr["x1"],pr["x0"],pr["x0"]],
+                [pr["y0"],pr["y0"],pr["y1"],pr["y1"],pr["y0"]],
+                color="#F5F0D8", zorder=0, alpha=0.7)
+        ax.plot([pr["x0"],pr["x1"],pr["x1"],pr["x0"],pr["x0"]],
+                [pr["y0"],pr["y0"],pr["y1"],pr["y1"],pr["y0"]],
+                color="#1A1A1A", linewidth=2.5, zorder=20, linestyle="-")
 
     plt.tight_layout(pad=0.5)
     plt.savefig(output_path, dpi=150, bbox_inches="tight",
