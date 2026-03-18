@@ -2519,10 +2519,30 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
             for k, v in rooms.items()
         )
 
-    total_sf   = intake_json.get("living") or sum(r.get("sf",100) for r in (rooms if isinstance(rooms,list) else []))
-    shape      = intake_json.get("house_shape") or layout_json.get("footprint", "rectangle")
-    stories    = intake_json.get("stories", 1)
-    style      = intake_json.get("style", "Hill Country")
+    # Fields may be top-level OR embedded in brief string — parse both
+    _brief     = intake_json.get("brief", "")
+    def _from_brief(pattern, default):
+        import re as _re
+        m = _re.search(pattern, _brief, _re.IGNORECASE)
+        return m.group(1).strip() if m else default
+
+    total_sf   = (intake_json.get("living") or
+                  _from_brief(r"(\d+)\s*SF\s*living", None) or
+                  _from_brief(r"(\d+)\s*SF", None) or
+                  sum(r.get("sf",100) for r in (rooms if isinstance(rooms,list) else [])))
+    total_sf   = int(str(total_sf).replace(",","").split()[0]) if total_sf else 2500
+
+    shape      = (intake_json.get("house_shape") or
+                  layout_json.get("footprint") or
+                  _from_brief(r"footprint:\s*([a-z_\-]+)", "rectangle"))
+
+    stories_raw = (intake_json.get("stories") or
+                   _from_brief(r"(\d+)[-\s]story", None) or
+                   _from_brief(r"(\d+)\s*stories", None) or 1)
+    stories    = int(str(stories_raw).split()[0]) if stories_raw else 1
+
+    style      = (intake_json.get("style") or
+                  _from_brief(r"style:\s*([\w\s]+?)(?:\n|-|,)", "Hill Country"))
     fp_dims    = footprint.get("footprint_dimensions") or {}
     fp_w       = fp_dims.get("width_ft") or footprint.get("total_width", 80)
     fp_d       = fp_dims.get("depth_ft") or footprint.get("total_depth", 60)
@@ -2549,25 +2569,39 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
         )
 
     # Match the original training prompt format — simple brief, no zone constraints
-    # The model learned connectivity from 66 examples; let it use that knowledge
-    garage_attach = intake_json.get("garage_attachment", "attached right")
-    master_loc    = intake_json.get("master_location", "far left, rear corner")
+    garage_attach = (intake_json.get("garage_attachment") or
+                     _from_brief(r"garage:\s*([\w\s\-]+?)(?:\n|,)", "attached right"))
+    master_loc    = intake_json.get("master_location", "far end, rear corner")
     street_face   = intake_json.get("street_facing", "south")
     view_face     = "north" if street_face == "south" else "south"
 
+    # Client bubble positions — spatial intent from intake form
+    import json as _json2
+    bubbles_raw = intake_json.get("bubble_positions") or _from_brief(r"bubble positions:\s*(\{[^}]+\})", None)
+    bubble_hint = ""
+    if bubbles_raw:
+        try:
+            bubbles = _json2.loads(bubbles_raw) if isinstance(bubbles_raw, str) else bubbles_raw
+            if bubbles:
+                bubble_hint = "\n- Client room positions (relative x,y from intake): " + ", ".join(
+                    f"{k}≈({int(v.get('x',0))},{int(v.get('y',0))})" 
+                    for k,v in list(bubbles.items())[:8]
+                )
+        except:
+            pass
+
     prompt = f"""Design a new Barnhaus Steel Builders home with the following requirements:
-- Living area: {total_sf} SF (total under roof)
-- {stories} bedrooms, bathrooms, {stories}-story
+- Living area: {total_sf} SF, {stories}-story
 - Footprint: {shape} — {fp_w}ft wide x {fp_d}ft deep
 - Style: {style} barndominium
 - Garage: {garage_attach}
 - Primary view/hero elevation: {view_face} face
-- Client wants: {room_sf_hints}
+- Rooms: {room_sf_hints}{bubble_hint}
 - Master suite: {master_loc}
-- All rooms must be connected — no isolated sections
-- Front porch leads directly into foyer or great room (never a bedroom)
-- Corridor stays inside footprint bounds
-- Garage connects to mudroom"""
+- All rooms connected — no isolated sections
+- Front porch leads into foyer or great room (never a bedroom)
+- Corridor stays inside footprint
+- Garage shares wall with mudroom"""
 
     try:
         client = openai.OpenAI(api_key=api_key)
