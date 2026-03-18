@@ -2537,26 +2537,24 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
             )
 
     # Build per-room dimension hints
+    import math as _m2
     rooms_list_raw = layout_json.get("rooms", [])
     if isinstance(rooms_list_raw, list):
-        room_dims = []
+        dim_lines = []
         for r in rooms_list_raw:
             sf = r.get("sf", 100)
-            asp = {"great room":1.4,"kitchen":1.2,"dining":1.3,"master bed":1.2,
-                   "master bath":1.0,"master closet":0.8,"bed":1.1,"bath":0.85,
-                   "laundry":1.0,"mudroom":1.2,"butler pantry":0.7,"utility":1.0,
-                   "home office":1.2,"porch":2.0,"garage":1.5}.get(
-                next((k for k in ["great room","kitchen","dining","master bed","master bath",
-                    "master closet","bed","bath","laundry","mudroom","butler pantry",
-                    "utility","home office","porch","garage"]
-                    if k in r["name"].lower()), "other"), 1.15)
-            import math as _m
-            w = round(_m.sqrt(sf * asp))
-            d = round(sf / max(w, 1))
-            room_dims.append(f"  {r['name']}: {sf} SF → {w}ft wide x {d}ft deep")
-        room_dims_str = "\n".join(room_dims)
+            n = r["name"].lower()
+            asp = next((v for k,v in {"great room":1.4,"kitchen":1.2,"dining":1.3,
+                "master bed":1.2,"master bath":1.0,"master closet":0.8,
+                "bed":1.1,"bath":0.85,"laundry":1.0,"mudroom":1.2,
+                "butler pantry":0.7,"utility":1.0,"home office":1.2,
+                "porch":2.0,"garage":1.5}.items() if k in n), 1.15)
+            w = round(_m2.sqrt(sf * asp))
+            d = round(sf / max(w,1))
+            dim_lines.append(f"  {r['name']}: width={w}ft depth={d}ft (target {sf} SF)")
+        dims_hint = "\nExact room dimensions to use:\n" + "\n".join(dim_lines)
     else:
-        room_dims_str = ""
+        dims_hint = ""
 
     prompt = f"""Design a new Barnhaus Steel Builders home with the following requirements:
 - Living area: {total_sf} SF, {stories}-story, {shape} footprint
@@ -2564,30 +2562,27 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
 - Footprint: {fp_w}ft wide x {fp_d}ft deep
 - Zone boundaries:
 {chr(10).join(zone_summary)}
-
-Rooms with EXACT target dimensions (use these widths and depths):
-{room_dims_str}
+{dims_hint}
 
 Rules:
-- NO rooms may overlap — rooms must be adjacent or separated, never overlapping
+- NO rooms may overlap — every room must be fully separate or just touching
+- Use the EXACT widths and depths listed above (not 10x10 placeholders)
 - All rooms must stay within footprint bounds (x: 0-{fp_w}, y: 0-{fp_d})
-- Use the EXACT room dimensions provided above — do not use 10x10 placeholders
 - Rooms snap to 1ft grid
-- Master suite at dead end (far from entry), stacked: Master Bed → Master Bath → Master Closet
-- Entry/foyer at south face (y closest to 0)
-- Great room, kitchen, dining MUST be adjacent (touching edges), open plan
-- Secondary bedrooms side-by-side, each with bath directly adjacent
-- Garage shares a wall with Mudroom (door between them)
-- Front porch attaches to south face centered on foyer
-- Back porch attaches to north/rear face
-- Output ONLY valid JSON with room coordinates, no commentary"""
+- Master suite: bed → bath → closet stacked, at far end from entry
+- Entry at south face (lowest y values)
+- Great room, kitchen, dining adjacent to each other (open plan)
+- Secondary bedrooms side by side, each bath directly next to its bed
+- Mudroom shares a wall with garage
+- Front porch at south face, back porch at north/rear face
+- Output ONLY valid JSON, no commentary"""
 
     try:
         client = openai.OpenAI(api_key=api_key)
         resp = client.chat.completions.create(
             model=SPATIAL_MODEL,
             messages=[
-                {"role": "system", "content": "You are a Barnhaus spatial layout engine. Given a design brief, output structured room coordinates as JSON."},
+                {"role": "system", "content": "You are a Barnhaus spatial layout engine. Given a design brief, output structured room coordinates as JSON. CRITICAL: Use the exact room widths and depths provided in the prompt. NEVER use 10x10 placeholder sizes. Rooms must not overlap. Each room x1-x0 and y1-y0 must match the target dimensions given."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.2,
@@ -2631,240 +2626,6 @@ Rules:
         return None
 
 
-def _post_process_room_coords(room_coords: dict, intake_json: dict) -> dict:
-    """Post-process spatial model output:
-    1. Resize rooms to match target SF while keeping anchor position
-    2. Snap edges to 1ft grid
-    3. Detect and flag overlaps
-    """
-    # Target SFs from original layout
-    rooms_list = intake_json.get("layout", {}).get("rooms", [])
-    if isinstance(rooms_list, dict):
-        target_sf = {k.replace("_"," ").title(): v.get("sf", 100) if isinstance(v,dict) else v
-                     for k,v in rooms_list.items()}
-    else:
-        target_sf = {r["name"]: r.get("sf", 100) for r in rooms_list if isinstance(r, dict)}
-
-    # Also use sf already in room_coords as fallback
-    for rname, rc in room_coords.items():
-        if rname not in target_sf:
-            target_sf[rname] = rc.get("sf", 100)
-
-    ASPECT = {
-        "great room": 1.4, "kitchen": 1.2, "dining": 1.3,
-        "master bed": 1.2, "master bath": 1.0, "master closet": 0.8,
-        "bed": 1.1, "bath": 0.85, "laundry": 1.0,
-        "mudroom": 1.2, "butler pantry": 0.7, "utility": 1.0,
-        "home office": 1.2, "porch": 2.0, "garage": 1.5,
-    }
-    def _asp(name):
-        n = name.lower()
-        for k, v in ASPECT.items():
-            if k in n: return v
-        return 1.15
-
-    result = {}
-    for rname, rc in room_coords.items():
-        sf = target_sf.get(rname, rc.get("sf", 100))
-        x0, y0 = rc["x0"], rc["y0"]
-        current_w = rc["x1"] - x0
-        current_d = rc["y1"] - y0
-        current_sf = current_w * current_d
-
-        # Only resize if more than 20% off target
-        if sf > 0 and abs(current_sf - sf) / sf > 0.20:
-            asp = _asp(rname)
-            new_w = math.sqrt(sf * asp)
-            new_d = sf / max(new_w, 1)
-            new_w = max(8.0, new_w)
-            new_d = max(8.0, new_d)
-            # Snap to 1ft grid
-            x1 = round(x0 + new_w)
-            y1 = round(y0 + new_d)
-        else:
-            x1 = round(rc["x1"])
-            y1 = round(rc["y1"])
-
-        result[rname] = {
-            **rc,
-            "x0": round(x0), "y0": round(y0),
-            "x1": x1, "y1": y1,
-            "sf": sf,
-        }
-
-    # Log any remaining overlaps as warnings
-    names = list(result.keys())
-    for i, a in enumerate(names):
-        ra = result[a]
-        for b in names[i+1:]:
-            rb = result[b]
-            ox = min(ra["x1"],rb["x1"]) - max(ra["x0"],rb["x0"])
-            oy = min(ra["y1"],rb["y1"]) - max(ra["y0"],rb["y0"])
-            if ox > 2 and oy > 2:
-                print(f"  ⚠️  Overlap: {a} ↔ {b} ({ox:.0f}x{oy:.0f}ft)")
-
-    return result
-
-
-def _repack_from_spatial(spatial_coords: dict, layout_json: dict, footprint: dict) -> dict:
-    """Use spatial model zone assignments + row/column ordering,
-    but repack rooms with correct SF-derived sizes to eliminate overlaps.
-    
-    The spatial model gets the flow right — we just fix the sizes.
-    """
-    import math as _m
-
-    # Get target SFs from layout
-    rooms_list = layout_json.get("rooms", [])
-    if isinstance(rooms_list, list):
-        target_sf = {r["name"]: r.get("sf", 100) for r in rooms_list if isinstance(r, dict)}
-    else:
-        target_sf = {k.replace("_"," ").title(): v.get("sf",100) if isinstance(v,dict) else v
-                     for k,v in rooms_list.items()}
-    # Merge with spatial coords sf as fallback
-    for rname, rc in spatial_coords.items():
-        target_sf.setdefault(rname, rc.get("sf", 100))
-
-    ASPECT = {
-        "great room":1.4, "kitchen":1.2, "dining":1.3,
-        "master bed":1.2, "master bath":1.0, "master closet":0.8,
-        "bed":1.1, "bath":0.85, "laundry":1.0, "mudroom":1.2,
-        "butler pantry":0.7, "utility":1.0, "home office":1.2,
-        "porch":2.0, "garage":1.5,
-    }
-    def _asp(name):
-        n = name.lower()
-        for k, v in ASPECT.items():
-            if k in n: return v
-        return 1.15
-
-    def _dims(name):
-        sf = target_sf.get(name, 100)
-        asp = _asp(name)
-        w = max(8.0, _m.sqrt(sf * asp))
-        d = max(8.0, sf / w)
-        return w, d
-
-    # Group rooms by zone, sorted by spatial model anchor (y0 then x0)
-    by_zone = {}
-    for rname, rc in spatial_coords.items():
-        z = rc.get("zone", "living")
-        by_zone.setdefault(z, []).append((rname, rc))
-
-    # Sort each zone group by anchor position
-    for z in by_zone:
-        by_zone[z].sort(key=lambda x: (round(x[1]["y0"]/10), round(x[1]["x0"]/10)))
-
-    zones = footprint.get("zones", {})
-    result = {}
-
-    def _zone_rect(zone_name):
-        candidates = {
-            "master":  ["master"],
-            "living":  ["living_core","living"],
-            "beds":    ["bed_wing","beds"],
-            "service": ["service"],
-            "garage":  ["garage","service"],
-            "porch":   ["porch"],
-        }
-        for k in candidates.get(zone_name, [zone_name]):
-            if k in zones: return zones[k]
-        # fallback: first zone
-        return list(zones.values())[0]
-
-    for zone_name, room_list in by_zone.items():
-        zr = _zone_rect(zone_name)
-        zx0, zy0 = zr["x0"], zr["y0"]
-        zx1, zy1 = zr["x1"], zr["y1"]
-        zone_w = zx1 - zx0
-
-        # Special: garage uses spatial coords directly (it's already right)
-        if zone_name == "service" and any("garage" in r.lower() for r,_ in room_list):
-            garage_items = [(r,c) for r,c in room_list if "garage" in r.lower()]
-            other_items  = [(r,c) for r,c in room_list if "garage" not in r.lower()]
-            # Place garage from spatial coords
-            for rname, rc in garage_items:
-                w, d = _dims(rname)
-                result[rname] = {**rc,
-                    "x0":round(rc["x0"]), "y0":round(rc["y0"]),
-                    "x1":round(rc["x0"]+w), "y1":round(rc["y0"]+d),
-                    "sf":target_sf.get(rname,rc.get("sf",100))}
-            room_list = other_items
-
-        # Detect if rooms form columns (x positions cluster)
-        if len(room_list) <= 1:
-            for rname, rc in room_list:
-                w, d = _dims(rname)
-                result[rname] = {**rc,
-                    "x0":round(rc["x0"]), "y0":round(rc["y0"]),
-                    "x1":round(rc["x0"]+w), "y1":round(rc["y0"]+d),
-                    "sf":target_sf.get(rname,rc.get("sf",100))}
-            continue
-
-        # Find distinct x-columns from spatial model
-        x_anchors = sorted(set(round(rc["x0"]/5)*5 for _,rc in room_list))
-        if len(x_anchors) > 1:
-            # Multi-column layout — pack each column separately
-            columns = {}
-            for rname, rc in room_list:
-                col_x = min(x_anchors, key=lambda x: abs(x - rc["x0"]))
-                columns.setdefault(col_x, []).append((rname, rc))
-
-            for col_x, col_rooms in columns.items():
-                col_rooms.sort(key=lambda x: x[1]["y0"])
-                # Determine column width from room dims
-                max_w = max(_dims(r)[0] for r,_ in col_rooms)
-                max_w = min(max_w, zone_w / max(len(columns), 1))
-                cx0 = round(zx0 + (col_x - zx0))
-                cx0 = max(round(zx0), min(cx0, round(zx1) - round(max_w)))
-                cx1 = round(cx0 + max_w)
-                cy = round(zy0)
-                for rname, rc in col_rooms:
-                    w, d = _dims(rname)
-                    d = max(8.0, d)
-                    if cy + d > zy1 + 5:
-                        d = max(8.0, zy1 - cy)
-                    result[rname] = {**rc,
-                        "x0": cx0, "y0": cy,
-                        "x1": min(cx1, round(zx1)), "y1": round(cy + d),
-                        "sf": target_sf.get(rname, rc.get("sf",100)),
-                        "zone": zone_name,
-                    }
-                    cy = round(cy + d)
-        else:
-            # Single column — stack vertically from spatial y0 anchor
-            cursor_y = round(zy0)
-            for rname, rc in room_list:
-                w, d = _dims(rname)
-                w = min(w, zone_w)
-                if cursor_y + d > zy1 + 5:
-                    d = max(8.0, zy1 - cursor_y)
-                result[rname] = {**rc,
-                    "x0": round(zx0), "y0": cursor_y,
-                    "x1": round(zx0 + w), "y1": round(cursor_y + d),
-                    "sf": target_sf.get(rname, rc.get("sf",100)),
-                    "zone": zone_name,
-                }
-                cursor_y = round(cursor_y + d)
-
-    # Apply zone corrections
-    for rname, rc in result.items():
-        rc["zone"] = _get_zone(rname)
-
-    # Report overlaps
-    names = list(result.keys())
-    for i, a in enumerate(names):
-        ra = result[a]
-        for b in names[i+1:]:
-            rb = result[b]
-            ox = min(ra["x1"],rb["x1"]) - max(ra["x0"],rb["x0"])
-            oy = min(ra["y1"],rb["y1"]) - max(ra["y0"],rb["y0"])
-            if ox > 2 and oy > 2:
-                print(f"  ⚠️  Overlap: {a} ↔ {b} ({ox:.0f}x{oy:.0f}ft)")
-
-    return result
-
-
 def run_planner(
     submission_id: str,
     layout_json: dict,
@@ -2880,10 +2641,6 @@ def run_planner(
     room_coords = solve_spatial_layout(layout_json, intake_json, footprint)
     if room_coords is None:
         room_coords = assign_rooms_to_zones(layout_json, footprint["zones"], circulation_spine=circulation.get("spine", []) if isinstance(circulation, dict) else [])
-    else:
-        # Use spatial model for zone assignment + room ordering,
-        # then repack with correct SF to eliminate overlaps
-        room_coords = _repack_from_spatial(room_coords, layout_json, footprint)
     # Generate fully resolved spec for Revit execution
     exterior_json = intake_json.get("exterior", {})
     spec = generate_spec(
