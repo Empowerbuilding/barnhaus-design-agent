@@ -985,157 +985,247 @@ def _expand_circulation_to_rects(spine: list) -> list:
     return rects
 
 def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: list = None) -> dict:
-    """Place each room into its zone and compute sub-coordinates.
+    """Place each room into its zone with architectural logic.
 
-    Uses actual room dimensions (w, d) from the fine-tuned model output when
-    available. Falls back to SF-proportional packing if not provided.
-
-    Returns {room_name: {x0, y0, x1, y1, sf, zone}}.
+    Special placement rules:
+    - Front Porch → south face of footprint (entry side, min Y)
+    - Back Porch  → north face of footprint (rear/view side, max Y)
+    - Garage      → garage zone, full rect
+    - Butler Pantry / Mudroom → service zone, adjacent to kitchen side (not garage)
+    - Master rooms → master zone, master bed largest and deepest
+    - Corridor    → carved from bed zone before placing secondary beds
     """
     rooms = layout_json.get("rooms", [])
     room_coords: dict = {}
 
-    # Group rooms by zone
-    by_zone: dict[str, list] = {}
-    for r in rooms:
-        z = _get_zone(r["name"])
-        by_zone.setdefault(z, []).append(r)
+    # ── Footprint extents ─────────────────────────────────────────────────
+    all_x = [v for z in zones.values() for v in (z["x0"], z["x1"])]
+    all_y = [v for z in zones.values() for v in (z["y0"], z["y1"])]
+    fp_x0, fp_x1 = min(all_x), max(all_x)
+    fp_y0, fp_y1 = min(all_y), max(all_y)  # y0=south(entry), y1=north(rear)
 
-    for z_name, z_rooms in by_zone.items():
-        # Resolve footprint zone key
-        z_key = None
-        for candidate in _ZONE_KEY_MAP.get(z_name, [z_name]):
-            if candidate in zones:
-                z_key = candidate
-                break
-        if z_key is None:
-            z_key = list(zones.keys())[0]
+    # ── Carve hallway corridors from zones ────────────────────────────────
+    hall_rects = []
+    if circulation_spine:
+        hall_rects = _expand_circulation_to_rects(circulation_spine)
 
-        zone = zones[z_key]
-        zx0, zy0 = zone["x0"], zone["y0"]
-        zx1, zy1 = zone["x1"], zone["y1"]
-        zone_w = zx1 - zx0
-        zone_d = zy1 - zy0
-
-        # Sort largest rooms first
-        z_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
-        total_sf = sum(r.get("sf", 100) for r in z_rooms)
-
-        # ── Carve hallway corridors out of this zone before packing ────────
-        hall_rects = []
-        if circulation_spine:
-            for hr in _expand_circulation_to_rects(circulation_spine):
-                # Only affect rooms whose zone overlaps this hallway rect
-                hx0, hy0, hx1, hy1 = hr["x0"], hr["y0"], hr["x1"], hr["y1"]
-                overlap = (hx0 < zx1 and hx1 > zx0 and hy0 < zy1 and hy1 > zy0)
-                if overlap:
-                    hall_rects.append(hr)
-
-        # Adjust zone packing to avoid hallways
-        # For now: split zone into left/right sub-columns if corridor runs N-S
-        # and top/bottom sub-rows if corridor runs E-W
-        vert_corridors  = [h for h in hall_rects if (h["x1"]-h["x0"]) <= (h["y1"]-h["y0"])]
-        horiz_corridors = [h for h in hall_rects if (h["x1"]-h["x0"]) > (h["y1"]-h["y0"])]
-
-        # Use sub-packing regions (split on first corridor)
+    def _carve_zone(zx0, zy0, zx1, zy1):
+        """Split zone into packing regions around hallways."""
         pack_regions = [{"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}]
-        for vc in vert_corridors:
+        for hr in hall_rects:
+            hx0, hy0, hx1, hy1 = hr["x0"], hr["y0"], hr["x1"], hr["y1"]
+            if not (hx0 < zx1 and hx1 > zx0 and hy0 < zy1 and hy1 > zy0):
+                continue
             new_regions = []
             for reg in pack_regions:
-                if vc["x0"] > reg["x0"] + 2:
-                    new_regions.append({"x0": reg["x0"], "y0": reg["y0"],
-                                        "x1": vc["x0"], "y1": reg["y1"]})
-                if vc["x1"] < reg["x1"] - 2:
-                    new_regions.append({"x0": vc["x1"], "y0": reg["y0"],
-                                        "x1": reg["x1"], "y1": reg["y1"]})
+                is_vert = (hr["x1"] - hr["x0"]) <= (hr["y1"] - hr["y0"])
+                if is_vert:
+                    if hx0 > reg["x0"] + 2:
+                        new_regions.append({"x0": reg["x0"], "y0": reg["y0"],
+                                            "x1": hx0, "y1": reg["y1"]})
+                    if hx1 < reg["x1"] - 2:
+                        new_regions.append({"x0": hx1, "y0": reg["y0"],
+                                            "x1": reg["x1"], "y1": reg["y1"]})
+                else:
+                    if hy0 > reg["y0"] + 2:
+                        new_regions.append({"x0": reg["x0"], "y0": reg["y0"],
+                                            "x1": reg["x1"], "y1": hy0})
+                    if hy1 < reg["y1"] - 2:
+                        new_regions.append({"x0": reg["x0"], "y0": hy1,
+                                            "x1": reg["x1"], "y1": reg["y1"]})
             if new_regions:
                 pack_regions = new_regions
-        for hc in horiz_corridors:
-            new_regions = []
-            for reg in pack_regions:
-                if hc["y0"] > reg["y0"] + 2:
-                    new_regions.append({"x0": reg["x0"], "y0": reg["y0"],
-                                        "x1": reg["x1"], "y1": hc["y0"]})
-                if hc["y1"] < reg["y1"] - 2:
-                    new_regions.append({"x0": reg["x0"], "y0": hc["y1"],
-                                        "x1": reg["x1"], "y1": reg["y1"]})
-            if new_regions:
-                pack_regions = new_regions
+        return pack_regions[0] if pack_regions else {"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}
 
-        # Use first region as primary packing area
-        primary = pack_regions[0] if pack_regions else {"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}
-        zx0, zy0, zx1, zy1 = primary["x0"], primary["y0"], primary["x1"], primary["y1"]
+    def _pack_rooms(room_list, zx0, zy0, zx1, zy1, zone_name):
+        """Simple row-wrap packer within a zone rect."""
         zone_w = zx1 - zx0
         zone_d = zy1 - zy0
-
-        cursor_x = zx0
-        cursor_y = zy0
+        total_sf = sum(r.get("sf", 100) for r in room_list)
+        cursor_x, cursor_y = zx0, zy0
         row_height = 0.0
+        coords = {}
 
-        for r in z_rooms:
+        for r in room_list:
             sf = r.get("sf", 100)
-
-            # ── Use actual dims from model output if available ────────────
-            # Fine-tuned model may return w/d or width/depth or dimensions dict
-            room_w = None
-            room_d = None
+            room_w = r.get("w") or r.get("width")
+            room_d = r.get("d") or r.get("depth")
             dims = r.get("dimensions") or {}
             if isinstance(dims, dict):
-                room_w = dims.get("w") or dims.get("width")
-                room_d = dims.get("d") or dims.get("depth")
-            if not room_w:
-                room_w = r.get("w") or r.get("width")
-            if not room_d:
-                room_d = r.get("d") or r.get("depth")
+                room_w = room_w or dims.get("w") or dims.get("width")
+                room_d = room_d or dims.get("d") or dims.get("depth")
 
-            # Fallback: derive from SF with reasonable aspect ratio
             if not room_w or not room_d:
                 frac = sf / max(total_sf, 1)
                 area = frac * zone_w * zone_d
                 room_w = math.sqrt(area * (zone_w / max(zone_d, 1)))
-                room_w = max(8, min(room_w, zone_w))
+                room_w = max(8, min(float(room_w), zone_w))
                 room_d = area / max(room_w, 1)
-                room_d = max(8, min(room_d, zone_d))
+                room_d = max(8, min(float(room_d), zone_d))
             else:
-                room_w = float(room_w)
-                room_d = float(room_d)
+                room_w, room_d = float(room_w), float(room_d)
 
-            # Wrap to next row if needed
             if cursor_x + room_w > zx1 + 0.5:
                 cursor_x = zx0
                 cursor_y += row_height
                 row_height = 0.0
-
-            # Clamp to zone boundaries — never exceed zone extents
             if cursor_y + room_d > zy1:
-                room_d = zy1 - cursor_y
-            if room_d < 4:
-                cursor_y = zy0
-                cursor_x = zx0 + zone_w * 0.8
-                room_d = min(zone_d, room_d + 8)
+                room_d = max(4, zy1 - cursor_y)
             if cursor_x + room_w > zx1:
-                room_w = zx1 - cursor_x
-            room_w = max(room_w, 4)
-            room_d = max(room_d, 4)
+                room_w = max(4, zx1 - cursor_x)
 
-            room_coords[r["name"]] = {
-                "x0": round(cursor_x, 1),
-                "y0": round(cursor_y, 1),
-                "x1": round(cursor_x + room_w, 1),
-                "y1": round(cursor_y + room_d, 1),
-                "sf": sf,
-                "zone": z_name,
-                "dims_source": "model" if (r.get("w") or r.get("dimensions")) else "derived",
+            coords[r["name"]] = {
+                "x0": round(cursor_x, 1), "y0": round(cursor_y, 1),
+                "x1": round(cursor_x + room_w, 1), "y1": round(cursor_y + room_d, 1),
+                "sf": sf, "zone": zone_name, "dims_source": "model" if r.get("w") else "derived",
             }
             cursor_x += room_w
             row_height = max(row_height, room_d)
 
+        return coords
+
+    # ── Separate rooms by special type ────────────────────────────────────
+    front_porches, back_porches = [], []
+    garage_rooms, service_rooms = [], []
+    master_rooms, living_rooms, bed_rooms = [], [], []
+
+    for r in rooms:
+        n = r["name"].lower()
+        z = _get_zone(r["name"])
+        if "front porch" in n:
+            front_porches.append(r)
+        elif "back porch" in n or "rear porch" in n or "covered porch" in n and "back" in n:
+            back_porches.append(r)
+        elif "porch" in n or "patio" in n:
+            back_porches.append(r)  # default unknown porches to rear
+        elif "garage" in n:
+            garage_rooms.append(r)
+        elif z == "service":
+            service_rooms.append(r)
+        elif z == "master":
+            master_rooms.append(r)
+        elif z == "beds":
+            bed_rooms.append(r)
+        else:
+            living_rooms.append(r)
+
+    # ── Resolve zone rects ────────────────────────────────────────────────
+    def _zone(name_candidates):
+        for k in name_candidates:
+            if k in zones:
+                return zones[k]
+        return None
+
+    master_zone  = _zone(["master"])
+    living_zone  = _zone(["living_core", "living", "great_room"])
+    bed_zone     = _zone(["bed_wing", "beds"])
+    service_zone = _zone(["service"])
+    garage_zone  = _zone(["garage"])
+    porch_zone   = _zone(["porch"])
+
+    # ── 1. Garage — use garage zone or right portion of service ──────────
+    if garage_rooms:
+        gz = garage_zone or service_zone
+        if gz:
+            g = garage_rooms[0]
+            sf = g.get("sf", 576)
+            gw = math.sqrt(sf * 1.2)
+            gd = sf / gw
+            gx0 = gz["x0"]
+            gy0 = gz["y0"]
+            room_coords[g["name"]] = {
+                "x0": round(gx0, 1), "y0": round(gy0, 1),
+                "x1": round(gx0 + gw, 1), "y1": round(gy0 + gd, 1),
+                "sf": sf, "zone": "service", "dims_source": "derived",
+            }
+
+    # ── 2. Service rooms (laundry, mudroom, pantry, utility) ─────────────
+    #    Place in service zone, on the KITCHEN-ADJACENT side (not next to garage)
+    if service_rooms and service_zone:
+        sz = service_zone
+        # Place service rooms at the inner edge of service zone (x0 side = adjacent to living)
+        svc_carved = _carve_zone(sz["x0"], sz["y0"], sz["x1"], sz["y1"])
+        # Sort: mudroom/pantry first (kitchen adjacency), laundry/utility last
+        def _svc_priority(r):
+            n = r["name"].lower()
+            if "mudroom" in n or "pantry" in n: return 0
+            if "laundry" in n: return 1
+            return 2
+        service_rooms.sort(key=_svc_priority)
+        room_coords.update(_pack_rooms(service_rooms, svc_carved["x0"], svc_carved["y0"],
+                                        svc_carved["x1"], svc_carved["y1"], "service"))
+
+    # ── 3. Master suite ───────────────────────────────────────────────────
+    if master_rooms and master_zone:
+        mz = master_zone
+        master_carved = _carve_zone(mz["x0"], mz["y0"], mz["x1"], mz["y1"])
+        # Sort: master bed first (largest), then bath, then closet
+        def _master_priority(r):
+            n = r["name"].lower()
+            if "bed" in n: return 0
+            if "bath" in n: return 1
+            return 2
+        master_rooms.sort(key=_master_priority)
+        room_coords.update(_pack_rooms(master_rooms, master_carved["x0"], master_carved["y0"],
+                                        master_carved["x1"], master_carved["y1"], "master"))
+
+    # ── 4. Living core ────────────────────────────────────────────────────
+    if living_rooms and living_zone:
+        lz = living_zone
+        living_carved = _carve_zone(lz["x0"], lz["y0"], lz["x1"], lz["y1"])
+        living_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
+        room_coords.update(_pack_rooms(living_rooms, living_carved["x0"], living_carved["y0"],
+                                        living_carved["x1"], living_carved["y1"], "living"))
+
+    # ── 5. Secondary bedrooms — split around corridor ─────────────────────
+    if bed_rooms and bed_zone:
+        bz = bed_zone
+        bed_carved = _carve_zone(bz["x0"], bz["y0"], bz["x1"], bz["y1"])
+        bed_rooms.sort(key=lambda r: r.get("sf", 100), reverse=True)
+        room_coords.update(_pack_rooms(bed_rooms, bed_carved["x0"], bed_carved["y0"],
+                                        bed_carved["x1"], bed_carved["y1"], "beds"))
+
+    # ── 6. Back porch — attach to rear (north/max-Y) face ────────────────
+    if back_porches:
+        porch_y0 = fp_y1  # rear face
+        total_porch_sf = sum(r.get("sf", 200) for r in back_porches)
+        porch_d = max(10, total_porch_sf / max(fp_x1 - fp_x0, 1))
+        porch_d = min(porch_d, 20)
+        # Center on rear face of main house
+        house_cx = (fp_x0 + fp_x1) / 2
+        porch_w = min(total_porch_sf / porch_d, fp_x1 - fp_x0)
+        px0 = house_cx - porch_w / 2
+        px1 = house_cx + porch_w / 2
+        for r in back_porches:
+            sf = r.get("sf", 200)
+            rw = min(sf / porch_d, porch_w)
+            room_coords[r["name"]] = {
+                "x0": round(px0, 1), "y0": round(porch_y0, 1),
+                "x1": round(px0 + rw, 1), "y1": round(porch_y0 + porch_d, 1),
+                "sf": sf, "zone": "porch", "dims_source": "derived",
+            }
+            px0 += rw
+
+    # ── 7. Front porch — attach to entry (south/min-Y) face ──────────────
+    if front_porches:
+        porch_y1 = fp_y0  # entry face
+        porch_d = 10
+        house_cx = (fp_x0 + fp_x1) / 2
+        total_porch_sf = sum(r.get("sf", 150) for r in front_porches)
+        porch_w = min(total_porch_sf / porch_d, (fp_x1 - fp_x0) * 0.6)
+        px0 = house_cx - porch_w / 2
+        for r in front_porches:
+            sf = r.get("sf", 150)
+            rw = min(sf / porch_d, porch_w)
+            room_coords[r["name"]] = {
+                "x0": round(px0, 1), "y0": round(porch_y1 - porch_d, 1),
+                "x1": round(px0 + rw, 1), "y1": round(porch_y1, 1),
+                "sf": sf, "zone": "porch", "dims_source": "derived",
+            }
+            px0 += rw
+
     return room_coords
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  3b. solve_circulation
-# ══════════════════════════════════════════════════════════════════════════════
 
 def solve_circulation(layout_json: dict, footprint_zones: dict, intake_json: dict) -> dict:
     """
