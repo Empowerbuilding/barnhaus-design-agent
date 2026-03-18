@@ -1292,23 +1292,16 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
             }
             px0 += rw
 
-    # ── Snap foyer to align with front porch center ───────────────────────
-    # Foyer is in circulation spine — make it contiguous with front porch entry
-    front_porch_coord = next(
-        (v for k, v in room_coords.items() if "front porch" in k.lower()), None
-    )
-    if front_porch_coord and circulation_spine:
-        fp_cx = (front_porch_coord["x0"] + front_porch_coord["x1"]) / 2
-        foyer_w = 10  # standard foyer width
-        foyer_d = 8
-        # Place foyer at house south face, centered on front porch
-        house_south = front_porch_coord["y1"]
-        foyer_coord = {
-            "x0": round(fp_cx - foyer_w/2, 1), "y0": round(house_south, 1),
-            "x1": round(fp_cx + foyer_w/2, 1), "y1": round(house_south + foyer_d, 1),
-            "sf": 80, "zone": "living", "dims_source": "derived",
-        }
-        room_coords["Foyer"] = foyer_coord
+    # ── Align front porch to foyer from circulation spine ────────────────
+    # Shift front porch x to center on foyer spine segment (not house center)
+    foyer_seg = next((s for s in (circulation_spine or []) if s.get("type") == "foyer"), None)
+    fp_coord = next((v for k, v in room_coords.items() if "front porch" in k.lower()), None)
+    fp_key = next((k for k in room_coords if "front porch" in k.lower()), None)
+    if foyer_seg and fp_coord and fp_key:
+        foyer_cx = (foyer_seg["x0"] + foyer_seg["x1"]) / 2
+        pw = fp_coord["x1"] - fp_coord["x0"]
+        room_coords[fp_key]["x0"] = round(foyer_cx - pw/2, 1)
+        room_coords[fp_key]["x1"] = round(foyer_cx + pw/2, 1)
 
     return room_coords
 
