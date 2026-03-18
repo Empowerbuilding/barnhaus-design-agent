@@ -745,13 +745,27 @@ def _solve_h_shape(living_sf: int, garage_w: int, garage_d: int,
     bridge_y0 = (max_wing_d - bridge_d) / 2
     bridge_y1 = bridge_y0 + bridge_d
 
+    # Garage placement: attach to left wing (master side) by default
+    # This keeps the H footprint compact instead of extending total_w
+    if garage_attachment in ("attached_left", "attached_right", None, ""):
+        garage_x0 = 0
+        garage_x1 = garage_w
+        garage_y0 = lw_d  # below master wing
+        garage_y1 = lw_d + garage_d
+        lw_d_with_garage = lw_d + garage_d
+    else:
+        garage_x0 = total_w
+        garage_x1 = total_w + garage_w
+        garage_y0 = wing_y0
+        garage_y1 = wing_y0 + garage_d
+        lw_d_with_garage = max_wing_d
+
     zones = {
         "master":       {"x0": 0,         "y0": wing_y0, "x1": lw_w,        "y1": lw_d},
         "living_core":  {"x0": bridge_x0, "y0": bridge_y0, "x1": bridge_x1, "y1": bridge_y1},
         "bed_wing":     {"x0": total_w - rw_w, "y0": wing_y0, "x1": total_w, "y1": rw_d},
-        "service":      {"x0": total_w,   "y0": wing_y0, "x1": total_w + garage_w, "y1": garage_d},
-        "garage":       {"x0": total_w,   "y0": wing_y0 + 4,
-                         "x1": total_w + garage_w, "y1": wing_y0 + 4 + garage_d},
+        "service":      {"x0": garage_x0, "y0": garage_y0, "x1": garage_x1, "y1": garage_y1},
+        "garage":       {"x0": garage_x0, "y0": garage_y0, "x1": garage_x1, "y1": garage_y1},
     }
     zones["living"]       = zones["living_core"]
     zones["beds"]         = zones["bed_wing"]
@@ -796,12 +810,13 @@ def _solve_h_shape(living_sf: int, garage_w: int, garage_d: int,
 
     actual_sf = lw_w * lw_d + bridge_w * bridge_d + rw_w * rw_d
 
+    total_depth_final = max(lw_d_with_garage, rw_d, bridge_y1)
     return {
         "shape": "h_shape",
-        "total_width": total_w + garage_w,
-        "total_depth": max_wing_d,
+        "total_width": total_w,
+        "total_depth": total_depth_final,
         "polygon": polygon, "zones": zones, "bumpouts": [],
-        "total_sf": actual_sf, "width": total_w + garage_w, "depth": max_wing_d,
+        "total_sf": actual_sf, "width": total_w, "depth": total_depth_final,
         "ceiling_heights": {
             "master": 11, "living_core": 16, "bed_wing": 10, "service": 9,
         },
