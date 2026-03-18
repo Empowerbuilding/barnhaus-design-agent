@@ -2618,6 +2618,17 @@ Rules:
             if correct_zone != "living":  # living is default — trust model on living
                 rc["zone"] = correct_zone
 
+        # Fix SF labels from brain output — don't move rooms, just correct the numbers
+        rooms_src = layout_json.get("rooms", [])
+        if isinstance(rooms_src, list):
+            sf_lookup = {r["name"]: r.get("sf",100) for r in rooms_src if isinstance(r,dict)}
+        else:
+            sf_lookup = {k.replace("_"," ").title(): v.get("sf",100) if isinstance(v,dict) else v
+                         for k,v in rooms_src.items()}
+        for rname, rc in room_coords.items():
+            if rname in sf_lookup:
+                rc["sf"] = sf_lookup[rname]
+
         print(f"✅ Spatial model placed {len(room_coords)} rooms")
         return room_coords
 
