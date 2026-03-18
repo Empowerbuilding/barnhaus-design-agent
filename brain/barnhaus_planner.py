@@ -2720,7 +2720,7 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
         resp = client.chat.completions.create(
             model=SPATIAL_MODEL,
             messages=[
-                {"role": "system", "content": "You are a Barnhaus spatial layout engine. Given a design brief, output structured room coordinates as JSON. CRITICAL: Use the exact room widths and depths provided in the prompt. NEVER use 10x10 placeholder sizes. Rooms must not overlap. Each room x1-x0 and y1-y0 must match the target dimensions given."},
+                {"role": "system", "content": "You are a Barnhaus spatial layout engine. Given a design brief, output a room adjacency graph as JSON: {RoomName: [adjacent_room1, adjacent_room2, ...], ...}. Include ALL rooms. Rooms that share a wall or open connection are adjacent. Group master suite rooms together, group secondary beds together, connect kitchen/dining/great room as open plan."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.2,
@@ -2739,10 +2739,16 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
 
         # Detect v2 adjacency graph output vs v1 coordinate output
         first_rv = next((v for v in rooms_out.values() if isinstance(v, dict)), {})
-        is_v2 = "adjacent_to" in first_rv and "x0" not in first_rv
+        # v2 outputs flat adjacency list: {room: [adj1, adj2]} OR {room: {"adjacent_to": [...]}}
+        first_val = next(iter(rooms_out.values()), None)
+        is_v2 = (isinstance(first_val, list) or 
+                 (isinstance(first_rv, dict) and "adjacent_to" in first_rv and "x0" not in first_rv))
 
         if is_v2:
             print("  spatial-v2 adjacency graph detected → running graph packer")
+            # Normalize flat list format to {room: {"adjacent_to": [...]}} for packer
+            if isinstance(first_val, list):
+                rooms_out = {k: {"adjacent_to": v, "sf": next((r.get("sf",100) for r in layout_json.get("rooms",[]) if r["name"].lower().replace(" ","_") == k.lower().replace(" ","_")), 100)} for k,v in rooms_out.items()}
             from barnhaus_graph_packer import pack as _graph_pack
             room_coords = _graph_pack(rooms_out, footprint)
             for rname, rc in room_coords.items():
