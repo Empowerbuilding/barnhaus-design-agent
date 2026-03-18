@@ -1010,9 +1010,14 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
         hall_rects = _expand_circulation_to_rects(circulation_spine)
 
     def _carve_zone(zx0, zy0, zx1, zy1):
-        """Split zone into packing regions around hallways."""
+        """Split zone into packing regions around hallways.
+        Only carves L1 circulation (foyer, gallery, corridor).
+        Skips landings (L2) and foyers that are subsets of living zone.
+        """
+        # Only carve actual corridors — not landings (L2) or foyers (part of living)
+        CARVE_TYPES = {"corridor", "gallery"}
         pack_regions = [{"x0": zx0, "y0": zy0, "x1": zx1, "y1": zy1}]
-        for hr in hall_rects:
+        for hr in [h for h in hall_rects if h.get("type") in CARVE_TYPES]:
             hx0, hy0, hx1, hy1 = hr["x0"], hr["y0"], hr["x1"], hr["y1"]
             if not (hx0 < zx1 and hx1 > zx0 and hy0 < zy1 and hy1 > zy0):
                 continue
