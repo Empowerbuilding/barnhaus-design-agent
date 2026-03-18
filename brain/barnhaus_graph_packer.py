@@ -1,306 +1,204 @@
 """
-barnhaus_graph_packer.py
+barnhaus_graph_packer.py — Row-fill zone packer (v3)
 
-Takes a room adjacency graph (spatial-v2 output) + footprint
-and produces x/y room coordinates using shape-zone-aware packing.
+Algorithm:
+1. Group rooms by zone (master, living, beds, service, garage, porch)
+2. For each zone, sort rooms largest->smallest
+3. Fill rows left->right within zone bounds, wrapping to next row
+4. Stretch rooms horizontally to fill zone width (no gaps, no overlaps)
 """
+from __future__ import annotations
 import math
-from collections import deque
+from typing import Dict, List, Tuple
 
 GRID = 1.0
 
-def snap(v): return round(v / GRID) * GRID
+def snap(v):
+    return round(v / GRID) * GRID
 
-def rooms_overlap(a, b, tol=0.5):
-    return (a["x0"]+tol < b["x1"] and b["x0"]+tol < a["x1"] and
-            a["y0"]+tol < b["y1"] and b["y0"]+tol < a["y1"])
-
-def dims_from_sf(name: str, sf: int) -> tuple:
-    ASPECT = {
-        "great room":1.4,"kitchen":1.2,"dining":1.3,"master bed":1.2,
-        "master bath":1.0,"master closet":0.8,"bed":1.1,"bath":0.85,
-        "laundry":1.0,"mudroom":1.2,"butler pantry":0.7,"utility":1.0,
-        "home office":1.2,"porch":2.5,"garage":1.5,"foyer":1.2,
-        "corridor":4.0,"gallery":3.0,"study":1.1,
-    }
+# ── Zone routing ─────────────────────────────────────────────────────────────
+def zone_for_room(name: str) -> str:
     n = name.lower()
-    asp = next((v for k,v in ASPECT.items() if k in n), 1.15)
-    w = max(8.0, math.sqrt(sf * asp))
-    d = max(8.0, sf / w)
-    return snap(w), snap(d)
-
-def get_shape_zones(shape: str, fp_w: float, fp_d: float) -> dict:
-    """
-    Return zone boundaries per shape.
-    Each zone: {x0, y0, x1, y1}
-    """
-    s = (shape or "rectangle").lower().replace(" ", "-")
-
-    if s == "h-shape":
-        lw = fp_w * 0.30  # left wing 30%
-        rw = fp_w * 0.70  # right wing starts at 70%
-        bridge_y0 = fp_d * 0.25
-        bridge_y1 = fp_d * 0.75
-        return {
-            "master":   {"x0": 0,   "y0": 0,         "x1": lw,   "y1": fp_d},
-            "living":   {"x0": lw,  "y0": bridge_y0, "x1": rw,   "y1": bridge_y1},
-            "beds":     {"x0": rw,  "y0": 0,         "x1": fp_w, "y1": fp_d},
-            "service":  {"x0": lw,  "y0": 0,         "x1": rw,   "y1": bridge_y0},
-            "garage":   {"x0": 0,   "y0": fp_d*0.6,  "x1": lw,   "y1": fp_d},
-            "porch":    {"x0": lw,  "y0": 0,         "x1": rw,   "y1": fp_d},
-        }
-    elif s in ("l-shape", "asymmetric-l"):
-        return {
-            "master":   {"x0": 0,        "y0": fp_d*0.4, "x1": fp_w*0.35, "y1": fp_d},
-            "living":   {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.7,  "y1": fp_d},
-            "beds":     {"x0": fp_w*0.65,"y0": 0,        "x1": fp_w,      "y1": fp_d},
-            "service":  {"x0": 0,        "y0": 0,        "x1": fp_w*0.3,  "y1": fp_d*0.45},
-            "garage":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.25, "y1": fp_d*0.4},
-            "porch":    {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.8,  "y1": fp_d},
-        }
-    elif s == "t-shape":
-        return {
-            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.28, "y1": fp_d*0.6},
-            "living":   {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.75, "y1": fp_d},
-            "beds":     {"x0": fp_w*0.72,"y0": 0,        "x1": fp_w,      "y1": fp_d*0.6},
-            "service":  {"x0": fp_w*0.25,"y0": fp_d*0.6, "x1": fp_w*0.75, "y1": fp_d},
-            "garage":   {"x0": 0,        "y0": fp_d*0.55,"x1": fp_w*0.28, "y1": fp_d},
-            "porch":    {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.75, "y1": fp_d},
-        }
-    elif s == "u-shape":
-        return {
-            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.28, "y1": fp_d},
-            "living":   {"x0": fp_w*0.25,"y0": fp_d*0.4, "x1": fp_w*0.75, "y1": fp_d},
-            "beds":     {"x0": fp_w*0.72,"y0": 0,        "x1": fp_w,      "y1": fp_d},
-            "service":  {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.75, "y1": fp_d*0.45},
-            "garage":   {"x0": 0,        "y0": fp_d*0.6, "x1": fp_w*0.28, "y1": fp_d},
-            "porch":    {"x0": fp_w*0.3, "y0": fp_d*0.4, "x1": fp_w*0.7,  "y1": fp_d},
-        }
-    elif s == "dogtrot":
-        return {
-            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.4,  "y1": fp_d},
-            "living":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.4,  "y1": fp_d},
-            "beds":     {"x0": fp_w*0.6, "y0": 0,        "x1": fp_w,      "y1": fp_d},
-            "service":  {"x0": fp_w*0.6, "y0": 0,        "x1": fp_w,      "y1": fp_d},
-            "garage":   {"x0": fp_w*0.6, "y0": fp_d*0.5, "x1": fp_w,      "y1": fp_d},
-            "porch":    {"x0": fp_w*0.4, "y0": 0,        "x1": fp_w*0.6,  "y1": fp_d},
-        }
-    elif s == "z-shape":
-        return {
-            "master":   {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.5,  "y1": fp_d},
-            "living":   {"x0": fp_w*0.15,"y0": 0,        "x1": fp_w*0.85, "y1": fp_d},
-            "beds":     {"x0": fp_w*0.5, "y0": 0,        "x1": fp_w,      "y1": fp_d*0.5},
-            "service":  {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.5,  "y1": fp_d},
-            "garage":   {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.3,  "y1": fp_d},
-            "porch":    {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.8,  "y1": fp_d},
-        }
-    else:  # rectangle, barn-bar, courtyard, default
-        return {
-            "master":   {"x0": 0,        "y0": 0,        "x1": fp_w*0.28, "y1": fp_d},
-            "living":   {"x0": fp_w*0.25,"y0": 0,        "x1": fp_w*0.65, "y1": fp_d},
-            "beds":     {"x0": fp_w*0.62,"y0": 0,        "x1": fp_w,      "y1": fp_d},
-            "service":  {"x0": fp_w*0.62,"y0": 0,        "x1": fp_w,      "y1": fp_d},
-            "garage":   {"x0": 0,        "y0": fp_d*0.5, "x1": fp_w*0.28, "y1": fp_d},
-            "porch":    {"x0": fp_w*0.2, "y0": 0,        "x1": fp_w*0.8,  "y1": fp_d},
-        }
-
-def zone_for_room(name: str, room_zone: str) -> str:
-    """Map brain zone name → shape zone key."""
-    n = name.lower()
-    if "garage" in n:                                          return "garage"
-    if "porch" in n:                                           return "porch"
-    if "master" in n:                                          return "master"
-    if "bed" in n and "bath" not in n and "master" not in n:  return "beds"
-    if "bath" in n and "master" not in n:                      return "beds"
-    if n in ("mudroom","laundry","utility","utility room"):     return "master"   # near garage/master
-    if "pantry" in n or "butler" in n:                         return "living"   # near kitchen
-    if room_zone in ("service",):                              return "master"
-    if room_zone == "master":                                  return "master"
-    if room_zone == "beds":                                    return "beds"
-    if room_zone == "garage":                                  return "garage"
+    if "garage" in n:                                           return "garage"
+    if "front porch" in n or ("porch" in n and "front" in n):  return "front_porch"
+    if "back porch" in n  or ("porch" in n and "back" in n):   return "back_porch"
+    if "porch" in n or "deck" in n or "balcony" in n:          return "back_porch"
+    if "master" in n:                                           return "master"
+    if "bed" in n and "bath" not in n:                          return "beds"
+    if "bath" in n and "master" not in n:                       return "beds"
+    if n in ("mudroom","laundry","utility","utility room","mechanical","storage"): return "service"
+    if "pantry" in n or "butler" in n:                          return "living"
     return "living"
 
-def get_void_zones(shape: str, fp_w: float, fp_d: float) -> list:
-    """Return list of void rectangles (areas rooms must NOT enter)."""
+# ── Zone bounds ───────────────────────────────────────────────────────────────
+def get_zone_bounds(shape, fp_w, fp_d, fp_zones):
     s = (shape or "rectangle").lower().replace(" ","-").replace("_","-")
-    if s == "h-shape":
-        lw = fp_w * 0.30; rw = fp_w * 0.70
-        by0 = fp_d * 0.25; by1 = fp_d * 0.75
-        return [
-            {"x0": lw, "y0": 0,   "x1": rw, "y1": by0},   # front void
-            {"x0": lw, "y0": by1, "x1": rw, "y1": fp_d},   # rear void
-        ]
-    elif s in ("l-shape","asymmetric-l"):
-        return [{"x0": fp_w*0.6, "y0": fp_d*0.55, "x1": fp_w, "y1": fp_d}]
-    elif s == "t-shape":
-        return [
-            {"x0": 0,       "y0": fp_d*0.6, "x1": fp_w*0.25, "y1": fp_d},
-            {"x0": fp_w*0.75,"y0": fp_d*0.6,"x1": fp_w,      "y1": fp_d},
-        ]
-    elif s == "u-shape":
-        return [{"x0": fp_w*0.3, "y0": fp_d*0.45, "x1": fp_w*0.7, "y1": fp_d}]
-    elif s == "dogtrot":
-        return [{"x0": fp_w*0.42, "y0": 0, "x1": fp_w*0.58, "y1": fp_d*0.3},
-                {"x0": fp_w*0.42, "y0": fp_d*0.7, "x1": fp_w*0.58, "y1": fp_d}]
-    return []
+    bounds = {}
 
-def get_real_voids(shape: str, fp_w: float, fp_d: float, fp_zones: dict) -> list:
-    """
-    Derive actual void rectangles from real footprint zone geometry.
-    Voids = areas inside bounding box but outside any zone.
-    """
+    def _z(keys, fallback):
+        for k in keys:
+            if k in fp_zones:
+                z = fp_zones[k]
+                return {"x0":max(0,z["x0"]),"y0":max(0,z["y0"]),"x1":min(fp_w,z["x1"]),"y1":min(fp_d,z["y1"])}
+        return fallback
+
+    if s == "h-shape":
+        bounds["master"]      = _z(["master","left_wing"],              {"x0":0,          "y0":0,         "x1":fp_w*0.28, "y1":fp_d*0.65})
+        bounds["living"]      = _z(["center_bridge","living_core","living"],{"x0":fp_w*0.28,"y0":0,       "x1":fp_w*0.72, "y1":fp_d*0.65})
+        bounds["beds"]        = _z(["bed_wing","right_wing","beds"],    {"x0":fp_w*0.72,  "y0":0,         "x1":fp_w,      "y1":fp_d*0.65})
+        bounds["service"]     = _z(["service"],                         {"x0":0,          "y0":fp_d*0.50, "x1":fp_w*0.28, "y1":fp_d*0.70})
+        bounds["garage"]      = _z(["garage"],                          {"x0":0,          "y0":fp_d*0.60, "x1":fp_w*0.28, "y1":fp_d})
+        # Porches snap to bridge front/back face
+        bz = bounds["living"]
+        bounds["front_porch"] = {"x0":bz["x0"], "y0":0,         "x1":bz["x1"], "y1":fp_d*0.12}
+        bounds["back_porch"]  = {"x0":bz["x0"], "y0":fp_d*0.88, "x1":bz["x1"], "y1":fp_d}
+    elif s in ("l-shape","asymmetric-l"):
+        bounds["master"]      = _z(["master","left_wing"],  {"x0":0,         "y0":0,        "x1":fp_w*0.50, "y1":fp_d})
+        bounds["living"]      = _z(["living_core","living"],{"x0":fp_w*0.30, "y0":0,        "x1":fp_w,      "y1":fp_d*0.55})
+        bounds["beds"]        = _z(["bed_wing","beds"],     {"x0":fp_w*0.50, "y0":0,        "x1":fp_w,      "y1":fp_d*0.55})
+        bounds["service"]     = {"x0":0,         "y0":fp_d*0.65, "x1":fp_w*0.40, "y1":fp_d}
+        bounds["garage"]      = _z(["garage"],              {"x0":fp_w*0.55, "y0":fp_d*0.55,"x1":fp_w,      "y1":fp_d})
+        bounds["front_porch"] = {"x0":fp_w*0.25, "y0":0,         "x1":fp_w*0.75, "y1":fp_d*0.12}
+        bounds["back_porch"]  = {"x0":fp_w*0.10, "y0":fp_d*0.88, "x1":fp_w*0.60, "y1":fp_d}
+    else:
+        bounds["master"]      = _z(["master"],  {"x0":0,         "y0":0,        "x1":fp_w*0.35, "y1":fp_d*0.55})
+        bounds["living"]      = _z(["living_core","living"],{"x0":fp_w*0.25,"y0":0,"x1":fp_w*0.75,"y1":fp_d*0.65})
+        bounds["beds"]        = _z(["beds"],    {"x0":fp_w*0.60, "y0":0,        "x1":fp_w,      "y1":fp_d*0.55})
+        bounds["service"]     = {"x0":0,         "y0":fp_d*0.55, "x1":fp_w*0.35,"y1":fp_d}
+        bounds["garage"]      = _z(["garage"],  {"x0":0,         "y0":fp_d*0.60, "x1":fp_w*0.30,"y1":fp_d})
+        bounds["front_porch"] = {"x0":fp_w*0.25,"y0":0,         "x1":fp_w*0.75,"y1":fp_d*0.12}
+        bounds["back_porch"]  = {"x0":fp_w*0.25,"y0":fp_d*0.88, "x1":fp_w*0.75,"y1":fp_d}
+
+    return bounds
+
+# ── Row-fill engine ───────────────────────────────────────────────────────────
+def _target_dims(sf, zone_w):
+    sf = max(sf, 36)
+    for aspect in [1.5, 1.2, 1.0, 2.0, 0.8]:
+        w = math.sqrt(sf * aspect)
+        d = sf / w
+        w = snap(min(w, zone_w))
+        d = snap(d)
+        if w >= 6 and d >= 6:
+            return w, d
+    return max(snap(min(math.sqrt(sf), zone_w)), 6.0), max(snap(sf / max(math.sqrt(sf),1)), 6.0)
+
+def _fill_zone(rooms, zb, zone_key):
+    zw = zb["x1"] - zb["x0"]
+    zd = zb["y1"] - zb["y0"]
+    if zw <= 0 or zd <= 0 or not rooms:
+        return []
+
+    rooms = sorted(rooms, key=lambda r: -r["sf"])
+    placed = []
+    cursor_y = zb["y0"]
+    remaining = list(rooms)
+
+    while remaining and cursor_y < zb["y1"] - 2:
+        row = []
+        row_width = 0.0
+        row_depth = 0.0
+        i = 0
+        while i < len(remaining):
+            rm = remaining[i]
+            w, d = _target_dims(rm["sf"], zw - row_width)
+            w = min(w, zw - row_width)
+            if w < 4:
+                i += 1
+                continue
+            row.append({**rm, "_w": w, "_d": d})
+            row_width += w
+            row_depth = max(row_depth, d)
+            remaining.pop(i)
+            if row_width >= zw * 0.80:
+                break
+
+        if not row:
+            break
+
+        row_depth = snap(min(row_depth, zb["y1"] - cursor_y))
+        if row_depth < 4:
+            break
+
+        # Stretch to fill zone width exactly
+        scale = zw / max(row_width, 0.01)
+        x = zb["x0"]
+        for j, rm in enumerate(row):
+            w = snap(rm["_w"] * scale)
+            if j == len(row) - 1:
+                w = snap(zb["x1"] - x)
+            w = max(w, 4.0)
+            placed.append({
+                "name": rm["name"], "sf": rm["sf"], "zone": zone_key,
+                "x0": snap(x), "y0": snap(cursor_y),
+                "x1": snap(x + w), "y1": snap(cursor_y + row_depth),
+            })
+            x += w
+
+        cursor_y = snap(cursor_y + row_depth)
+
+    return placed
+
+# ── Void zones (for renderer) ─────────────────────────────────────────────────
+def get_real_voids(shape, fp_w, fp_d, fp_zones):
     s = (shape or "rectangle").lower().replace(" ","-").replace("_","-")
     voids = []
     if s == "h-shape" and fp_zones:
-        lw  = fp_zones.get("master") or fp_zones.get("left_wing")
-        br  = fp_zones.get("center_bridge") or fp_zones.get("living_core") or fp_zones.get("living")
-        rw  = fp_zones.get("bed_wing") or fp_zones.get("right_wing") or fp_zones.get("beds")
+        lw = fp_zones.get("master") or fp_zones.get("left_wing")
+        br = fp_zones.get("center_bridge") or fp_zones.get("living_core") or fp_zones.get("living")
+        rw = fp_zones.get("bed_wing") or fp_zones.get("right_wing") or fp_zones.get("beds")
         if lw and br and rw:
-            # Breezeway voids — the 4 corners between wings and bridge
-            # Front-left: x from left-wing-east to bridge-west, y from 0 to bridge-south
-            voids.append({"x0": lw["x1"], "y0": 0,        "x1": br["x0"], "y1": br["y0"]})
-            # Front-right: x from bridge-east to right-wing-west, y from 0 to bridge-south
-            voids.append({"x0": br["x1"], "y0": 0,        "x1": rw["x0"], "y1": br["y0"]})
-            # Rear-left: x from left-wing-east to bridge-west, y from bridge-north to lw-depth
-            lw_y1 = max(lw.get("y1", fp_d), br["y1"])
-            voids.append({"x0": lw["x1"], "y0": br["y1"], "x1": br["x0"], "y1": lw_y1})
-            # Rear-right: x from bridge-east to right-wing-west, y from bridge-north to rw-depth
-            rw_y1 = max(rw.get("y1", fp_d), br["y1"])
-            voids.append({"x0": br["x1"], "y0": br["y1"], "x1": rw["x0"], "y1": rw_y1})
-            # Note: do NOT add front/rear-center voids — bridge IS the living zone, not empty
-    elif s in ("l-shape","asymmetric-l") and fp_zones:
-        mw = fp_zones.get("master")
-        bw = fp_zones.get("bed_wing") or fp_zones.get("beds")
-        if mw and bw:
-            voids.append({"x0": bw["x0"], "y0": bw["y1"], "x1": fp_w, "y1": fp_d})
-    elif s == "u-shape" and fp_zones:
-        br = fp_zones.get("living_core") or fp_zones.get("living")
-        if br:
-            voids.append({"x0": br["x0"], "y0": br["y1"], "x1": br["x1"], "y1": fp_d})
-    return [v for v in voids if v["x1"]-v["x0"] > 2 and v["y1"]-v["y0"] > 2]
+            lx1=lw["x1"]; bx0=br["x0"]; bx1=br["x1"]; rx0=rw["x0"]
+            by0=br["y0"]; by1=br["y1"]
+            lyd=max(lw.get("y1",fp_d),by1); ryd=max(rw.get("y1",fp_d),by1)
+            if bx0 > lx1 + 1:
+                voids.append({"x0":lx1,"y0":0,   "x1":bx0,"y1":by0})
+                voids.append({"x0":lx1,"y0":by1, "x1":bx0,"y1":lyd})
+            if rx0 > bx1 + 1:
+                voids.append({"x0":bx1,"y0":0,   "x1":rx0,"y1":by0})
+                voids.append({"x0":bx1,"y0":by1, "x1":rx0,"y1":ryd})
+    return [v for v in voids if v["x1"]-v["x0"]>1 and v["y1"]-v["y0"]>1]
+
+def get_void_zones(shape, fp_w, fp_d):
+    return get_real_voids(shape, fp_w, fp_d, {})
+
+# ── Main entry point ──────────────────────────────────────────────────────────
+CIRCULATION = {"foyer","gallery","corridor","hallway","landing","entry","breezeway"}
 
 def pack(adjacency: dict, footprint: dict, shape: str = "rectangle") -> dict:
-    fp_w = footprint.get("width", 89)
-    fp_d = footprint.get("depth", 79)
-    fp_zones_raw = footprint.get("zones", {})
-    zones = get_shape_zones(shape, fp_w, fp_d)
-    # Use real voids from actual footprint geometry if available
-    voids = get_real_voids(shape, fp_w, fp_d, fp_zones_raw) or get_void_zones(shape, fp_w, fp_d)
-    placed = {}
+    fp_w     = footprint.get("width", 89)
+    fp_d     = footprint.get("depth", 79)
+    fp_zones = footprint.get("zones", {})
+    zb_all   = get_zone_bounds(shape, fp_w, fp_d, fp_zones)
 
-    def zone_bounds(zkey: str) -> dict:
-        # Prefer real footprint zone geometry over computed percentages
-        ZONE_MAP = {
-            "master":  ["master","left_wing"],
-            "living":  ["living_core","center_bridge","living"],
-            "beds":    ["bed_wing","right_wing","beds"],
-            "service": ["garage","service","master"],  # service falls near garage/master
-            "garage":  ["garage"],
-            "porch":   ["porch","living_core","center_bridge","living"],
-        }
-        for key in ZONE_MAP.get(zkey, [zkey]):
-            if key in fp_zones_raw:
-                z = fp_zones_raw[key]
-                # Clamp to footprint bounds
-                return {
-                    "x0": max(0, z["x0"]), "y0": max(0, z["y0"]),
-                    "x1": min(fp_w, z["x1"]), "y1": min(fp_d, z["y1"])
-                }
-        return zones.get(zkey, {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d})
+    # Build room list, skip circulation
+    rooms_list = []
+    for name, val in adjacency.items():
+        if name.lower() in CIRCULATION:
+            continue
+        sf = val.get("sf", 100) if isinstance(val, dict) else 100
+        rooms_list.append({"name": name, "sf": sf})
 
-    def _try_place(x0, y0, w, d, name, zkey=None):
-        """Place room, clamped to its zone bounds, avoiding voids."""
-        zb = zone_bounds(zkey) if zkey else {"x0":0,"y0":0,"x1":fp_w,"y1":fp_d}
-        x0 = max(zb["x0"], min(snap(x0), max(zb["x0"], zb["x1"] - w)))
-        y0 = max(zb["y0"], min(snap(y0), max(zb["y0"], zb["y1"] - d)))
-        x1 = snap(min(x0 + w, zb["x1"]))
-        y1 = snap(min(y0 + d, zb["y1"]))
-        if x1 - x0 < 4 or y1 - y0 < 4:
-            return None
-        c = {"x0":x0,"y0":y0,"x1":x1,"y1":y1}
-        # Check void zones — rooms must not enter voids (porches exempt — they live in open areas)
-        is_porch = "porch" in name.lower()
-        if not is_porch:
-            for v in voids:
-                if rooms_overlap(c, v, 0.5):
-                    return None
-        if any(rooms_overlap(c, p, 0.5) for n,p in placed.items() if n != name):
-            return None
-        return c
+    # Group by zone
+    groups = {k: [] for k in zb_all}
+    for rm in rooms_list:
+        zk = zone_for_room(rm["name"])
+        if zk not in groups:
+            zk = "living"
+        groups[zk].append(rm)
 
-    def _place_room(name, rc):
-        w, d = dims_from_sf(name, rc.get("sf", 100))
-        zkey = zone_for_room(name, rc.get("zone","living"))
-        zb = zone_bounds(zkey)
-        zw = zb["x1"] - zb["x0"]
-        zh = zb["y1"] - zb["y0"]
+    # Fill zones
+    placed_list = []
+    for zk, zb in zb_all.items():
+        rms = groups.get(zk, [])
+        if not rms:
+            continue
+        placed_list.extend(_fill_zone(rms, zb, zk))
 
-        # Clamp w/d to zone size
-        w = min(w, zw - 1)
-        d = min(d, zh - 1)
+    result = {}
+    for p in placed_list:
+        result[p["name"]] = {"x0":p["x0"],"y0":p["y0"],"x1":p["x1"],"y1":p["y1"],"sf":p["sf"],"zone":p["zone"]}
+        w=p["x1"]-p["x0"]; d=p["y1"]-p["y0"]
+        print(f"  {p['name']:<22} zone={p['zone']:<14} ({p['x0']:.0f},{p['y0']:.0f})->({p['x1']:.0f},{p['y1']:.0f})  {w*d:.0f} SF")
 
-        # Porch: ALWAYS snap to footprint edges — never use adjacency or grid scan
-        if "porch" in name.lower():
-            br = fp_zones_raw.get("center_bridge") or fp_zones_raw.get("living_core") or fp_zones_raw.get("living")
-            cx_base = (br["x0"]+br["x1"])/2 if br else fp_w/2
-            x0c = max(0, min(snap(cx_base - w/2), fp_w - w))
-            if "front" in name.lower() or "south" in name.lower():
-                return {"x0":x0c, "y0":0, "x1":snap(x0c+w), "y1":snap(d), "sf":rc["sf"], "zone":"porch"}
-            else:  # back porch
-                y0c = max(0, snap(fp_d - d))
-                return {"x0":x0c, "y0":y0c, "x1":snap(x0c+w), "y1":snap(fp_d), "sf":rc["sf"], "zone":"porch"}
-
-        # Try adjacent neighbors first (within same zone preferred)
-        for neighbor in rc.get("adjacent_to", []):
-            if neighbor not in placed: continue
-            nb = placed[neighbor]
-            for (tx, ty) in [
-                (nb["x1"], nb["y0"]),
-                (nb["x0"] - w, nb["y0"]),
-                (nb["x0"], nb["y1"]),
-                (nb["x0"], nb["y0"] - d),
-                (nb["x1"], nb["y1"] - d),
-                (nb["x0"] - w, nb["y1"] - d),
-            ]:
-                r = _try_place(tx, ty, w, d, name, zkey)
-                if r: return {**r, "sf":rc["sf"], "zone":zkey}
-
-        # Grid scan within zone
-        step = GRID * 1
-        y = zb["y0"]
-        while y + d <= zb["y1"]:
-            x = zb["x0"]
-            while x + w <= zb["x1"]:
-                r = _try_place(x, y, w, d, name, zkey)
-                if r: return {**r, "sf":rc["sf"], "zone":zkey}
-                x += step
-            y += step
-
-        # Last resort: zone top-left
-        x0 = zb["x0"]
-        y0 = zb["y0"]
-        return {"x0":snap(x0),"y0":snap(y0),"x1":snap(x0+w),"y1":snap(y0+d),
-                "sf":rc["sf"],"zone":zkey}
-
-    # Priority: porches first (anchor edges), then main rooms, then service
-    PRIORITY = ["front porch","back porch","master bed","garage","great room","kitchen",
-                "dining","master bath","master closet","bed 2","bed 3","bed 4",
-                "bath 2","bath 3","butler pantry","laundry","utility","mudroom","home office"]
-
-    def _pri(name):
-        n = name.lower()
-        for i,k in enumerate(PRIORITY):
-            if k == n: return i
-        return 99
-
-    for name in sorted(adjacency.keys(), key=_pri):
-        placed[name] = _place_room(name, adjacency[name])
-
-    # Report overlaps
-    names = list(placed.keys())
-    for i,a in enumerate(names):
-        for b in names[i+1:]:
-            if rooms_overlap(placed[a], placed[b], 1.0):
-                print(f"  ⚠️  Overlap: {a} ↔ {b}")
-
-    return placed
+    return result
