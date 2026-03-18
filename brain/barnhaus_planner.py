@@ -2749,6 +2749,13 @@ def solve_spatial_layout(layout_json: dict, intake_json: dict, footprint: dict) 
             # Normalize flat list format to {room: {"adjacent_to": [...]}} for packer
             if isinstance(first_val, list):
                 rooms_out = {k: {"adjacent_to": v, "sf": next((r.get("sf",100) for r in layout_json.get("rooms",[]) if r["name"].lower().replace(" ","_") == k.lower().replace(" ","_")), 100)} for k,v in rooms_out.items()}
+
+            # Strip phantom circulation rooms added by spatial model — these are rendered as overlays only
+            CIRCULATION_ROOMS = {"foyer","gallery","corridor","hallway","landing","entry"}
+            rooms_out = {k:v for k,v in rooms_out.items()
+                         if k.lower().split()[0] not in CIRCULATION_ROOMS
+                         and not any(c in k.lower() for c in CIRCULATION_ROOMS)}
+            print(f"  v2 rooms after stripping circulation: {list(rooms_out.keys())}")
             _shape = intake_json.get("house_shape","rectangle")
             _shape = intake_json.get("house_shape","rectangle")
             from barnhaus_graph_packer import pack as _graph_pack
