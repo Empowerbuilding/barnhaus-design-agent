@@ -1754,103 +1754,6 @@ def _upload_spec_to_supabase(spec: dict, submission_id: str) -> str:
     return f"Spec upload failed ({resp.status_code}): {resp.text}"
 
 
-def run_planner(
-    submission_id: str,
-    layout_json: dict,
-    intake_json: dict,
-) -> dict:
-    """Full pipeline: validate -> solve -> assign -> render -> upload -> spec."""
-    layout_json = _normalize_layout(layout_json)
-    layout_json = _correct_layout(layout_json)
-    violations = validate_layout(layout_json, intake_json)
-    footprint = solve_footprint(layout_json, intake_json)
-    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
-    circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
-    # Generate fully resolved spec for Revit execution
-    exterior_json = intake_json.get("exterior", {})
-    spec = generate_spec(
-        submission_id, layout_json, intake_json,
-        footprint, room_coords, circulation, exterior_json
-    )
-    spec_url = _upload_spec_to_supabase(spec, submission_id)
-    print(f"Spec URL: {spec_url}")
-
-    # Render precise floor plan from spec (walls, doors, windows, labels)
-    sid8 = submission_id[:8]
-    image_path = f"designs/floorplan_{sid8}.png"
-    render_spec_floorplan(spec, image_path)
-    floorplan_url = _upload_to_supabase(image_path, submission_id)
-
-    return {
-        "violations": violations,
-        "footprint": footprint,
-        "room_coords": room_coords,
-        "circulation": circulation,
-        "floorplan_url": floorplan_url,
-        "spec_url": spec_url,
-    }
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  CLI
-# ══════════════════════════════════════════════════════════════════════════════
-
-
-if __name__ == "__main__":
-    import sys, os
-    # Run from workspace root so relative "designs/" path works
-    workspace = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    os.chdir(workspace)
-    if len(sys.argv) < 2:
-        print("Usage: python3 barnhaus_planner.py <submission_id_prefix>")
-        sys.exit(1)
-    prefix = sys.argv[1]
-    import glob
-    matches = glob.glob(f"designs/design_{prefix}*.json")
-    if not matches:
-        print(f"No design file found for prefix: {prefix}")
-        sys.exit(1)
-    design_path = matches[0]
-    with open(design_path) as f:
-        data = json.load(f)
-
-    submission_id = data["submission_id"]
-    layout_json = data["layout"]
-    intake_json = data
-
-    result = run_planner(submission_id, layout_json, intake_json)
-
-    print("=" * 60)
-    print("BARNHAUS PLANNER RESULTS")
-    print("=" * 60)
-    print(f"\nViolations ({len(result['violations'])}):")
-    for v in result["violations"]:
-        print(f"  - {v}")
-
-    fp = result["footprint"]
-    print(f"\nFootprint: {fp['shape']}")
-    print(f"  Total: {fp['total_width']}ft x {fp['total_depth']}ft")
-    print(f"  Zones:")
-    for zn, zd in fp["zones"].items():
-        w = zd["x1"] - zd["x0"]
-        d = zd["y1"] - zd["y0"]
-        print(f"    {zn:16s}  ({zd['x0']},{zd['y0']})->"
-              f"({zd['x1']},{zd['y1']})  {w}x{d}={w*d} SF")
-
-    print(f"\nRoom Assignments ({len(result['room_coords'])}):")
-    for rname, rc in result["room_coords"].items():
-        print(f"  {rname:20s}  zone={rc['zone']:8s}  "
-              f"({rc['x0']:.0f},{rc['y0']:.0f})->({rc['x1']:.0f},"
-              f"{rc['y1']:.0f})  {rc['sf']} SF")
-
-    print(f"\nFloor plan: {result['floorplan_url']}")
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  SPEC-BASED FLOOR PLAN RENDERER
-#  Draws precise walls, door openings, window marks, room labels from spec JSON
-# ══════════════════════════════════════════════════════════════════════════════
-
 def render_spec_floorplan(spec: dict, output_path: str) -> str:
     """
     Render a precise architectural floor plan from a resolved spec JSON.
@@ -2064,4 +1967,96 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
     plt.close(fig)
     print(f"✅ Spec floor plan rendered: {output_path}")
     return output_path
+
+def run_planner(
+    submission_id: str,
+    layout_json: dict,
+    intake_json: dict,
+) -> dict:
+    """Full pipeline: validate -> solve -> assign -> render -> upload -> spec."""
+    layout_json = _normalize_layout(layout_json)
+    layout_json = _correct_layout(layout_json)
+    violations = validate_layout(layout_json, intake_json)
+    footprint = solve_footprint(layout_json, intake_json)
+    room_coords = assign_rooms_to_zones(layout_json, footprint["zones"])
+    circulation = solve_circulation(layout_json, footprint["zones"], intake_json)
+    # Generate fully resolved spec for Revit execution
+    exterior_json = intake_json.get("exterior", {})
+    spec = generate_spec(
+        submission_id, layout_json, intake_json,
+        footprint, room_coords, circulation, exterior_json
+    )
+    spec_url = _upload_spec_to_supabase(spec, submission_id)
+    print(f"Spec URL: {spec_url}")
+
+    # Render precise floor plan from spec (walls, doors, windows, labels)
+    sid8 = submission_id[:8]
+    image_path = f"designs/floorplan_{sid8}.png"
+    render_spec_floorplan(spec, image_path)
+    floorplan_url = _upload_to_supabase(image_path, submission_id)
+
+    return {
+        "violations": violations,
+        "footprint": footprint,
+        "room_coords": room_coords,
+        "circulation": circulation,
+        "floorplan_url": floorplan_url,
+        "spec_url": spec_url,
+    }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  CLI
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+if __name__ == "__main__":
+    import sys, os
+    # Run from workspace root so relative "designs/" path works
+    workspace = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(workspace)
+    if len(sys.argv) < 2:
+        print("Usage: python3 barnhaus_planner.py <submission_id_prefix>")
+        sys.exit(1)
+    prefix = sys.argv[1]
+    import glob
+    matches = glob.glob(f"designs/design_{prefix}*.json")
+    if not matches:
+        print(f"No design file found for prefix: {prefix}")
+        sys.exit(1)
+    design_path = matches[0]
+    with open(design_path) as f:
+        data = json.load(f)
+
+    submission_id = data["submission_id"]
+    layout_json = data["layout"]
+    intake_json = data
+
+    result = run_planner(submission_id, layout_json, intake_json)
+
+    print("=" * 60)
+    print("BARNHAUS PLANNER RESULTS")
+    print("=" * 60)
+    print(f"\nViolations ({len(result['violations'])}):")
+    for v in result["violations"]:
+        print(f"  - {v}")
+
+    fp = result["footprint"]
+    print(f"\nFootprint: {fp['shape']}")
+    print(f"  Total: {fp['total_width']}ft x {fp['total_depth']}ft")
+    print(f"  Zones:")
+    for zn, zd in fp["zones"].items():
+        w = zd["x1"] - zd["x0"]
+        d = zd["y1"] - zd["y0"]
+        print(f"    {zn:16s}  ({zd['x0']},{zd['y0']})->"
+              f"({zd['x1']},{zd['y1']})  {w}x{d}={w*d} SF")
+
+    print(f"\nRoom Assignments ({len(result['room_coords'])}):")
+    for rname, rc in result["room_coords"].items():
+        print(f"  {rname:20s}  zone={rc['zone']:8s}  "
+              f"({rc['x0']:.0f},{rc['y0']:.0f})->({rc['x1']:.0f},"
+              f"{rc['y1']:.0f})  {rc['sf']} SF")
+
+    print(f"\nFloor plan: {result['floorplan_url']}")
+
 
