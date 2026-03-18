@@ -1179,20 +1179,42 @@ def assign_rooms_to_zones(layout_json: dict, zones: dict, circulation_spine: lis
             }
 
     # ── 2. Service rooms (laundry, mudroom, pantry, utility) ─────────────
-    #    Place in service zone, on the KITCHEN-ADJACENT side (not next to garage)
+    #    Mudroom always placed flush against garage entry wall
+    #    Pantry/butler pantry adjacent to kitchen (inner/living side)
+    #    Laundry/utility fill remaining space
     if service_rooms and service_zone:
         sz = service_zone
-        # Place service rooms at the inner edge of service zone (x0 side = adjacent to living)
-        svc_carved = _carve_zone(sz["x0"], sz["y0"], sz["x1"], sz["y1"])
-        # Sort: mudroom/pantry first (kitchen adjacency), laundry/utility last
+        gz = garage_zone or service_zone
+
+        # Determine garage entry face (the wall shared with service zone)
+        garage_x0 = gz["x0"]  # left face of garage = right face of service zone
+        garage_y0 = gz["y0"]
+
+        # Mudroom: snap to garage entry face, at garage y0
+        mudroom = next((r for r in service_rooms if "mudroom" in r["name"].lower()), None)
+        if mudroom:
+            sf = mudroom.get("sf", 100)
+            mw = 10.0  # 10ft wide
+            md = sf / mw
+            md = max(8.0, md)
+            room_coords[mudroom["name"]] = {
+                "x0": round(garage_x0 - mw, 1), "y0": round(garage_y0, 1),
+                "x1": round(garage_x0, 1), "y1": round(garage_y0 + md, 1),
+                "sf": sf, "zone": "service", "dims_source": "derived",
+            }
+
+        # Remaining service rooms: pack in service zone inner side (kitchen-adjacent)
+        remaining_svc = [r for r in service_rooms if r is not mudroom]
         def _svc_priority(r):
             n = r["name"].lower()
-            if "mudroom" in n or "pantry" in n: return 0
+            if "pantry" in n: return 0
             if "laundry" in n: return 1
             return 2
-        service_rooms.sort(key=_svc_priority)
-        room_coords.update(_pack_rooms(service_rooms, svc_carved["x0"], svc_carved["y0"],
-                                        svc_carved["x1"], svc_carved["y1"], "service"))
+        remaining_svc.sort(key=_svc_priority)
+        if remaining_svc:
+            svc_carved = _carve_zone(sz["x0"], sz["y0"], sz["x1"], sz["y1"])
+            room_coords.update(_pack_rooms(remaining_svc, svc_carved["x0"], svc_carved["y0"],
+                                            svc_carved["x1"], svc_carved["y1"], "service"))
 
     # ── 3. Master suite ───────────────────────────────────────────────────
     if master_rooms and master_zone:
