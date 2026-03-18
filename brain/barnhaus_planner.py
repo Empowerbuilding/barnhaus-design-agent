@@ -1855,6 +1855,9 @@ def render_spec_floorplan(spec: dict, output_path: str) -> str:
     fp         = spec.get("footprint_polygon", [])
     name       = spec.get("name", "Floor Plan")
     sid        = spec.get("submission_id", "")[:8]
+    _circ      = spec.get("circulation", {})
+    _spine     = _circ.get("spine", []) if isinstance(_circ, dict) else []
+    hall_rects = _expand_circulation_to_rects(_spine)
 
     # ── Canvas ──────────────────────────────────────────────────────────────
     fig, ax = plt.subplots(figsize=(14, 14))
