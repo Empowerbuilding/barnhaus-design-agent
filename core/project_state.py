@@ -164,20 +164,26 @@ def _scan_rooms(state: dict):
         bbox = None
         if bb_res.get("success") and bb_res.get("result", {}).get("has_bbox"):
             bbox = bb_res["result"]
-            # Derive width and depth from bbox
             dx = abs(bbox["max"]["x"] - bbox["min"]["x"])
             dy = abs(bbox["max"]["y"] - bbox["min"]["y"])
             bbox["width_ft"]  = round(min(dx, dy), 2)
             bbox["depth_ft"]  = round(max(dx, dy), 2)
 
+        # Get real boundary wall IDs
+        boundary_wall_ids = []
+        rb_res = rc.call("revit.get_room_boundary", {"room_id": eid})
+        if rb_res.get("success") and isinstance(rb_res.get("result"), dict):
+            boundary_wall_ids = rb_res["result"].get("adjacent_wall_ids", [])
+
         rooms.append({
-            "id":       eid,
-            "name":     name,
-            "area_sf":  area_sf,
-            "level":    level,
-            "bbox":     bbox,
-            "width_ft": bbox["width_ft"] if bbox else 0,
-            "depth_ft": bbox["depth_ft"] if bbox else 0,
+            "id":                eid,
+            "name":              name,
+            "area_sf":           area_sf,
+            "level":             level,
+            "bbox":              bbox,
+            "width_ft":          bbox["width_ft"] if bbox else 0,
+            "depth_ft":          bbox["depth_ft"] if bbox else 0,
+            "boundary_wall_ids": boundary_wall_ids,
         })
 
     state["rooms"] = rooms

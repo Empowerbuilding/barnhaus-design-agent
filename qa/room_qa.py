@@ -125,31 +125,27 @@ def _check_sizing(room: dict) -> list:
 
 def _check_adjacency(room: dict, room_map: dict) -> list:
     """
-    Adjacency check using bounding box overlap detection.
-    Two rooms are considered adjacent if their bounding boxes are within 2ft of each other.
-    TODO: replace with revit.get_room_boundary when available in bridge.
+    Adjacency check using real wall boundary IDs from revit.get_room_boundary.
+    Two rooms are adjacent if they share at least one boundary wall ID.
     """
     issues = []
     name = room.get("name", "")
-    bbox = room.get("bbox")
-    if not bbox:
-        return []  # no geometry data, skip
+    my_walls = set(room.get("boundary_wall_ids", []))
 
     required = MUST_TOUCH.get(name, [])
     forbidden = MUST_NOT_TOUCH.get(name, [])
     if not required and not forbidden:
         return []
+    if not my_walls:
+        return []  # no boundary data yet
 
-    # Find which rooms are near this one using bbox proximity
-    PROXIMITY = 2.0  # ft — rooms within 2ft are considered adjacent
+    # Find which rooms share a wall with this one
     neighbors = set()
     for other_name, other_room in room_map.items():
         if other_name == name:
             continue
-        other_bbox = other_room.get("bbox")
-        if not other_bbox:
-            continue
-        if _bboxes_near(bbox, other_bbox, PROXIMITY):
+        other_walls = set(other_room.get("boundary_wall_ids", []))
+        if my_walls & other_walls:  # shared wall ID = truly adjacent
             neighbors.add(other_name)
 
     # Must-touch violations
@@ -157,10 +153,10 @@ def _check_adjacency(room: dict, room_map: dict) -> list:
         if req in room_map and req not in neighbors:
             issues.append({
                 "type": "missing_adjacency",
-                "severity": "consider",  # consider, not fix — bbox proximity isn't perfect
+                "severity": "fix",
                 "room": name,
                 "element_id": room.get("id"),
-                "message": f"{name} doesn't appear adjacent to {req}. Verify layout.",
+                "message": f"{name} does not share a wall with {req}. Check layout — they should be directly connected.",
                 "auto_fixable": False,
             })
 
@@ -169,28 +165,14 @@ def _check_adjacency(room: dict, room_map: dict) -> list:
         if forb in room_map and forb in neighbors:
             issues.append({
                 "type": "bad_adjacency",
-                "severity": "consider",
+                "severity": "fix",
                 "room": name,
                 "element_id": room.get("id"),
-                "message": f"{name} appears adjacent to {forb} — these typically shouldn't share a wall.",
+                "message": f"{name} shares a wall with {forb} — these should not be directly adjacent.",
                 "auto_fixable": False,
             })
 
     return issues
-
-
-def _bboxes_near(a: dict, b: dict, proximity: float) -> bool:
-    """Returns True if two bounding boxes are within proximity ft of each other."""
-    a_min = a.get("min", {})
-    a_max = a.get("max", {})
-    b_min = b.get("min", {})
-    b_max = b.get("max", {})
-    return not (
-        a_max.get("x", 0) + proximity < b_min.get("x", 0) or
-        b_max.get("x", 0) + proximity < a_min.get("x", 0) or
-        a_max.get("y", 0) + proximity < b_min.get("y", 0) or
-        b_max.get("y", 0) + proximity < a_min.get("y", 0)
-    )
 
 
 def _check_bedroom_width(room: dict) -> list:

@@ -1,5 +1,5 @@
 {
-  "total": 39,
+  "total": 37,
   "fix": [
     {
       "type": "revit_warning",
@@ -169,22 +169,6 @@
       "room": "Level 3.0",
       "element_id": 724245,
       "message": "Level 'Level 3.0' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "consider",
-      "room": "Master Bedroom",
-      "element_id": 3172248,
-      "message": "Master Bedroom doesn't appear adjacent to Master Bath. Verify layout.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "consider",
-      "room": "Master Bath",
-      "element_id": 3172252,
-      "message": "Master Bath doesn't appear adjacent to Master Bedroom. Verify layout.",
       "auto_fixable": false
     }
   ],
