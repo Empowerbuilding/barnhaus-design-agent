@@ -1,0 +1,2267 @@
+{
+  "scanned_at": "2026-06-14T22:41:10",
+  "document": {
+    "title": "Spring Mountian Construction Set",
+    "path": "C:\\Revit Projects\\Spring Mountian Construction Set.rvt",
+    "is_modified": false,
+    "is_family": false,
+    "is_workshared": false,
+    "project_name": null,
+    "project_number": null,
+    "project_address": null,
+    "project_status": null
+  },
+  "levels": [],
+  "rooms": [],
+  "walls": {
+    "exterior": [
+      {
+        "id": 2381749,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2381823,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2382729,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2382783,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2382991,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2383194,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2383410,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2397431,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2398051,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2411501,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2412686,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2434332,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2445089,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2445146,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2464846,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2465064,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2468409,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2469975,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2470154,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2473428,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2474241,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2475479,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2475618,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2475978,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2478888,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2487139,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2488072,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2488593,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2488742,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2489853,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2500779,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2500870,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2501289,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2504676,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2531384,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2535322,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2542249,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2564439,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2567463,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2569877,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2572225,
+        "name": "Wall 2x6 Steel Plates",
+        "category": "Walls",
+        "type": "Wall 2x6 Steel Plates"
+      },
+      {
+        "id": 2573449,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2577356,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2590672,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2592372,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2603818,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      },
+      {
+        "id": 2660146,
+        "name": "Wall 2x6",
+        "category": "Walls",
+        "type": "Wall 2x6"
+      }
+    ],
+    "interior": [
+      {
+        "id": 2405444,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2405770,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2417634,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2420716,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2472944,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2473018,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2473278,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2473765,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2473895,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2476562,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2476632,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2476756,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2478638,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2487219,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2487270,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2488806,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2528661,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2530289,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2532834,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2539457,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2544416,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2553649,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2554367,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2554599,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2554669,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2555070,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2560343,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2560947,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2561068,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2642927,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2658386,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2658612,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2702611,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2702783,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2792167,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 2998738,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 3000262,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 3036169,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      },
+      {
+        "id": 3036365,
+        "name": "Wall 6.5 Interior\"",
+        "category": "Walls",
+        "type": "Wall 6.5 Interior\""
+      }
+    ],
+    "other": [
+      {
+        "id": 2420668,
+        "name": "Wall 2x10",
+        "category": "Walls",
+        "type": "Wall 2x10"
+      },
+      {
+        "id": 2605884,
+        "name": "1/8\" Shower Glass",
+        "category": "Walls",
+        "type": "1/8\" Shower Glass"
+      },
+      {
+        "id": 2606005,
+        "name": "1/8\" Shower Glass",
+        "category": "Walls",
+        "type": "1/8\" Shower Glass"
+      },
+      {
+        "id": 2608876,
+        "name": "1/8\" Shower",
+        "category": "Walls",
+        "type": "1/8\" Shower"
+      },
+      {
+        "id": 2609030,
+        "name": "1/8\" Shower",
+        "category": "Walls",
+        "type": "1/8\" Shower"
+      },
+      {
+        "id": 2609163,
+        "name": "1/8\" Shower",
+        "category": "Walls",
+        "type": "1/8\" Shower"
+      },
+      {
+        "id": 2610953,
+        "name": "1/8\" Shower",
+        "category": "Walls",
+        "type": "1/8\" Shower"
+      },
+      {
+        "id": 2611037,
+        "name": "1/8\" Shower",
+        "category": "Walls",
+        "type": "1/8\" Shower"
+      },
+      {
+        "id": 2611177,
+        "name": "1/8\" Shower",
+        "category": "Walls",
+        "type": "1/8\" Shower"
+      },
+      {
+        "id": 2640958,
+        "name": "1/8\" Back Splash",
+        "category": "Walls",
+        "type": "1/8\" Back Splash"
+      },
+      {
+        "id": 2641276,
+        "name": "1/8\" Back Splash",
+        "category": "Walls",
+        "type": "1/8\" Back Splash"
+      },
+      {
+        "id": 2641436,
+        "name": "1/8\" Back Splash",
+        "category": "Walls",
+        "type": "1/8\" Back Splash"
+      },
+      {
+        "id": 2642031,
+        "name": "1/8\" Back Splash",
+        "category": "Walls",
+        "type": "1/8\" Back Splash"
+      },
+      {
+        "id": 2642256,
+        "name": "1/8\" Back Splash",
+        "category": "Walls",
+        "type": "1/8\" Back Splash"
+      },
+      {
+        "id": 2643228,
+        "name": "1/8\" Shower Glass",
+        "category": "Walls",
+        "type": "1/8\" Shower Glass"
+      },
+      {
+        "id": 2643675,
+        "name": "1/8\" Back Splash",
+        "category": "Walls",
+        "type": "1/8\" Back Splash"
+      },
+      {
+        "id": 2836493,
+        "name": "Wall Island Waterfall",
+        "category": "Walls",
+        "type": "Wall Island Waterfall"
+      },
+      {
+        "id": 2836614,
+        "name": "Wall Island Waterfall",
+        "category": "Walls",
+        "type": "Wall Island Waterfall"
+      }
+    ]
+  },
+  "doors": [
+    {
+      "id": 2402815,
+      "name": "10x10",
+      "category": "Doors",
+      "type": "10x10"
+    },
+    {
+      "id": 2406773,
+      "name": "6'-0\"W. x 8'-0\"H.",
+      "category": "Doors",
+      "type": "6'-0\"W. x 8'-0\"H."
+    },
+    {
+      "id": 2406863,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2416235,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2420400,
+      "name": "6'-0\"W. x 9'-6\"H",
+      "category": "Doors",
+      "type": "6'-0\"W. x 9'-6\"H"
+    },
+    {
+      "id": 2430375,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2442399,
+      "name": "10x10",
+      "category": "Doors",
+      "type": "10x10"
+    },
+    {
+      "id": 2450130,
+      "name": "Bifold door [parametric]",
+      "category": "Doors",
+      "type": "Bifold door [parametric]"
+    },
+    {
+      "id": 2470651,
+      "name": "Exterior_Pivot_Door_22942",
+      "category": "Doors",
+      "type": "Exterior_Pivot_Door_22942"
+    },
+    {
+      "id": 2473915,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2488903,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2488975,
+      "name": "6'-0\"W. x 9'-0\"H.",
+      "category": "Doors",
+      "type": "6'-0\"W. x 9'-0\"H."
+    },
+    {
+      "id": 2490080,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2491535,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2491581,
+      "name": "72\" x 96\"",
+      "category": "Doors",
+      "type": "72\" x 96\""
+    },
+    {
+      "id": 2492995,
+      "name": "Interior_barn_door_18732",
+      "category": "Doors",
+      "type": "Interior_barn_door_18732"
+    },
+    {
+      "id": 2497231,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2505367,
+      "name": "16x10'",
+      "category": "Doors",
+      "type": "16x10'"
+    },
+    {
+      "id": 2531471,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2543851,
+      "name": "32\" x 96\"",
+      "category": "Doors",
+      "type": "32\" x 96\""
+    },
+    {
+      "id": 2545105,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2552066,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2552318,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2555606,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2555637,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2555700,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2555792,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2555859,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2561125,
+      "name": "32\" x 96\"",
+      "category": "Doors",
+      "type": "32\" x 96\""
+    },
+    {
+      "id": 2996752,
+      "name": "36\" x 96\"",
+      "category": "Doors",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2999167,
+      "name": "32\" x 96\"",
+      "category": "Doors",
+      "type": "32\" x 96\""
+    }
+  ],
+  "windows": [
+    {
+      "id": 2419963,
+      "name": "60\" x 48\"",
+      "category": "Windows",
+      "type": "60\" x 48\""
+    },
+    {
+      "id": 2419990,
+      "name": "60\" x 48\"",
+      "category": "Windows",
+      "type": "60\" x 48\""
+    },
+    {
+      "id": 2489255,
+      "name": "54\" X 108\"",
+      "category": "Windows",
+      "type": "54\" X 108\""
+    },
+    {
+      "id": 2489295,
+      "name": "54\" X 108\"",
+      "category": "Windows",
+      "type": "54\" X 108\""
+    },
+    {
+      "id": 2491225,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491229,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491262,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491302,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491331,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491337,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491363,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2491868,
+      "name": "36\" x 96\"",
+      "category": "Windows",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2491954,
+      "name": "36\" x 96\"",
+      "category": "Windows",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2492088,
+      "name": "36\" x 96\"",
+      "category": "Windows",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2492118,
+      "name": "36\" x 96\"",
+      "category": "Windows",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2492159,
+      "name": "36\" x 96\"",
+      "category": "Windows",
+      "type": "36\" x 96\""
+    },
+    {
+      "id": 2495163,
+      "name": "36\" X 84\"",
+      "category": "Windows",
+      "type": "36\" X 84\""
+    },
+    {
+      "id": 2495340,
+      "name": "36\" X 84\"",
+      "category": "Windows",
+      "type": "36\" X 84\""
+    },
+    {
+      "id": 2495355,
+      "name": "36\" X 84\"",
+      "category": "Windows",
+      "type": "36\" X 84\""
+    },
+    {
+      "id": 2495391,
+      "name": "36\" X 84\"",
+      "category": "Windows",
+      "type": "36\" X 84\""
+    },
+    {
+      "id": 2495494,
+      "name": "36\" X 84\"",
+      "category": "Windows",
+      "type": "36\" X 84\""
+    },
+    {
+      "id": 2495544,
+      "name": "36\" X 84\"",
+      "category": "Windows",
+      "type": "36\" X 84\""
+    },
+    {
+      "id": 2506980,
+      "name": "42\" X 96\"",
+      "category": "Windows",
+      "type": "42\" X 96\""
+    },
+    {
+      "id": 2507819,
+      "name": "42\" X 72\"",
+      "category": "Windows",
+      "type": "42\" X 72\""
+    },
+    {
+      "id": 2508983,
+      "name": "42\" X 96\"",
+      "category": "Windows",
+      "type": "42\" X 96\""
+    },
+    {
+      "id": 2508984,
+      "name": "42\" X 72\"",
+      "category": "Windows",
+      "type": "42\" X 72\""
+    },
+    {
+      "id": 2509141,
+      "name": "42\" X 96\"",
+      "category": "Windows",
+      "type": "42\" X 96\""
+    },
+    {
+      "id": 2509142,
+      "name": "42\" X 72\"",
+      "category": "Windows",
+      "type": "42\" X 72\""
+    },
+    {
+      "id": 2509247,
+      "name": "60\" X 96\"",
+      "category": "Windows",
+      "type": "60\" X 96\""
+    },
+    {
+      "id": 2509248,
+      "name": "60\" X 72\"",
+      "category": "Windows",
+      "type": "60\" X 72\""
+    },
+    {
+      "id": 2512541,
+      "name": "72\" x 72\"",
+      "category": "Windows",
+      "type": "72\" x 72\""
+    },
+    {
+      "id": 2513058,
+      "name": "144\" X 60\"",
+      "category": "Windows",
+      "type": "144\" X 60\""
+    },
+    {
+      "id": 2519295,
+      "name": "60\" x 24\"",
+      "category": "Windows",
+      "type": "60\" x 24\""
+    },
+    {
+      "id": 2521108,
+      "name": "60\" x 36\"",
+      "category": "Windows",
+      "type": "60\" x 36\""
+    },
+    {
+      "id": 2527729,
+      "name": "36\" x 114\"",
+      "category": "Windows",
+      "type": "36\" x 114\""
+    },
+    {
+      "id": 2536993,
+      "name": "60\" x 24\"",
+      "category": "Windows",
+      "type": "60\" x 24\""
+    },
+    {
+      "id": 2538542,
+      "name": "60\" x 36\"",
+      "category": "Windows",
+      "type": "60\" x 36\""
+    },
+    {
+      "id": 2540863,
+      "name": "36\" x 78\"",
+      "category": "Windows",
+      "type": "36\" x 78\""
+    },
+    {
+      "id": 2576867,
+      "name": "36\" x 78\"",
+      "category": "Windows",
+      "type": "36\" x 78\""
+    },
+    {
+      "id": 2609554,
+      "name": "36\" X 120\"",
+      "category": "Windows",
+      "type": "36\" X 120\""
+    },
+    {
+      "id": 2609555,
+      "name": "36\" X 120\"",
+      "category": "Windows",
+      "type": "36\" X 120\""
+    },
+    {
+      "id": 2610387,
+      "name": "84\" X 24\"",
+      "category": "Windows",
+      "type": "84\" X 24\""
+    },
+    {
+      "id": 2659482,
+      "name": "60\" x 24\"",
+      "category": "Windows",
+      "type": "60\" x 24\""
+    },
+    {
+      "id": 2680128,
+      "name": "48\" X 72\"",
+      "category": "Windows",
+      "type": "48\" X 72\""
+    },
+    {
+      "id": 2689528,
+      "name": "108\" X 48\"",
+      "category": "Windows",
+      "type": "108\" X 48\""
+    },
+    {
+      "id": 2689947,
+      "name": "36\" X 120\"",
+      "category": "Windows",
+      "type": "36\" X 120\""
+    },
+    {
+      "id": 2690057,
+      "name": "36\" X 120\"",
+      "category": "Windows",
+      "type": "36\" X 120\""
+    },
+    {
+      "id": 2690231,
+      "name": "144\" X 72\"",
+      "category": "Windows",
+      "type": "144\" X 72\""
+    },
+    {
+      "id": 2875265,
+      "name": "72\" x 36\"",
+      "category": "Windows",
+      "type": "72\" x 36\""
+    },
+    {
+      "id": 3056963,
+      "name": "36\" X 120\"",
+      "category": "Windows",
+      "type": "36\" X 120\""
+    },
+    {
+      "id": 3057014,
+      "name": "36\" X 120\"",
+      "category": "Windows",
+      "type": "36\" X 120\""
+    },
+    {
+      "id": 3093243,
+      "name": "72\" x 72\"",
+      "category": "Windows",
+      "type": "72\" x 72\""
+    }
+  ],
+  "sheets": {
+    "existing": [
+      {
+        "id": 622317,
+        "sheet_number": "A100",
+        "sheet_name": "COVER SHEET",
+        "is_placeholder": false,
+        "titleblock_id": null,
+        "viewport_count": 0
+      },
+      {
+        "id": 2346779,
+        "sheet_number": "A100.1",
+        "sheet_name": "COVER SHEET INTERIOR",
+        "is_placeholder": false,
+        "titleblock_id": null,
+        "viewport_count": 0
+      },
+      {
+        "id": 2395514,
+        "sheet_number": "A100.2",
+        "sheet_name": "SITE PLAN",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 611405,
+        "sheet_number": "A101.1",
+        "sheet_name": "FLOOR PLAN F1",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 1991712,
+        "sheet_number": "A101.2",
+        "sheet_name": "FLOOR PLAN F2",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 2882605,
+        "sheet_number": "A101.3",
+        "sheet_name": "CEILING PLAN",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 3072415,
+        "sheet_number": "A101.4",
+        "sheet_name": "STEELCROSS SECTIONS",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 914357,
+        "sheet_number": "A102.1",
+        "sheet_name": "DIMENSION PLAN F1",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 1991535,
+        "sheet_number": "A102.2",
+        "sheet_name": "DIMENSION PLAN F2",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 612296,
+        "sheet_number": "A103",
+        "sheet_name": "ROOF LAYOUT",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 623419,
+        "sheet_number": "A104",
+        "sheet_name": "COLUMN PLACEMENT",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 624905,
+        "sheet_number": "A105",
+        "sheet_name": "ELEVATIONS SIDES",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 647856,
+        "sheet_number": "A106",
+        "sheet_name": "ELEVATIONS FRONT BACK",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 1455490,
+        "sheet_number": "A107",
+        "sheet_name": "INTERIOR ELEVATIONS",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 14
+      },
+      {
+        "id": 648053,
+        "sheet_number": "A108.1",
+        "sheet_name": "ELECTRICAL F1",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 2821625,
+        "sheet_number": "A108.2",
+        "sheet_name": "ELECTRICAL F2",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 1752795,
+        "sheet_number": "A109.1",
+        "sheet_name": "FOUNDATION PLAN",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 1
+      },
+      {
+        "id": 1843691,
+        "sheet_number": "A109.2",
+        "sheet_name": "PLUMBING PLAN",
+        "is_placeholder": false,
+        "titleblock_id": 1705,
+        "viewport_count": 2
+      },
+      {
+        "id": 2081289,
+        "sheet_number": "A110",
+        "sheet_name": "TAKE OFFS",
+        "is_placeholder": false,
+        "titleblock_id": null,
+        "viewport_count": 0
+      }
+    ],
+    "missing_draft1": [
+      {
+        "number": "A100",
+        "name": "Cover Sheet"
+      },
+      {
+        "number": "A101.1",
+        "name": "Floor Plan Level 1"
+      },
+      {
+        "number": "A102.1",
+        "name": "Dimension Plan L1"
+      },
+      {
+        "number": "A103",
+        "name": "Roof Plan"
+      }
+    ],
+    "missing_draft2": [
+      {
+        "number": "A105",
+        "name": "Door & Window Schedule"
+      },
+      {
+        "number": "A106",
+        "name": "Exterior Elevations - Front"
+      },
+      {
+        "number": "A106.1",
+        "name": "Exterior Elevations - Left"
+      },
+      {
+        "number": "A106.2",
+        "name": "Exterior Elevations - Right / Rear"
+      },
+      {
+        "number": "A107",
+        "name": "Interior Elevations - Kitchen"
+      },
+      {
+        "number": "A107.1",
+        "name": "Interior Elevations - Master Bath"
+      },
+      {
+        "number": "A107.2",
+        "name": "Interior Elevations - Laundry"
+      }
+    ],
+    "missing_draft3": [
+      {
+        "number": "A104",
+        "name": "Structural Column Grid"
+      },
+      {
+        "number": "A108.1",
+        "name": "Electrical Plan L1"
+      },
+      {
+        "number": "A109.2",
+        "name": "Plumbing Plan L1"
+      }
+    ]
+  },
+  "views": {
+    "on_sheet": [],
+    "unplaced": [
+      {
+        "id": 1213,
+        "name": "Project View",
+        "type": "ProjectBrowser",
+        "scale": 96,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2002,
+        "name": "System Browser",
+        "type": "SystemBrowser",
+        "scale": 96,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 5397,
+        "name": "{3D}",
+        "type": "ThreeD",
+        "scale": 96,
+        "detail_level": "Fine"
+      },
+      {
+        "id": 93747,
+        "name": "Left",
+        "type": "Elevation",
+        "scale": 48,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 598632,
+        "name": "Front",
+        "type": "Elevation",
+        "scale": 48,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 607681,
+        "name": "Right",
+        "type": "Elevation",
+        "scale": 48,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 607691,
+        "name": "Back",
+        "type": "Elevation",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 611405,
+        "name": "FLOOR PLAN F1",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 612296,
+        "name": "ROOF LAYOUT",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 622317,
+        "name": "COVER SHEET",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 623419,
+        "name": "COLUMN PLACEMENT",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 624905,
+        "name": "ELEVATIONS SIDES",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 647856,
+        "name": "ELEVATIONS FRONT BACK",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 648053,
+        "name": "ELECTRICAL F1",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 722612,
+        "name": "Level 1.0",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 722622,
+        "name": "Level 1.0",
+        "type": "CeilingPlan",
+        "scale": 96,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 722631,
+        "name": "Level 1.0",
+        "type": "EngineeringPlan",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 723662,
+        "name": "Level 2.0",
+        "type": "FloorPlan",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 723672,
+        "name": "Level 2.0",
+        "type": "CeilingPlan",
+        "scale": 96,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 723681,
+        "name": "Level 2.0",
+        "type": "EngineeringPlan",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 724246,
+        "name": "Level 3.0",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 724256,
+        "name": "Level 3.0",
+        "type": "CeilingPlan",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 724265,
+        "name": "Level 3.0",
+        "type": "EngineeringPlan",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 754323,
+        "name": "Level 1.0 COLUMNS",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 755164,
+        "name": "Level 1.0 ELECTRICAL",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 914357,
+        "name": "DIMENSION PLAN F1",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 940466,
+        "name": "Level 2.0 DIMENSIONS",
+        "type": "FloorPlan",
+        "scale": 48,
+        "detail_level": "Fine"
+      },
+      {
+        "id": 942600,
+        "name": "DOOR SCHEDULE",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 942834,
+        "name": "WINDOW SCHEDULE",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 989374,
+        "name": "LIGHT FIXTURE SCHEDULE",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 989501,
+        "name": "ELECTRICAL FIXTURE SCHEDULE",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 990642,
+        "name": "Level 2.0 ELECTRICAL",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 1259038,
+        "name": "Level 2.0",
+        "type": "AreaPlan",
+        "scale": 64,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 1259075,
+        "name": "Level 1.0",
+        "type": "AreaPlan",
+        "scale": 120,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 1306933,
+        "name": "Level 1.0 Simple",
+        "type": "FloorPlan",
+        "scale": 48,
+        "detail_level": "Fine"
+      },
+      {
+        "id": 1306990,
+        "name": "Level 2.0 Simple",
+        "type": "FloorPlan",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 1336346,
+        "name": "Area Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1435671,
+        "name": "CABINET SCHEDULE",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1455490,
+        "name": "INTERIOR ELEVATIONS",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1574726,
+        "name": "Ceiling Material Takeoff",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1666833,
+        "name": "ELECTRICAL",
+        "type": "Legend",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 1726742,
+        "name": "Level 1.0 DIMENSIONS",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 1730738,
+        "name": "Gypsum",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1730962,
+        "name": "Wall Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1731203,
+        "name": "Backsplash",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1737255,
+        "name": "Level 1.0 FOUNDATION",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 1752795,
+        "name": "FOUNDATION PLAN",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1832487,
+        "name": "Level 1.0 PLUMBING",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Fine"
+      },
+      {
+        "id": 1843691,
+        "name": "PLUMBING PLAN",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1991535,
+        "name": "DIMENSION PLAN F2",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 1991712,
+        "name": "FLOOR PLAN F2",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2081184,
+        "name": "Countertop Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2081289,
+        "name": "TAKE OFFS",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2095189,
+        "name": "Floor Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2095208,
+        "name": "Ceiling Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2346779,
+        "name": "COVER SHEET INTERIOR",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2395495,
+        "name": "Level 1.0 Survey",
+        "type": "FloorPlan",
+        "scale": 192,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2395514,
+        "name": "SITE PLAN",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2619273,
+        "name": "Kitchen Main",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2619792,
+        "name": "Kitchen Island",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2621866,
+        "name": "Kitchen Back",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2622457,
+        "name": "Pantry",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2622733,
+        "name": "Utility",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2623093,
+        "name": "Utility 2",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2625388,
+        "name": "Bar",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2625906,
+        "name": "Fireplace",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2626334,
+        "name": "M Bath 1",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2627059,
+        "name": "M Bath 2",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2627380,
+        "name": "Half Bath",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2627826,
+        "name": "Guest Suite Bath",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2628347,
+        "name": "Kid Bath 1",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2628615,
+        "name": "Kid Bath 2",
+        "type": "Section",
+        "scale": 48,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 2657228,
+        "name": "Roof Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2657240,
+        "name": "Roof Soffit Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2821625,
+        "name": "ELECTRICAL F2",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2882605,
+        "name": "CEILING PLAN",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 2971711,
+        "name": "Multi-Category Material Takeoff",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3004710,
+        "name": "Level 2.0 Plumbing",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Fine"
+      },
+      {
+        "id": 3005030,
+        "name": "Plumbing Fixture Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3005041,
+        "name": "Plumbing Equipment Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3058051,
+        "name": "Stucco",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3071082,
+        "name": "Section 1",
+        "type": "Section",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 3072415,
+        "name": "STEELCROSS SECTIONS",
+        "type": "DrawingSheet",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3075882,
+        "name": "Section 2",
+        "type": "Section",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 3084894,
+        "name": "Level 3.0 Copy 1",
+        "type": "FloorPlan",
+        "scale": 64,
+        "detail_level": "Medium"
+      },
+      {
+        "id": 3093092,
+        "name": "Section 3",
+        "type": "Section",
+        "scale": 64,
+        "detail_level": "Coarse"
+      },
+      {
+        "id": 3097783,
+        "name": "Fascia Schedule",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099259,
+        "name": "<Revision Schedule>",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099264,
+        "name": "<Revision Schedule> 2",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099269,
+        "name": "<Revision Schedule> 3",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099274,
+        "name": "<Revision Schedule> 5",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099279,
+        "name": "<Revision Schedule> 6",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099284,
+        "name": "<Revision Schedule> 7",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099289,
+        "name": "<Revision Schedule> 8",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099294,
+        "name": "<Revision Schedule> 9",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099299,
+        "name": "<Revision Schedule> 10",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099304,
+        "name": "<Revision Schedule> 13",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099309,
+        "name": "<Revision Schedule> 12",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099314,
+        "name": "<Revision Schedule> 4",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099319,
+        "name": "<Revision Schedule> 14",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099324,
+        "name": "<Revision Schedule> 15",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099329,
+        "name": "<Revision Schedule> 16",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099334,
+        "name": "<Revision Schedule> 17",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099339,
+        "name": "<Revision Schedule> 18",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099344,
+        "name": "<Revision Schedule> 11",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3099349,
+        "name": "<Revision Schedule> 19",
+        "type": "Schedule",
+        "scale": 1,
+        "detail_level": "Undefined"
+      },
+      {
+        "id": 3170749,
+        "name": "{3D} Copy 1",
+        "type": "ThreeD",
+        "scale": 96,
+        "detail_level": "Fine"
+      }
+    ]
+  },
+  "warnings": [],
+  "loaded_families": [
+    "System Panel",
+    "Rectangular Mullion",
+    "Circular Mullion",
+    "L Corner Mullion",
+    "V Corner Mullion",
+    "Trapezoid Corner Mullion",
+    "Quad Corner Mullion",
+    "Timber-Column",
+    "Baluster - Square",
+    "Muntin Pattern_2x2",
+    "Trim-Window-Interior-Flat",
+    "Trim-Window-Exterior-Flat",
+    "Instance-Window-Fixed",
+    "Door-Interior-Single-Pocket-2_Panel-Wood",
+    "Door-Exterior-Double-Full Glass-Wood_Clad",
+    "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
+    "Tub-Rectangular-3D",
+    "Bed-Standard",
+    "Toilet-Domestic-3D",
+    "Sink Kitchen-Single",
+    "Sink Vanity-Round",
+    "123_or_4_seats_couch_4554",
+    "AGENT_BAR_STOOL_18681",
+    "TV - Flat Screen",
+    "Int-Opening-Craftsman_Casing_1726",
+    "Shower_Head_4441 (2)",
+    "gooseneck_exterior_wall_light_19146",
+    "Outlet Floor-Duplex",
+    "Outlet-Duplex",
+    "Outlet-GFI",
+    "Outlet-Range",
+    "Switch-Dimmer",
+    "Switch-Single",
+    "Downlight - Recessed Can",
+    "Ceiling_Fan_With_Light_15608",
+    "Bathroom_Ceiling_Fan_71",
+    "Downlight - Rectangle - LED",
+    "Exterior_Sliding_Door_3843",
+    "Empty System Panel",
+    "Window Tag",
+    "Door Tag",
+    "Area Tag",
+    "Glass_Panel_Overhead_2705",
+    "Parametric_folding_door_9123",
+    "Shelf-_Parametric_17480",
+    "Vanity Cabinet-Double Door Sink Unit",
+    "Shower_columns_15486",
+    "Upper Cabinet-Double Door-Wall",
+    "Base Cabinet-4 Drawers",
+    "Base Cabinet-Double Door & 2 Drawer",
+    "Base Cabinet-Double Door Sink Unit",
+    "Base Cabinet-Single Door",
+    "Casework Tag",
+    "Sink Kitchen-Double",
+    "Exo_Pendant_Lamp_Tech_Lighting_Parametric_18718",
+    "Edison_Wall_Sconce_20320",
+    "Security_Flood_Light_20223",
+    "Modern_Pot_Filler_Faucet_22179",
+    "Security_Flood_Light_1",
+    "Pendant Light - Disk",
+    "Tall Cabinet-Double Door(2)",
+    "Tall Cabinet-Single Door",
+    "Enscape AssetDefinition - Faucet 016",
+    "View Title w Sheet",
+    "Enscape AssetDefinition - Car 052",
+    "Enscape AssetDefinition - Deciduous Tree 105 Tree",
+    "Enscape AssetDefinition - Deciduous Tree 014 Chestnut",
+    "Enscape AssetDefinition - Bush 077 Dwarf Peppermint",
+    "Enscape AssetDefinition - Bush 123 Pampas Grass",
+    "Enscape AssetDefinition - Coniferous Tree 004 Japanese Black Pine",
+    "Enscape AssetDefinition - Coniferous Tree 021 Stone Pine",
+    "70284",
+    "Door-Interior-Single-1_Panel-Wood",
+    "Hood-Wall",
+    "Refrigerator-Over-and-Under-Glass_Door",
+    "Freezer-Stainless_Steel_Door",
+    "Dishwasher",
+    "Furniture_Sofas-Armchairs_Icons-of-Denmark_ EC1-Sofa_Configuration1",
+    "Table-Night Stand",
+    "Washer-Top_Load",
+    "Dryer",
+    "Fireplace-Gas-Heat&Glo-Cerona",
+    "Casework 2",
+    "Casework 3",
+    "Casework 4",
+    "Casework 5",
+    "Casework 6",
+    "Casework 7",
+    "Casework 9",
+    "Casework 11",
+    "Casework 10",
+    "Casework 8",
+    "Enscape AssetDefinition - Adhesive 001",
+    "Casework 12",
+    "Casework 13",
+    "Casework 1",
+    "Casework 14",
+    "Casework 15",
+    "Casework 16",
+    "Range-48_Inch",
+    "Skylight-Pyramid",
+    "Range-60_Inch",
+    "Window-Single-Hung",
+    "Data Outlet",
+    "Interior_barn_door_18732",
+    "Electrical Panel",
+    "Water Heater - Tankless",
+    "Floor_light_perfect_for_exterior_16733",
+    "W-Wide Flange",
+    "Enscape AssetDefinition - Bush 108 Kangaroo Paw",
+    "HSS-Hollow Structural Section-Column",
+    "Floor Drain-2D",
+    "W-Wide Flange-Column",
+    "Duplex Receptacle",
+    "Recessed Direct-Indirect Light - Asymmetrical",
+    "Level Head - Circle",
+    "Plain Recessed Lighting Fixture",
+    "Window-Awning-Single",
+    "Exterior_Pivot_Door_22942",
+    "1x6 Baseboard",
+    "ARCH D 24 X 36 HORIZONTAL",
+    "12039_Big_curse_Fan_19134",
+    "Enscape AssetDefinition - Bed 006 208 x 245 cm (82 x 96 in)",
+    "Enscape AssetDefinition - Marcel Open Shelf Nightstand",
+    "ClosetMaid - MasterSuite Reach-In - Drawer Tower",
+    "ClosetMaid - MasterSuite Deluxe 6x8 Walk-In - Drawer Tower",
+    "ClosetMaid - MasterSuite Standard 8x8 Walk-In - Drawer Tower",
+    "ClosetMaid - MasterSuite Deluxe 8x8 Walk-In - Drawer Tower"
+  ],
+  "summary": {
+    "room_count": 0,
+    "room_names": [],
+    "has_master": false,
+    "has_kitchen": false,
+    "has_garage": false,
+    "is_two_story": false,
+    "door_count": 31,
+    "window_count": 52,
+    "sheet_count": 19,
+    "draft1_complete": false,
+    "draft2_complete": false,
+    "draft3_complete": false
+  }
+}

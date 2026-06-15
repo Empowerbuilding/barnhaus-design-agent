@@ -255,7 +255,7 @@ def place_against_wall(family: str, type_name: str,
 
 def get_all_rooms() -> list:
     """Return list of all rooms with name, area, and bounding box."""
-    result = call("revit.get_rooms", {})
+    result = call("revit.list_elements_by_category", {"category": "Rooms"})
     if result.get("success"):
         return result.get("result", {}).get("rooms", [])
     return []
@@ -298,7 +298,7 @@ def create_sheet(sheet_number: str, sheet_name: str,
 def place_view_on_sheet(sheet_id: int, view_id: int,
                          x: float = 1.0, y: float = 1.0) -> dict:
     payload = {"sheet_id": sheet_id, "view_id": view_id, "location": {"x": x, "y": y}}
-    return call("revit.place_view_on_sheet", payload)
+    return call("revit.place_viewport_on_sheet", payload)
 
 
 def create_elevation(name: str, x: float, y: float,
@@ -352,28 +352,28 @@ def tag_element(element_id: int, view_id: int,
 # ─────────────────────────────────────────────
 
 def get_all_walls() -> list:
-    result = call("revit.get_elements_by_category", {"category": "Walls"})
+    result = call("revit.list_elements_by_category", {"category": "Walls"})
     if result.get("success"):
         return result.get("result", {}).get("elements", [])
     return []
 
 
 def get_all_doors() -> list:
-    result = call("revit.get_elements_by_category", {"category": "Doors"})
+    result = call("revit.list_elements_by_category", {"category": "Doors"})
     if result.get("success"):
         return result.get("result", {}).get("elements", [])
     return []
 
 
 def get_all_windows() -> list:
-    result = call("revit.get_elements_by_category", {"category": "Windows"})
+    result = call("revit.list_elements_by_category", {"category": "Windows"})
     if result.get("success"):
         return result.get("result", {}).get("elements", [])
     return []
 
 
 def get_element_geometry(element_id: int) -> dict:
-    result = call("revit.get_element_geometry", {"element_id": element_id})
+    result = call("revit.get_element_geometry", {"element_id": element_id, "detail_level": "medium"})
     if result.get("success"):
         return result.get("result", {})
     return {}

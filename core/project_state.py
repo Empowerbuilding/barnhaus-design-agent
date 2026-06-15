@@ -40,6 +40,19 @@ def scan_project(save: bool = True) -> dict:
         print("❌ Bridge not reachable — open Revit and connect the addin first.")
         return state
 
+    # ── Document info ───────────────────────────────────────────────────────
+    doc_info = rc.call("revit.get_document_info", {})
+    if doc_info.get("success"):
+        state["document"] = doc_info.get("result", {})
+        print(f"  Project: {state['document'].get('title', 'unknown')}")
+
+    # ── Families loaded ─────────────────────────────────────────────────────
+    fam_result = rc.call("revit.list_families", {})
+    if fam_result.get("success"):
+        families = fam_result.get("result", {}).get("families", [])
+        state["loaded_families"] = [f.get("name") for f in families]
+        print(f"  Families: {len(state['loaded_families'])} loaded")
+
     # ── Rooms ──────────────────────────────────────────────────────────────
     print("  Rooms...")
     rooms = rc.get_all_rooms()
@@ -50,10 +63,12 @@ def scan_project(save: bool = True) -> dict:
     print("  Walls...")
     walls = rc.get_all_walls()
     for w in walls:
-        wtype = w.get("type_name", "")
-        if "EXT" in wtype or "7.5" in wtype:
+        wtype = w.get("type", w.get("type_name", ""))
+        # Flexible matching — works with any template
+        wtype_lower = wtype.lower()
+        if any(x in wtype_lower for x in ["ext", "7.5", "pbr", "exterior", "6x", "2x6"]):
             state["walls"]["exterior"].append(w)
-        elif "Interior" in wtype or "4.5" in wtype:
+        elif any(x in wtype_lower for x in ["int", "4.5", "interior", "2x4"]):
             state["walls"]["interior"].append(w)
         else:
             state["walls"]["other"].append(w)
