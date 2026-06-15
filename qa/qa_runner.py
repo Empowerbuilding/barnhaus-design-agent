@@ -66,14 +66,14 @@ def _check_revit_warnings(state: dict) -> list:
         elements = w.get("failing_elements", [])
         desc_lower = desc.lower()
 
-        if "overlap" in desc_lower and "wall" in desc_lower:
-            severity = "fix"
-        elif "insert" in desc_lower and "overlap" in desc_lower:
-            severity = "fix"
+        if "insert" in desc_lower and "overlap" in desc_lower:
+            severity = "fix"   # overlapping doors/windows — actual problem
         elif "miss" in desc_lower and "target" in desc_lower:
-            severity = "fix"
+            severity = "fix"   # wall missing its attachment target
         elif "stair" in desc_lower:
-            severity = "fix"
+            severity = "fix"   # stair code/geometry issues
+        elif "overlap" in desc_lower and "wall" in desc_lower:
+            severity = "fyi"   # often intentional (corner conditions, stacked walls)
         elif "off axis" in desc_lower:
             severity = "consider"
         elif "duplicate" in desc_lower:

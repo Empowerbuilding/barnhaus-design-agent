@@ -1,94 +1,6 @@
 {
-  "total": 37,
+  "total": 33,
   "fix": [
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2397431,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2397431, 2660146)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2420668,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2420668, 2475479)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2420668,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2420668, 2640958)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2488806,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2488806, 2609163)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2488806,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2488806, 2642256)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2504676,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2504676, 2608876)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2504676,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2504676, 2642031)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2528661,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2528661, 2535322)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2611177,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2611177, 2643675)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2642927,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2642927, 2643228)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2792167,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2792167, 2836493)",
-      "auto_fixable": false
-    },
     {
       "type": "revit_warning",
       "severity": "fix",
@@ -143,54 +55,6 @@
       "element_id": 3061478,
       "room": null,
       "message": "[Revit Warning] Stair top end exceeds or cannot reach the top elevation of the stair. Add/remove risers at the top end by control or change the stair run's \"Relative Top Height\" parameter in the properties palette. (elements: 3061478)",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "fix",
-      "room": "Master Bedroom",
-      "element_id": 3172248,
-      "message": "Master Bedroom should be adjacent to Master Bath but isn't. Check layout.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "fix",
-      "room": "Master Bedroom",
-      "element_id": 3172248,
-      "message": "Master Bedroom should be adjacent to Master Closet but isn't. Check layout.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "fix",
-      "room": "Master Bath",
-      "element_id": 3172250,
-      "message": "Master Bath should be adjacent to Master Bedroom but isn't. Check layout.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "fix",
-      "room": "Master Bath",
-      "element_id": 3172252,
-      "message": "Master Bath should be adjacent to Master Bedroom but isn't. Check layout.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "fix",
-      "room": "Master Closet",
-      "element_id": 3172254,
-      "message": "Master Closet should be adjacent to Master Bedroom but isn't. Check layout.",
-      "auto_fixable": false
-    },
-    {
-      "type": "missing_adjacency",
-      "severity": "fix",
-      "room": "Master Closet",
-      "element_id": 3172254,
-      "message": "Master Closet should be adjacent to Master Bath but isn't. Check layout.",
       "auto_fixable": false
     }
   ],
@@ -266,6 +130,22 @@
       "room": null,
       "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2576712, 2576716, 2576719)",
       "auto_fixable": false
+    },
+    {
+      "type": "missing_adjacency",
+      "severity": "consider",
+      "room": "Master Bedroom",
+      "element_id": 3172248,
+      "message": "Master Bedroom doesn't appear adjacent to Master Bath. Verify layout.",
+      "auto_fixable": false
+    },
+    {
+      "type": "missing_adjacency",
+      "severity": "consider",
+      "room": "Master Bath",
+      "element_id": 3172252,
+      "message": "Master Bath doesn't appear adjacent to Master Bedroom. Verify layout.",
+      "auto_fixable": false
     }
   ],
   "fyi": [
@@ -299,6 +179,94 @@
       "element_id": 1697370,
       "room": null,
       "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1697370, 1703112)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2397431,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2397431, 2660146)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2420668,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2420668, 2475479)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2420668,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2420668, 2640958)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2488806,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2488806, 2609163)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2488806,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2488806, 2642256)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2504676,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2504676, 2608876)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2504676,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2504676, 2642031)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2528661,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2528661, 2535322)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2611177,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2611177, 2643675)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2642927,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2642927, 2643228)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2792167,
+      "room": null,
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2792167, 2836493)",
       "auto_fixable": false
     }
   ],
