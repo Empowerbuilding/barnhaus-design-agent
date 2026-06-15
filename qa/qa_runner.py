@@ -35,6 +35,16 @@ def run_qa(state: dict, auto_fix: bool = False) -> dict:
     all_issues += check_all_doors(state)
     all_issues += check_all_cabinets(state)
 
+    # Deduplicate: same type + same message = one issue
+    seen = set()
+    deduped = []
+    for issue in all_issues:
+        key = (issue.get("type"), issue.get("message", "")[:80])
+        if key not in seen:
+            seen.add(key)
+            deduped.append(issue)
+    all_issues = deduped
+
     # Sort by severity
     all_issues.sort(key=lambda x: SEVERITY_ORDER.get(x.get("severity", "fyi"), 99))
 

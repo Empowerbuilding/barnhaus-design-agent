@@ -17,18 +17,59 @@ def check_all_rooms(state: dict) -> list:
     issues = []
     rooms  = state.get("rooms", [])
     levels = state.get("levels", [])
-    room_map = {r["name"]: r for r in rooms}
 
-    issues += _check_unnamed_rooms(rooms)
+    # Only QA rooms that are named — unnamed rooms get a single grouped summary
+    named_rooms   = [r for r in rooms if not _is_unnamed(r["name"])]
+    unnamed_rooms = [r for r in rooms if _is_unnamed(r["name"])]
+    room_map = {r["name"]: r for r in named_rooms}
+
+    # Summarize unnamed rooms in one issue instead of spamming per-room
+    issues += _summarize_unnamed_rooms(unnamed_rooms)
     issues += _check_missing_level_rooms(rooms, levels)
 
-    for room in rooms:
+    for room in named_rooms:
         issues += _check_sizing(room)
         issues += _check_adjacency(room, room_map)
         issues += _check_bedroom_width(room)
         issues += _check_closet_depth(room)
 
     issues += _check_circulation(room_map)
+    return issues
+
+
+def _is_unnamed(name: str) -> bool:
+    name = name.strip().lower()
+    return name == "room" or (name.startswith("room ") and name.split()[-1].isdigit())
+
+
+def _summarize_unnamed_rooms(rooms: list) -> list:
+    if not rooms:
+        return []
+    zero_area  = [r for r in rooms if r.get("area_sf", 0) == 0]
+    with_area  = [r for r in rooms if r.get("area_sf", 0) > 0]
+    issues = []
+    if zero_area:
+        issues.append({
+            "type": "unnamed_rooms_zero_area",
+            "severity": "fyi",
+            "room": "Unnamed Rooms",
+            "element_id": None,
+            "message": f"{len(zero_area)} unnamed rooms with 0 SF — likely unplaced or outside boundaries. "
+                       f"Delete or name them.",
+            "auto_fixable": False,
+        })
+    if with_area:
+        total_sf = sum(r.get("area_sf", 0) for r in with_area)
+        sizes    = sorted([r.get("area_sf", 0) for r in with_area], reverse=True)[:5]
+        issues.append({
+            "type": "unnamed_rooms_with_area",
+            "severity": "fix",
+            "room": "Unnamed Rooms",
+            "element_id": None,
+            "message": f"{len(with_area)} unnamed rooms with area ({total_sf:.0f} SF total). "
+                       f"Largest: {', '.join(f'{s:.0f} SF' for s in sizes)}. Name them before running documentation.",
+            "auto_fixable": False,
+        })
     return issues
 
 

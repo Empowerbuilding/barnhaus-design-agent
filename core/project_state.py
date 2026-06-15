@@ -169,11 +169,14 @@ def _scan_rooms(state: dict):
             bbox["width_ft"]  = round(min(dx, dy), 2)
             bbox["depth_ft"]  = round(max(dx, dy), 2)
 
-        # Get real boundary wall IDs
+        # Get real boundary wall IDs — only for named rooms with area
         boundary_wall_ids = []
-        rb_res = rc.call("revit.get_room_boundary", {"room_id": eid})
-        if rb_res.get("success") and isinstance(rb_res.get("result"), dict):
-            boundary_wall_ids = rb_res["result"].get("adjacent_wall_ids", [])
+        is_unnamed = (name.strip().lower() == "room" or
+                      (name.lower().startswith("room ") and name.split()[-1].isdigit()))
+        if not is_unnamed and area_sf > 0:
+            rb_res = rc.call("revit.get_room_boundary", {"room_id": eid})
+            if rb_res.get("success") and isinstance(rb_res.get("result"), dict):
+                boundary_wall_ids = rb_res["result"].get("adjacent_wall_ids", [])
 
         rooms.append({
             "id":                eid,

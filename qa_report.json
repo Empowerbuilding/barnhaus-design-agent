@@ -1,68 +1,44 @@
 {
-  "total": 37,
+  "total": 29,
   "fix": [
     {
       "type": "revit_warning",
       "severity": "fix",
-      "element_id": 2381749,
+      "element_id": 3653510,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls are attached to, but miss, the highlighted targets. (elements: 2381749, 2390412)",
+      "message": "[Revit Warning] Highlighted walls are attached to, but miss, the highlighted targets. (elements: 3653510, 3844488)",
       "auto_fixable": false
     },
     {
-      "type": "revit_warning",
+      "type": "short_wall",
       "severity": "fix",
-      "element_id": 2383194,
+      "element_id": 4139903,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls are attached to, but miss, the highlighted targets. (elements: 2383194, 2390412)",
+      "message": "Wall 4139903 is only 7.8\" long \u2014 likely a duplicate or modeling error. Delete it.",
       "auto_fixable": false
     },
     {
-      "type": "revit_warning",
+      "type": "short_wall",
       "severity": "fix",
-      "element_id": 2390708,
+      "element_id": 4139980,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls are attached to, but miss, the highlighted targets. (elements: 2390708, 2445089)",
+      "message": "Wall 4139980 is only 7.8\" long \u2014 likely a duplicate or modeling error. Delete it.",
       "auto_fixable": false
     },
     {
-      "type": "revit_warning",
+      "type": "unclosed_room",
       "severity": "fix",
-      "element_id": 2473428,
-      "room": null,
-      "message": "[Revit Warning] Highlighted inserts overlap with other inserts or completely miss their hosts. (elements: 2473428, 2491868)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 2509247,
-      "room": null,
-      "message": "[Revit Warning] Highlighted inserts overlap with other inserts or completely miss their hosts. (elements: 2509247, 2572225)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 3061478,
-      "room": null,
-      "message": "[Revit Warning] The Actual Tread Depth of stair is less than the Minimum Tread Depth specified in the stair type. (elements: 3061478)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fix",
-      "element_id": 3061478,
-      "room": null,
-      "message": "[Revit Warning] Stair top end exceeds or cannot reach the top elevation of the stair. Add/remove risers at the top end by control or change the stair run's \"Relative Top Height\" parameter in the properties palette. (elements: 3061478)",
-      "auto_fixable": false
-    },
-    {
-      "type": "unnamed_room",
-      "severity": "fix",
+      "element_id": 2947989,
       "room": "Room",
-      "element_id": 3172262,
-      "message": "Room 'Room' (940 SF) has a default Revit name. Rename it to its actual purpose.",
+      "message": "Room 'Room' has zero area \u2014 boundary not closed. Find and close the gap in the enclosing walls.",
+      "auto_fixable": false
+    },
+    {
+      "type": "unnamed_rooms_with_area",
+      "severity": "fix",
+      "room": "Unnamed Rooms",
+      "element_id": null,
+      "message": "26 unnamed rooms with area (8736 SF total). Largest: 2686 SF, 2486 SF, 684 SF, 515 SF, 376 SF. Name them before running documentation.",
       "auto_fixable": false
     }
   ],
@@ -70,105 +46,33 @@
     {
       "type": "revit_warning",
       "severity": "consider",
-      "element_id": 2441978,
+      "element_id": 1306992,
       "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2441978, 2441979, 2441985)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2441978,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2441978, 2441980, 2441985)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2441978,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2441978, 2441981, 2441985)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2441978,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2441978, 2441982, 2441985)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2556690,
-      "room": null,
-      "message": "[Revit Warning] Area separation line is slightly off axis and may cause inaccuracies. (elements: 2556690)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2576712,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2576712, 2576713, 2576719)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2576712,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2576712, 2576714, 2576719)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2576712,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2576712, 2576715, 2576719)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "consider",
-      "element_id": 2576712,
-      "room": null,
-      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2576712, 2576716, 2576719)",
-      "auto_fixable": false
-    },
-    {
-      "type": "unnamed_room",
-      "severity": "consider",
-      "room": "Room",
-      "element_id": 3172258,
-      "message": "Room 'Room' (23 SF) has a default Revit name. Rename it to its actual purpose.",
-      "auto_fixable": false
-    },
-    {
-      "type": "unnamed_room",
-      "severity": "consider",
-      "room": "Room",
-      "element_id": 3172260,
-      "message": "Room 'Room' (56 SF) has a default Revit name. Rename it to its actual purpose.",
+      "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 1306992, 3357893)",
       "auto_fixable": false
     },
     {
       "type": "level_missing_rooms",
       "severity": "consider",
-      "room": "Level 2.0",
-      "element_id": 723660,
-      "message": "Level 'Level 2.0' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
-      "auto_fixable": false
-    },
-    {
-      "type": "level_missing_rooms",
-      "severity": "consider",
-      "room": "Level 3.0",
+      "room": "Level 3.00",
       "element_id": 724245,
-      "message": "Level 'Level 3.0' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
+      "message": "Level 'Level 3.00' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
+      "auto_fixable": false
+    },
+    {
+      "type": "room_oversized",
+      "severity": "consider",
+      "room": "Living/Kitchen",
+      "element_id": 3670931,
+      "message": "Living/Kitchen is 1333 SF \u2014 above typical max 420 SF. Intentional?",
+      "auto_fixable": false
+    },
+    {
+      "type": "room_oversized",
+      "severity": "consider",
+      "room": "Pantry",
+      "element_id": 3896672,
+      "message": "Pantry is 378 SF \u2014 above typical max 160 SF. Intentional?",
       "auto_fixable": false
     }
   ],
@@ -176,129 +80,161 @@
     {
       "type": "revit_warning",
       "severity": "fyi",
+      "element_id": 520755,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 520755, 3221473)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 1396348,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1396348, 1396935)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 1398636,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1398636, 2918570)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 1992263,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1992263, 3096432)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2883666,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 2883666, 3101041)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 2995826,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 2995826, 3101292)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
+      "element_id": 3407239,
+      "room": null,
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 3407239, 3684382)",
+      "auto_fixable": false
+    },
+    {
+      "type": "revit_warning",
+      "severity": "fyi",
       "element_id": 171945,
       "room": null,
-      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 171945, 2005970)",
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 171945, 2005970, 3107007)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 1399958,
+      "element_id": 1715521,
       "room": null,
-      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1399958, 1402695)",
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1715521, 3557457, 3631007)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 1697368,
+      "element_id": 1707168,
       "room": null,
-      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1697368, 1703110)",
+      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1707168, 1717001, 3212928)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 1697370,
+      "element_id": 3655800,
       "room": null,
-      "message": "[Revit Warning] Elements have duplicate \"Type Mark\" values. (elements: 1697370, 1703112)",
+      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 3655800, 4117027)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2397431,
+      "element_id": 3662562,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2397431, 2660146)",
+      "message": "[Revit Warning] Highlighted lines overlap. Lines may not form closed loops. (elements: 3662562, 3748700)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2420668,
+      "element_id": 3685422,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2420668, 2475479)",
+      "message": "[Revit Warning] A wall and a room separation line overlap. One of them may be ignored when Revit finds room boundaries. Shorten or delete the room separation line to remove the overlap. (elements: 3685422, 3839752)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2420668,
+      "element_id": 4133379,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2420668, 2640958)",
+      "message": "[Revit Warning] Insert conflicts with joined Wall. (elements: 4133379, 4137547)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2488806,
+      "element_id": 3849658,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2488806, 2609163)",
+      "message": "[Revit Warning] Room is not in a properly enclosed region (elements: 3849658)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2488806,
+      "element_id": 6541662,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2488806, 2642256)",
+      "message": "[Revit Warning] Room is not in a properly enclosed region (elements: 6541662)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2504676,
+      "element_id": 3896676,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2504676, 2608876)",
+      "message": "[Revit Warning] Multiple Rooms are in the same enclosed region.  The correct area and perimeter will be assigned to one Room and the others will display \"Redundant Room.\"  You should separate the regions, delete the extra Rooms, or move them into different regions. (elements: 3896676, 6541654)",
       "auto_fixable": false
     },
     {
       "type": "revit_warning",
       "severity": "fyi",
-      "element_id": 2504676,
+      "element_id": 3958577,
       "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2504676, 2642031)",
+      "message": "[Revit Warning] Rectangular opening doesn't cut its host. (elements: 3958577)",
       "auto_fixable": false
     },
     {
-      "type": "revit_warning",
+      "type": "unnamed_rooms_zero_area",
       "severity": "fyi",
-      "element_id": 2528661,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2528661, 2535322)",
+      "room": "Unnamed Rooms",
+      "element_id": null,
+      "message": "290 unnamed rooms with 0 SF \u2014 likely unplaced or outside boundaries. Delete or name them.",
       "auto_fixable": false
     },
     {
-      "type": "revit_warning",
+      "type": "missing_foyer",
       "severity": "fyi",
-      "element_id": 2611177,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2611177, 2643675)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fyi",
-      "element_id": 2642927,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2642927, 2643228)",
-      "auto_fixable": false
-    },
-    {
-      "type": "revit_warning",
-      "severity": "fyi",
-      "element_id": 2792167,
-      "room": null,
-      "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2792167, 2836493)",
-      "auto_fixable": false
-    },
-    {
-      "type": "door_missing_dimensions",
-      "severity": "fyi",
-      "element_id": 2470651,
-      "room": null,
-      "message": "Door 2470651 (Exterior_Pivot_Door_22942) \u2014 couldn't read Width/Height. Family may use non-standard parameter names. Won't appear correctly in schedule.",
+      "room": "Entry Zone",
+      "element_id": null,
+      "message": "No Foyer/Entry room placed (3003 SF plan). Consider adding one for circulation clarity.",
       "auto_fixable": false
     }
   ],
