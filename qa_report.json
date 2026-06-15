@@ -1,5 +1,5 @@
 {
-  "total": 33,
+  "total": 39,
   "fix": [
     {
       "type": "revit_warning",
@@ -55,6 +55,14 @@
       "element_id": 3061478,
       "room": null,
       "message": "[Revit Warning] Stair top end exceeds or cannot reach the top elevation of the stair. Add/remove risers at the top end by control or change the stair run's \"Relative Top Height\" parameter in the properties palette. (elements: 3061478)",
+      "auto_fixable": false
+    },
+    {
+      "type": "unnamed_room",
+      "severity": "fix",
+      "room": "Room",
+      "element_id": 3172262,
+      "message": "Room 'Room' (940 SF) has a default Revit name. Rename it to its actual purpose.",
       "auto_fixable": false
     }
   ],
@@ -129,6 +137,38 @@
       "element_id": 2576712,
       "room": null,
       "message": "[Revit Warning] Line in Sketch is slightly off axis and may cause inaccuracies. (elements: 2576712, 2576716, 2576719)",
+      "auto_fixable": false
+    },
+    {
+      "type": "unnamed_room",
+      "severity": "consider",
+      "room": "Room",
+      "element_id": 3172258,
+      "message": "Room 'Room' (23 SF) has a default Revit name. Rename it to its actual purpose.",
+      "auto_fixable": false
+    },
+    {
+      "type": "unnamed_room",
+      "severity": "consider",
+      "room": "Room",
+      "element_id": 3172260,
+      "message": "Room 'Room' (56 SF) has a default Revit name. Rename it to its actual purpose.",
+      "auto_fixable": false
+    },
+    {
+      "type": "level_missing_rooms",
+      "severity": "consider",
+      "room": "Level 2.0",
+      "element_id": 723660,
+      "message": "Level 'Level 2.0' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
+      "auto_fixable": false
+    },
+    {
+      "type": "level_missing_rooms",
+      "severity": "consider",
+      "room": "Level 3.0",
+      "element_id": 724245,
+      "message": "Level 'Level 3.0' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
       "auto_fixable": false
     },
     {
@@ -267,6 +307,14 @@
       "element_id": 2792167,
       "room": null,
       "message": "[Revit Warning] Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other. (elements: 2792167, 2836493)",
+      "auto_fixable": false
+    },
+    {
+      "type": "door_missing_dimensions",
+      "severity": "fyi",
+      "element_id": 2470651,
+      "room": null,
+      "message": "Door 2470651 (Exterior_Pivot_Door_22942) \u2014 couldn't read Width/Height. Family may use non-standard parameter names. Won't appear correctly in schedule.",
       "auto_fixable": false
     }
   ],

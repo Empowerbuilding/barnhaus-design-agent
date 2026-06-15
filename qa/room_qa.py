@@ -15,8 +15,12 @@ from core.constants import ROOM_NORMS, MUST_TOUCH, MUST_NOT_TOUCH, QA
 
 def check_all_rooms(state: dict) -> list:
     issues = []
-    rooms = state.get("rooms", [])
+    rooms  = state.get("rooms", [])
+    levels = state.get("levels", [])
     room_map = {r["name"]: r for r in rooms}
+
+    issues += _check_unnamed_rooms(rooms)
+    issues += _check_missing_level_rooms(rooms, levels)
 
     for room in rooms:
         issues += _check_sizing(room)
@@ -25,6 +29,54 @@ def check_all_rooms(state: dict) -> list:
         issues += _check_closet_depth(room)
 
     issues += _check_circulation(room_map)
+    return issues
+
+
+def _check_unnamed_rooms(rooms: list) -> list:
+    """Flag rooms with default Revit names ('Room', 'Room 1', etc.)"""
+    issues = []
+    for room in rooms:
+        name = room.get("name", "")
+        sf   = room.get("area_sf", 0)
+        # Default Revit room names are just 'Room' or 'Room N'
+        if name.strip().lower() == "room" or (name.lower().startswith("room ") and name.split()[-1].isdigit()):
+            severity = "fix" if sf > 100 else "consider"
+            issues.append({
+                "type": "unnamed_room",
+                "severity": severity,
+                "room": name,
+                "element_id": room.get("id"),
+                "message": f"Room '{name}' ({sf:.0f} SF) has a default Revit name. Rename it to its actual purpose.",
+                "auto_fixable": False,
+            })
+    return issues
+
+
+def _check_missing_level_rooms(rooms: list, levels: list) -> list:
+    """Flag levels that have walls but no rooms placed."""
+    issues = []
+    if len(levels) <= 1:
+        return issues
+
+    # Get unique level IDs from rooms
+    room_levels = {r.get("level") for r in rooms}
+    level_ids   = {l.get("id") for l in levels}
+
+    # Levels without any rooms (skip roof levels)
+    for level in levels:
+        lid  = level.get("id")
+        name = level.get("name", "")
+        if "roof" in name.lower() or "ceiling" in name.lower():
+            continue
+        if str(lid) not in {str(l) for l in room_levels} and lid not in room_levels:
+            issues.append({
+                "type": "level_missing_rooms",
+                "severity": "consider",
+                "room": name,
+                "element_id": lid,
+                "message": f"Level '{name}' has no rooms placed. Drop room elements to enable QA + area tracking on this level.",
+                "auto_fixable": False,
+            })
     return issues
 
 

@@ -18,6 +18,8 @@ def check_all_doors(state: dict) -> list:
     issues = []
     doors = state.get("doors", [])
 
+    issues += _check_missing_dimensions(doors)
+
     for door in doors:
         door_id  = door.get("id")
         host_wall = door.get("host_wall_id")
@@ -30,6 +32,23 @@ def check_all_doors(state: dict) -> list:
         issues += _check_swing_logic(door, room_name)
         issues += _check_egress_width(door, room_name, width_ft)
 
+    return issues
+
+
+def _check_missing_dimensions(doors: list) -> list:
+    """Flag doors where width/height couldn't be read — family may not expose standard params."""
+    issues = []
+    for door in doors:
+        if door.get("width_ft", 0) == 0 and door.get("height_ft", 0) == 0:
+            issues.append({
+                "type": "door_missing_dimensions",
+                "severity": "fyi",
+                "element_id": door.get("id"),
+                "room": None,
+                "message": f"Door {door.get('id')} ({door.get('family_name')}) — couldn't read Width/Height. "
+                           f"Family may use non-standard parameter names. Won't appear correctly in schedule.",
+                "auto_fixable": False,
+            })
     return issues
 
 

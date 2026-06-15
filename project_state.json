@@ -1,5 +1,5 @@
 {
-  "scanned_at": "2026-06-14T22:57:58",
+  "scanned_at": "2026-06-14T23:23:53",
   "document": {
     "title": "Spring Mountian Construction Set",
     "path": "C:\\Revit Projects\\Spring Mountian Construction Set.rvt",
@@ -11,13 +11,165 @@
     "project_address": null,
     "project_status": null
   },
-  "levels": [],
+  "levels": [
+    {
+      "id": 722610,
+      "name": "Level 1.0",
+      "elevation": 6.9387189883494696e-18,
+      "elevation_ft": 6.9387189883494696e-18,
+      "elevation_m": 2.1149215476489186e-18
+    },
+    {
+      "id": 723660,
+      "name": "Level 2.0",
+      "elevation": 11,
+      "elevation_ft": 11,
+      "elevation_m": 3.3528000000000002
+    },
+    {
+      "id": 724245,
+      "name": "Level 3.0",
+      "elevation": 20,
+      "elevation_ft": 20,
+      "elevation_m": 6.096000000000001
+    }
+  ],
+  "loaded_families": [
+    "System Panel",
+    "Rectangular Mullion",
+    "Circular Mullion",
+    "L Corner Mullion",
+    "V Corner Mullion",
+    "Trapezoid Corner Mullion",
+    "Quad Corner Mullion",
+    "Timber-Column",
+    "Baluster - Square",
+    "Muntin Pattern_2x2",
+    "Trim-Window-Interior-Flat",
+    "Trim-Window-Exterior-Flat",
+    "Instance-Window-Fixed",
+    "Door-Interior-Single-Pocket-2_Panel-Wood",
+    "Door-Exterior-Double-Full Glass-Wood_Clad",
+    "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
+    "Tub-Rectangular-3D",
+    "Bed-Standard",
+    "Toilet-Domestic-3D",
+    "Sink Kitchen-Single",
+    "Sink Vanity-Round",
+    "123_or_4_seats_couch_4554",
+    "AGENT_BAR_STOOL_18681",
+    "TV - Flat Screen",
+    "Int-Opening-Craftsman_Casing_1726",
+    "Shower_Head_4441 (2)",
+    "gooseneck_exterior_wall_light_19146",
+    "Outlet Floor-Duplex",
+    "Outlet-Duplex",
+    "Outlet-GFI",
+    "Outlet-Range",
+    "Switch-Dimmer",
+    "Switch-Single",
+    "Downlight - Recessed Can",
+    "Ceiling_Fan_With_Light_15608",
+    "Bathroom_Ceiling_Fan_71",
+    "Downlight - Rectangle - LED",
+    "Exterior_Sliding_Door_3843",
+    "Empty System Panel",
+    "Window Tag",
+    "Door Tag",
+    "Area Tag",
+    "Glass_Panel_Overhead_2705",
+    "Parametric_folding_door_9123",
+    "Shelf-_Parametric_17480",
+    "Vanity Cabinet-Double Door Sink Unit",
+    "Shower_columns_15486",
+    "Upper Cabinet-Double Door-Wall",
+    "Base Cabinet-4 Drawers",
+    "Base Cabinet-Double Door & 2 Drawer",
+    "Base Cabinet-Double Door Sink Unit",
+    "Base Cabinet-Single Door",
+    "Casework Tag",
+    "Sink Kitchen-Double",
+    "Exo_Pendant_Lamp_Tech_Lighting_Parametric_18718",
+    "Edison_Wall_Sconce_20320",
+    "Security_Flood_Light_20223",
+    "Modern_Pot_Filler_Faucet_22179",
+    "Security_Flood_Light_1",
+    "Pendant Light - Disk",
+    "Tall Cabinet-Double Door(2)",
+    "Tall Cabinet-Single Door",
+    "Enscape AssetDefinition - Faucet 016",
+    "View Title w Sheet",
+    "Enscape AssetDefinition - Car 052",
+    "Enscape AssetDefinition - Deciduous Tree 105 Tree",
+    "Enscape AssetDefinition - Deciduous Tree 014 Chestnut",
+    "Enscape AssetDefinition - Bush 077 Dwarf Peppermint",
+    "Enscape AssetDefinition - Bush 123 Pampas Grass",
+    "Enscape AssetDefinition - Coniferous Tree 004 Japanese Black Pine",
+    "Enscape AssetDefinition - Coniferous Tree 021 Stone Pine",
+    "70284",
+    "Door-Interior-Single-1_Panel-Wood",
+    "Hood-Wall",
+    "Refrigerator-Over-and-Under-Glass_Door",
+    "Freezer-Stainless_Steel_Door",
+    "Dishwasher",
+    "Furniture_Sofas-Armchairs_Icons-of-Denmark_ EC1-Sofa_Configuration1",
+    "Table-Night Stand",
+    "Washer-Top_Load",
+    "Dryer",
+    "Fireplace-Gas-Heat&Glo-Cerona",
+    "Casework 2",
+    "Casework 3",
+    "Casework 4",
+    "Casework 5",
+    "Casework 6",
+    "Casework 7",
+    "Casework 9",
+    "Casework 11",
+    "Casework 10",
+    "Casework 8",
+    "Enscape AssetDefinition - Adhesive 001",
+    "Casework 12",
+    "Casework 13",
+    "Casework 1",
+    "Casework 14",
+    "Casework 15",
+    "Casework 16",
+    "Range-48_Inch",
+    "Skylight-Pyramid",
+    "Range-60_Inch",
+    "Window-Single-Hung",
+    "Data Outlet",
+    "Interior_barn_door_18732",
+    "Electrical Panel",
+    "Water Heater - Tankless",
+    "Floor_light_perfect_for_exterior_16733",
+    "W-Wide Flange",
+    "Enscape AssetDefinition - Bush 108 Kangaroo Paw",
+    "HSS-Hollow Structural Section-Column",
+    "Floor Drain-2D",
+    "W-Wide Flange-Column",
+    "Duplex Receptacle",
+    "Recessed Direct-Indirect Light - Asymmetrical",
+    "Level Head - Circle",
+    "Plain Recessed Lighting Fixture",
+    "Window-Awning-Single",
+    "Exterior_Pivot_Door_22942",
+    "1x6 Baseboard",
+    "ARCH D 24 X 36 HORIZONTAL",
+    "12039_Big_curse_Fan_19134",
+    "Enscape AssetDefinition - Bed 006 208 x 245 cm (82 x 96 in)",
+    "Enscape AssetDefinition - Marcel Open Shelf Nightstand",
+    "ClosetMaid - MasterSuite Reach-In - Drawer Tower",
+    "ClosetMaid - MasterSuite Deluxe 6x8 Walk-In - Drawer Tower",
+    "ClosetMaid - MasterSuite Standard 8x8 Walk-In - Drawer Tower",
+    "ClosetMaid - MasterSuite Deluxe 8x8 Walk-In - Drawer Tower"
+  ],
   "rooms": [
     {
       "id": 3172236,
       "name": "Office",
       "area_sf": 178.1,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172236,
         "has_bbox": true,
@@ -30,14 +182,18 @@
           "x": -39.62009059023803,
           "y": 38.29340319327767,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 10.94,
+        "depth_ft": 16.27
+      },
+      "width_ft": 10.94,
+      "depth_ft": 16.27
     },
     {
       "id": 3172238,
       "name": "Guest Suite",
       "area_sf": 188.1,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172238,
         "has_bbox": true,
@@ -50,14 +206,18 @@
           "x": -40.01592392357136,
           "y": 21.193048888247308,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 13.9,
+        "depth_ft": 13.98
+      },
+      "width_ft": 13.9,
+      "depth_ft": 13.98
     },
     {
       "id": 3172240,
       "name": "Bath 2",
       "area_sf": 42.9,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172240,
         "has_bbox": true,
@@ -70,14 +230,18 @@
           "x": -54.453423923571364,
           "y": 18.776382221580658,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 5.47,
+        "depth_ft": 7.91
+      },
+      "width_ft": 5.47,
+      "depth_ft": 7.91
     },
     {
       "id": 3172242,
       "name": "Bath 2",
       "area_sf": 18.6,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172242,
         "has_bbox": true,
@@ -90,14 +254,18 @@
           "x": -54.47946559023804,
           "y": 10.718219474761876,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 3.5,
+        "depth_ft": 5.45
+      },
+      "width_ft": 3.5,
+      "depth_ft": 5.45
     },
     {
       "id": 3172248,
       "name": "Master Bedroom",
       "area_sf": 252.0,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172248,
         "has_bbox": true,
@@ -110,14 +278,18 @@
           "x": 39.848841846279655,
           "y": 10.480903193277676,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 15.88,
+        "depth_ft": 15.88
+      },
+      "width_ft": 15.88,
+      "depth_ft": 15.88
     },
     {
       "id": 3172250,
       "name": "Master Bath",
       "area_sf": 143.9,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172250,
         "has_bbox": true,
@@ -130,14 +302,18 @@
           "x": 49.46863351294634,
           "y": 10.480903193277669,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 9.08,
+        "depth_ft": 15.86
+      },
+      "width_ft": 9.08,
+      "depth_ft": 15.86
     },
     {
       "id": 3172252,
       "name": "Master Bath",
       "area_sf": 37.5,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172252,
         "has_bbox": true,
@@ -150,14 +326,18 @@
           "x": 49.47384184627969,
           "y": 17.939236526611005,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 5.42,
+        "depth_ft": 6.92
+      },
+      "width_ft": 5.42,
+      "depth_ft": 6.92
     },
     {
       "id": 3172254,
       "name": "Master Closet",
       "area_sf": 155.3,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172254,
         "has_bbox": true,
@@ -170,14 +350,18 @@
           "x": 43.515508512946354,
           "y": 27.395067251151158,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 15.04,
+        "depth_ft": 16.37
+      },
+      "width_ft": 15.04,
+      "depth_ft": 16.37
     },
     {
       "id": 3172256,
       "name": "Office Closet",
       "area_sf": 47.7,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172256,
         "has_bbox": true,
@@ -190,14 +374,18 @@
           "x": -51.0916747354322,
           "y": 26.808018852782528,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 8.55,
+        "depth_ft": 8.92
+      },
+      "width_ft": 8.55,
+      "depth_ft": 8.92
     },
     {
       "id": 3172258,
       "name": "Room",
       "area_sf": 22.8,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172258,
         "has_bbox": true,
@@ -210,14 +398,18 @@
           "x": -47.113512175467825,
           "y": 26.808018852782528,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 4.57,
+        "depth_ft": 5.07
+      },
+      "width_ft": 4.57,
+      "depth_ft": 5.07
     },
     {
       "id": 3172260,
       "name": "Room",
       "area_sf": 55.5,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172260,
         "has_bbox": true,
@@ -230,14 +422,18 @@
           "x": 33.89050851294636,
           "y": 33.85340058448447,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 5.92,
+        "depth_ft": 9.38
+      },
+      "width_ft": 5.92,
+      "depth_ft": 9.38
     },
     {
       "id": 3172262,
       "name": "Room",
       "area_sf": 940.3,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172262,
         "has_bbox": true,
@@ -250,14 +446,18 @@
           "x": 0.5602749001646603,
           "y": 77.85711440254889,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 26.0,
+        "depth_ft": 41.83
+      },
+      "width_ft": 26.0,
+      "depth_ft": 41.83
     },
     {
       "id": 3172264,
       "name": "Mud",
       "area_sf": 95.6,
-      "category": "Rooms",
+      "level": "722610",
       "bbox": {
         "element_id": 3172264,
         "has_bbox": true,
@@ -270,8 +470,12 @@
           "x": -13.31905196862343,
           "y": 43.5446144025489,
           "z": 8
-        }
-      }
+        },
+        "width_ft": 9.56,
+        "depth_ft": 10.01
+      },
+      "width_ft": 9.56,
+      "depth_ft": 10.01
     }
   ],
   "walls": {
@@ -280,283 +484,1223 @@
         "id": 2381749,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2381749,
+          "has_bbox": true,
+          "min": {
+            "x": -26.60949148705377,
+            "y": 2.3142365266109586,
+            "z": 0
+          },
+          "max": {
+            "x": -26.026158153720395,
+            "y": 26.428354165197717,
+            "z": 11.258170723781525
+          }
+        },
+        "length_ft": 24.11,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -26.31782482038708,
+          "y": 14.371295345904338
+        }
       },
       {
         "id": 2381823,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2381823,
+          "has_bbox": true,
+          "min": {
+            "x": -6.169645427050995,
+            "y": 2.0225698599442765,
+            "z": 0
+          },
+          "max": {
+            "x": -2.711312093717684,
+            "y": 2.6059031932776255,
+            "z": 19.008680555555557
+          }
+        },
+        "length_ft": 3.46,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -4.440478760384339,
+          "y": 2.314236526610951
+        }
       },
       {
         "id": 2382729,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2382729,
+          "has_bbox": true,
+          "min": {
+            "x": -40.015923923571386,
+            "y": 6.922215554913933,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -39.43259059023803,
+            "y": 21.734715554913972,
+            "z": 11.263733660691875
+          }
+        },
+        "length_ft": 14.81,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -39.72425725690471,
+          "y": 14.328465554913953
+        }
       },
       {
         "id": 2382783,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2382783,
+          "has_bbox": true,
+          "min": {
+            "x": -60.59925725690474,
+            "y": 6.630548888247266,
+            "z": 0
+          },
+          "max": {
+            "x": -39.43259059023805,
+            "y": 7.213882221580601,
+            "z": 11.177083333333336
+          }
+        },
+        "length_ft": 21.17,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -50.01592392357139,
+          "y": 6.922215554913933
+        }
       },
       {
         "id": 2382991,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2382991,
+          "has_bbox": true,
+          "min": {
+            "x": -26.02305843316868,
+            "y": 77.8571144025489,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": 1.1436082334979965,
+            "y": 78.44044773588223,
+            "z": 13.607638888888912
+          }
+        },
+        "length_ft": 27.17,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -12.439725099835341,
+          "y": 78.14878106921557
+        }
       },
       {
         "id": 2383194,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2383194,
+          "has_bbox": true,
+          "min": {
+            "x": 0.5602749001646427,
+            "y": 65.6489351835042,
+            "z": 0
+          },
+          "max": {
+            "x": 1.1436082334979938,
+            "y": 78.14878106921556,
+            "z": 13.607638888888912
+          }
+        },
+        "length_ft": 12.5,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 0.8519415668313182,
+          "y": 71.89885812635987
+        }
       },
       {
         "id": 2383410,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2383410,
+          "has_bbox": true,
+          "min": {
+            "x": -23.896322077597798,
+            "y": 38.293403193277626,
+            "z": 0
+          },
+          "max": {
+            "x": -23.312988744264427,
+            "y": 65.10711440254889,
+            "z": 13.098126451852178
+          }
+        },
+        "length_ft": 26.81,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -23.604655410931112,
+          "y": 51.70025879791326
+        }
       },
       {
         "id": 2397431,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2397431,
+          "has_bbox": true,
+          "min": {
+            "x": 23.390508512946308,
+            "y": 2.3142365266109977,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 23.973841846279672,
+            "y": 22.348775316038367,
+            "z": 19.395833333333332
+          }
+        },
+        "length_ft": 20.03,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 23.68217517961299,
+          "y": 12.331505921324682
+        }
       },
       {
         "id": 2398051,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2398051,
+          "has_bbox": true,
+          "min": {
+            "x": 23.932175179613008,
+            "y": 27.39506725115117,
+            "z": 0
+          },
+          "max": {
+            "x": 24.51550851294635,
+            "y": 34.14506725115113,
+            "z": 20
+          }
+        },
+        "length_ft": 6.75,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 24.22384184627968,
+          "y": 30.77006725115115
+        }
       },
       {
         "id": 2411501,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2411501,
+          "has_bbox": true,
+          "min": {
+            "x": -60.59925725690474,
+            "y": 6.922215554913931,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -60.015923923571386,
+            "y": 24.29721555491394,
+            "z": 12
+          }
+        },
+        "length_ft": 17.38,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -60.307590590238064,
+          "y": 15.609715554913937
+        }
       },
       {
         "id": 2412686,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2412686,
+          "has_bbox": true,
+          "min": {
+            "x": -56.474257256904714,
+            "y": 24.005548888247265,
+            "z": 0
+          },
+          "max": {
+            "x": -55.89092392357136,
+            "y": 38.876736526611005,
+            "z": 12
+          }
+        },
+        "length_ft": 14.87,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -56.182590590238036,
+          "y": 31.441142707429137
+        }
       },
       {
         "id": 2434332,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2434332,
+          "has_bbox": true,
+          "min": {
+            "x": -26.609491487053727,
+            "y": 2.0225698599442765,
+            "z": 0
+          },
+          "max": {
+            "x": -6.169645427050989,
+            "y": 2.6059031932776198,
+            "z": 19.008680555555557
+          }
+        },
+        "length_ft": 20.44,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -16.38956845705236,
+          "y": 2.314236526610948
+        }
       },
       {
         "id": 2445089,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2445089,
+          "has_bbox": true,
+          "min": {
+            "x": 21.390508512946305,
+            "y": 2.314236526611003,
+            "z": -1.8333333333333335
+          },
+          "max": {
+            "x": 21.973841846279672,
+            "y": 22.34877531603837,
+            "z": 18.996527777777782
+          }
+        },
+        "length_ft": 20.03,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 21.68217517961299,
+          "y": 12.331505921324688
+        }
       },
       {
         "id": 2445146,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2445146,
+          "has_bbox": true,
+          "min": {
+            "x": 21.682175179613004,
+            "y": 21.765441982705028,
+            "z": -1.8333333333333335
+          },
+          "max": {
+            "x": 23.682175179613004,
+            "y": 22.348775316038367,
+            "z": 23.166666666666668
+          }
+        },
+        "length_ft": 2.0,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 22.682175179613004,
+          "y": 22.0571086493717
+        }
       },
       {
         "id": 2464846,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2464846,
+          "has_bbox": true,
+          "min": {
+            "x": -26.023058433168696,
+            "y": 64.81544773588223,
+            "z": 0
+          },
+          "max": {
+            "x": -25.439725099835346,
+            "y": 78.14878106921556,
+            "z": 13.053819444444448
+          }
+        },
+        "length_ft": 13.33,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -25.73139176650202,
+          "y": 71.48211440254889
+        }
       },
       {
         "id": 2465064,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2465064,
+          "has_bbox": true,
+          "min": {
+            "x": -25.73139176650203,
+            "y": 64.81544773588223,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -23.312988744264427,
+            "y": 65.39878106921556,
+            "z": 13.098126451852176
+          }
+        },
+        "length_ft": 2.42,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -24.52219025538323,
+          "y": 65.10711440254889
+        }
       },
       {
         "id": 2468409,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2468409,
+          "has_bbox": true,
+          "min": {
+            "x": 23.93217517961302,
+            "y": 34.14506725115113,
+            "z": 0
+          },
+          "max": {
+            "x": 24.515508512946354,
+            "y": 36.02256985994434,
+            "z": 18.339461859905416
+          }
+        },
+        "length_ft": 1.88,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 24.223841846279687,
+          "y": 35.08381855554774
+        }
       },
       {
         "id": 2469975,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2469975,
+          "has_bbox": true,
+          "min": {
+            "x": -39.640923923571364,
+            "y": 38.29340319327763,
+            "z": 0
+          },
+          "max": {
+            "x": -23.60465541093113,
+            "y": 38.87673652661102,
+            "z": 12
+          }
+        },
+        "length_ft": 16.04,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -31.622789667251247,
+          "y": 38.585069859944326
+        }
       },
       {
         "id": 2470154,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2470154,
+          "has_bbox": true,
+          "min": {
+            "x": -39.83278569927925,
+            "y": 21.260865929104906,
+            "z": 0
+          },
+          "max": {
+            "x": -24.313037074150955,
+            "y": 26.85971555491399,
+            "z": 10.5
+          }
+        },
+        "length_ft": 15.52,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -32.072911386715106,
+          "y": 24.06029074200945
+        }
       },
       {
         "id": 2473428,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2473428,
+          "has_bbox": true,
+          "min": {
+            "x": -56.18259059023802,
+            "y": 38.29340319327767,
+            "z": 0
+          },
+          "max": {
+            "x": -39.3492572569047,
+            "y": 38.876736526611005,
+            "z": 10.5
+          }
+        },
+        "length_ft": 16.83,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -47.765923923571364,
+          "y": 38.58506985994434
+        }
       },
       {
         "id": 2474241,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2474241,
+          "has_bbox": true,
+          "min": {
+            "x": -60.30759059023806,
+            "y": 23.7138822215806,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -55.89092392357137,
+            "y": 24.29721555491394,
+            "z": 12
+          }
+        },
+        "length_ft": 4.42,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -58.099257256904714,
+          "y": 24.00554888824727
+        }
       },
       {
         "id": 2475479,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2475479,
+          "has_bbox": true,
+          "min": {
+            "x": -17.881744183434847,
+            "y": 2.314236526610948,
+            "z": 11
+          },
+          "max": {
+            "x": -17.298410850101465,
+            "y": 38.876736526611,
+            "z": 23.79868691510733
+          }
+        },
+        "length_ft": 36.56,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -17.590077516768154,
+          "y": 20.595486526610973
+        }
       },
       {
         "id": 2475618,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2475618,
+          "has_bbox": true,
+          "min": {
+            "x": -56.18259059023809,
+            "y": 48.35590319327763,
+            "z": 11
+          },
+          "max": {
+            "x": -39.349257256904686,
+            "y": 48.93923652661097,
+            "z": 23.053819444444436
+          }
+        },
+        "length_ft": 16.83,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -47.76592392357139,
+          "y": 48.6475698599443
+        }
       },
       {
         "id": 2475978,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2475978,
+          "has_bbox": true,
+          "min": {
+            "x": -56.47425725690473,
+            "y": 11.373097934790472,
+            "z": 11
+          },
+          "max": {
+            "x": -17.59007751676817,
+            "y": 11.95643126812382,
+            "z": 23.824294553996214
+          }
+        },
+        "length_ft": 38.88,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -37.03216738683645,
+          "y": 11.664764601457147
+        }
       },
       {
         "id": 2478888,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2478888,
+          "has_bbox": true,
+          "min": {
+            "x": -13.0482186352901,
+            "y": 35.43923652661098,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": 0.8519415668312647,
+            "y": 36.022569859944326,
+            "z": 22
+          }
+        },
+        "length_ft": 13.9,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -6.098138534229418,
+          "y": 35.730903193277655
+        }
       },
       {
         "id": 2487139,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2487139,
+          "has_bbox": true,
+          "min": {
+            "x": 24.223841846279687,
+            "y": 33.85340058448446,
+            "z": -4.440892098500626e-16
+          },
+          "max": {
+            "x": 34.4738418462797,
+            "y": 34.4367339178178,
+            "z": 12.05300352657208
+          }
+        },
+        "length_ft": 10.25,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 29.34884184627969,
+          "y": 34.14506725115113
+        }
       },
       {
         "id": 2488072,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2488072,
+          "has_bbox": true,
+          "min": {
+            "x": -9.193045473008809,
+            "y": 8.607974056805997,
+            "z": 0
+          },
+          "max": {
+            "x": -8.609712139675423,
+            "y": 18.87880739013933,
+            "z": 2.875
+          }
+        },
+        "length_ft": 10.27,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -8.901378806342116,
+          "y": 13.743390723472663
+        }
       },
       {
         "id": 2488593,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2488593,
+          "has_bbox": true,
+          "min": {
+            "x": 23.390508512946308,
+            "y": -5.977430140055688,
+            "z": -0.625
+          },
+          "max": {
+            "x": 23.97384184627965,
+            "y": 2.3142365266109954,
+            "z": 12.8828125
+          }
+        },
+        "length_ft": 8.29,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 23.68217517961298,
+          "y": -1.8315968067223463
+        }
       },
       {
         "id": 2488742,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2488742,
+          "has_bbox": true,
+          "min": {
+            "x": 23.682175179612972,
+            "y": -5.977430140055681,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 50.05717517961299,
+            "y": -5.394096806722298,
+            "z": 12.8828125
+          }
+        },
+        "length_ft": 26.38,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 36.86967517961298,
+          "y": -5.68576347338899
+        }
       },
       {
         "id": 2489853,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2489853,
+          "has_bbox": true,
+          "min": {
+            "x": 34.182175179613,
+            "y": 17.939236526610998,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 50.05717517961302,
+            "y": 18.522569859944337,
+            "z": 12.384548611111112
+          }
+        },
+        "length_ft": 15.88,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 42.11967517961301,
+          "y": 18.23090319327767
+        }
       },
       {
         "id": 2500779,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2500779,
+          "has_bbox": true,
+          "min": {
+            "x": -39.640923923571364,
+            "y": 38.58506985994433,
+            "z": 11
+          },
+          "max": {
+            "x": -39.057590590238014,
+            "y": 48.93923652661097,
+            "z": 23.251302083333314
+          }
+        },
+        "length_ft": 10.35,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -39.34925725690469,
+          "y": 43.762153193277655
+        }
       },
       {
         "id": 2500870,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2500870,
+          "has_bbox": true,
+          "min": {
+            "x": -56.47425725690473,
+            "y": 11.66476460145715,
+            "z": 11
+          },
+          "max": {
+            "x": -55.89092392357134,
+            "y": 48.93923652661097,
+            "z": 23.81214177621844
+          }
+        },
+        "length_ft": 37.27,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -56.182590590238036,
+          "y": 30.30200056403406
+        }
       },
       {
         "id": 2501289,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2501289,
+          "has_bbox": true,
+          "min": {
+            "x": -39.640923923571364,
+            "y": 38.29340319327763,
+            "z": 11
+          },
+          "max": {
+            "x": -17.590077516768133,
+            "y": 38.876736526611005,
+            "z": 23.263454861111093
+          }
+        },
+        "length_ft": 22.05,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -28.61550072016975,
+          "y": 38.58506985994432
+        }
       },
       {
         "id": 2504676,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2504676,
+          "has_bbox": true,
+          "min": {
+            "x": 49.473841846279655,
+            "y": -5.685763473388967,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 50.05717517961302,
+            "y": 18.230903193277673,
+            "z": 12.870659722222223
+          }
+        },
+        "length_ft": 23.92,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 49.76550851294634,
+          "y": 6.272569859944353
+        }
       },
       {
         "id": 2531384,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2531384,
+          "has_bbox": true,
+          "min": {
+            "x": 33.890508512946326,
+            "y": 17.939236526610998,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 34.4738418462797,
+            "y": 34.14506725115113,
+            "z": 12.38454861111111
+          }
+        },
+        "length_ft": 16.21,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 34.18217517961301,
+          "y": 26.042151888881065
+        }
       },
       {
         "id": 2535322,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2535322,
+          "has_bbox": true,
+          "min": {
+            "x": -23.87548874426447,
+            "y": 32.32965319327768,
+            "z": 0
+          },
+          "max": {
+            "x": -23.292155410931134,
+            "y": 34.98992388824733,
+            "z": 10
+          }
+        },
+        "length_ft": 2.66,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -23.5838220775978,
+          "y": 33.659788540762506
+        }
       },
       {
         "id": 2542249,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2542249,
+          "has_bbox": true,
+          "min": {
+            "x": -17.59007751676813,
+            "y": 40.29340319327762,
+            "z": 11
+          },
+          "max": {
+            "x": -13.048218635290102,
+            "y": 40.87673652661097,
+            "z": 21
+          }
+        },
+        "length_ft": 4.54,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -15.319148076029116,
+          "y": 40.5850698599443
+        }
       },
       {
         "id": 2564439,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2564439,
+          "has_bbox": true,
+          "min": {
+            "x": 0.8519415668312611,
+            "y": 35.43923652661099,
+            "z": 0
+          },
+          "max": {
+            "x": 24.223841846279694,
+            "y": 36.022569859944326,
+            "z": 22
+          }
+        },
+        "length_ft": 23.37,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 12.537891706555477,
+          "y": 35.730903193277655
+        }
       },
       {
         "id": 2567463,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2567463,
+          "has_bbox": true,
+          "min": {
+            "x": -3.0029787603843445,
+            "y": 2.3142365266109586,
+            "z": 14.020833333333334
+          },
+          "max": {
+            "x": -2.4196454270509578,
+            "y": 35.73090319327766,
+            "z": 19.020833333333336
+          }
+        },
+        "length_ft": 33.42,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -2.711312093717651,
+          "y": 19.022569859944312
+        }
       },
       {
         "id": 2569877,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2569877,
+          "has_bbox": true,
+          "min": {
+            "x": -17.590077516768133,
+            "y": 35.482114402548845,
+            "z": 11
+          },
+          "max": {
+            "x": -13.0482186352901,
+            "y": 36.065447735882195,
+            "z": 26
+          }
+        },
+        "length_ft": 4.54,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -15.319148076029116,
+          "y": 35.77378106921552
+        }
       },
       {
         "id": 2572225,
         "name": "Wall 2x6 Steel Plates",
         "category": "Walls",
-        "type": "Wall 2x6 Steel Plates"
+        "type": "Wall 2x6 Steel Plates",
+        "bbox": {
+          "element_id": 2572225,
+          "has_bbox": true,
+          "min": {
+            "x": -2.7113120937176767,
+            "y": 2.0225698599442836,
+            "z": 0
+          },
+          "max": {
+            "x": 23.97384184627965,
+            "y": 2.605903193277673,
+            "z": 19.008680555555557
+          }
+        },
+        "length_ft": 26.69,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 10.631264876280987,
+          "y": 2.314236526610978
+        }
       },
       {
         "id": 2573449,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2573449,
+          "has_bbox": true,
+          "min": {
+            "x": 0.5602749001645968,
+            "y": 35.439236526610976,
+            "z": 0
+          },
+          "max": {
+            "x": 1.143608233497976,
+            "y": 65.6489351835042,
+            "z": 18.3125
+          }
+        },
+        "length_ft": 30.21,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 0.8519415668312864,
+          "y": 50.54408585505759
+        }
       },
       {
         "id": 2577356,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2577356,
+          "has_bbox": true,
+          "min": {
+            "x": -2.9613120937176003,
+            "y": 33.46006985994428,
+            "z": 0
+          },
+          "max": {
+            "x": -2.3779787603842624,
+            "y": 35.73090319327766,
+            "z": 14
+          }
+        },
+        "length_ft": 2.27,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -2.6696454270509316,
+          "y": 34.59548652661097
+        }
       },
       {
         "id": 2590672,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2590672,
+          "has_bbox": true,
+          "min": {
+            "x": -15.716412554756802,
+            "y": 4.730903193277591,
+            "z": 10
+          },
+          "max": {
+            "x": -15.13307922142342,
+            "y": 33.71006985994432,
+            "z": 25
+          }
+        },
+        "length_ft": 28.98,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -15.424745888090111,
+          "y": 19.220486526610955
+        }
       },
       {
         "id": 2592372,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2592372,
+          "has_bbox": true,
+          "min": {
+            "x": -15.716412554756808,
+            "y": 2.314236526610951,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -15.133079221423468,
+            "y": 4.730903193277597,
+            "z": 20
+          }
+        },
+        "length_ft": 2.42,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -15.424745888090138,
+          "y": 3.522569859944274
+        }
       },
       {
         "id": 2603818,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2603818,
+          "has_bbox": true,
+          "min": {
+            "x": -13.048218635290112,
+            "y": 33.46006985994427,
+            "z": 10
+          },
+          "max": {
+            "x": -2.6696454270509324,
+            "y": 34.04340319327765,
+            "z": 30
+          }
+        },
+        "length_ft": 10.38,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -7.858932031170522,
+          "y": 33.751736526610955
+        }
       },
       {
         "id": 2660146,
         "name": "Wall 2x6",
         "category": "Walls",
-        "type": "Wall 2x6"
+        "type": "Wall 2x6",
+        "bbox": {
+          "element_id": 2660146,
+          "has_bbox": true,
+          "min": {
+            "x": 23.932175179612972,
+            "y": 2.3142365266110048,
+            "z": 12.313590106668546
+          },
+          "max": {
+            "x": 24.51550851294634,
+            "y": 27.665900584484504,
+            "z": 21.313590106668546
+          }
+        },
+        "length_ft": 25.35,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 24.223841846279655,
+          "y": 14.990068555547754
+        }
       }
     ],
     "interior": [
@@ -564,235 +1708,1015 @@
         "id": 2405444,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2405444,
+          "has_bbox": true,
+          "min": {
+            "x": -54.453423923571364,
+            "y": 6.922215554913937,
+            "z": 0
+          },
+          "max": {
+            "x": -53.91175725690469,
+            "y": 17.9570926005847,
+            "z": 11.263733660691875
+          }
+        },
+        "length_ft": 11.03,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -54.18259059023803,
+          "y": 12.439654077749319
+        }
       },
       {
         "id": 2405770,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2405770,
+          "has_bbox": true,
+          "min": {
+            "x": -50.51715047571813,
+            "y": 21.193048888247304,
+            "z": 0
+          },
+          "max": {
+            "x": -39.72425725690469,
+            "y": 21.734715554913972,
+            "z": 10
+          }
+        },
+        "length_ft": 10.79,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -45.120703866311416,
+          "y": 21.46388222158064
+        }
       },
       {
         "id": 2417634,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2417634,
+          "has_bbox": true,
+          "min": {
+            "x": -60.307590590238064,
+            "y": 18.776382221580654,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -55.2727135445673,
+            "y": 19.318048888247322,
+            "z": 10
+          }
+        },
+        "length_ft": 5.03,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -57.79015206740269,
+          "y": 19.04721555491399
+        }
       },
       {
         "id": 2420716,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2420716,
+          "has_bbox": true,
+          "min": {
+            "x": -25.884322815238228,
+            "y": 26.318048888247322,
+            "z": 0
+          },
+          "max": {
+            "x": -15.091412554756804,
+            "y": 26.85971555491399,
+            "z": 10
+          }
+        },
+        "length_ft": 10.79,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -20.487867684997518,
+          "y": 26.588882221580654
+        }
       },
       {
         "id": 2472944,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2472944,
+          "has_bbox": true,
+          "min": {
+            "x": -47.11351217546784,
+            "y": 21.463882221580636,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -46.57184550880116,
+            "y": 27.078852186115856,
+            "z": 10
+          }
+        },
+        "length_ft": 5.61,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -46.842678842134504,
+          "y": 24.271367203848246
+        }
       },
       {
         "id": 2473018,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2473018,
+          "has_bbox": true,
+          "min": {
+            "x": -56.18259059023804,
+            "y": 26.808018852782524,
+            "z": 0
+          },
+          "max": {
+            "x": -46.84267884213449,
+            "y": 27.349685519449196,
+            "z": 10
+          }
+        },
+        "length_ft": 9.34,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -51.51263471618627,
+          "y": 27.07885218611586
+        }
       },
       {
         "id": 2473278,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2473278,
+          "has_bbox": true,
+          "min": {
+            "x": -39.62009059023804,
+            "y": 27.078852186115856,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -39.078423923571364,
+            "y": 38.876736526611005,
+            "z": 9.5
+          }
+        },
+        "length_ft": 11.8,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -39.34925725690471,
+          "y": 32.97779435636343
+        }
       },
       {
         "id": 2473765,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2473765,
+          "has_bbox": true,
+          "min": {
+            "x": -47.113512175467825,
+            "y": 26.808018852782524,
+            "z": 0
+          },
+          "max": {
+            "x": -39.07842392357138,
+            "y": 27.349685519449192,
+            "z": 10.5
+          }
+        },
+        "length_ft": 8.04,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -43.0959680495196,
+          "y": 27.07885218611586
+        }
       },
       {
         "id": 2473895,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2473895,
+          "has_bbox": true,
+          "min": {
+            "x": -44.571845508801154,
+            "y": 21.463882221580636,
+            "z": 0
+          },
+          "max": {
+            "x": -44.03017884213448,
+            "y": 27.078852186115856,
+            "z": 10
+          }
+        },
+        "length_ft": 5.61,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -44.30101217546782,
+          "y": 24.271367203848246
+        }
       },
       {
         "id": 2476562,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2476562,
+          "has_bbox": true,
+          "min": {
+            "x": -42.82842392357458,
+            "y": 11.66476460145715,
+            "z": 11
+          },
+          "max": {
+            "x": -42.2867572569015,
+            "y": 26.683018852782503,
+            "z": 21
+          }
+        },
+        "length_ft": 15.02,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -42.55759059023804,
+          "y": 19.173891727119827
+        }
       },
       {
         "id": 2476632,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2476632,
+          "has_bbox": true,
+          "min": {
+            "x": -37.15884959345814,
+            "y": 11.66476460145715,
+            "z": 11
+          },
+          "max": {
+            "x": -36.617182926791465,
+            "y": 26.683018852782503,
+            "z": 21
+          }
+        },
+        "length_ft": 15.02,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -36.8880162601248,
+          "y": 19.173891727119827
+        }
       },
       {
         "id": 2476756,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2476756,
+          "has_bbox": true,
+          "min": {
+            "x": -42.557590590238036,
+            "y": 26.141352186115828,
+            "z": 11
+          },
+          "max": {
+            "x": -36.88801626012479,
+            "y": 26.683018852782496,
+            "z": 21
+          }
+        },
+        "length_ft": 5.67,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -39.72280342518141,
+          "y": 26.41218551944916
+        }
       },
       {
         "id": 2478638,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2478638,
+          "has_bbox": true,
+          "min": {
+            "x": -23.5838220775978,
+            "y": 33.439236526607786,
+            "z": 0
+          },
+          "max": {
+            "x": -13.048218635290114,
+            "y": 33.98090319328087,
+            "z": 18.35416666666667
+          }
+        },
+        "length_ft": 10.54,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -18.316020356443957,
+          "y": 33.710069859944326
+        }
       },
       {
         "id": 2487219,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2487219,
+          "has_bbox": true,
+          "min": {
+            "x": 27.932175179612983,
+            "y": 10.751736526611008,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 28.47384184627967,
+            "y": 22.057108649371685,
+            "z": 12.528645833333334
+          }
+        },
+        "length_ft": 11.31,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 28.203008512946326,
+          "y": 16.40442258799135
+        }
       },
       {
         "id": 2487270,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2487270,
+          "has_bbox": true,
+          "min": {
+            "x": 23.682175179613008,
+            "y": 10.480903193277662,
+            "z": -0.6666666666666666
+          },
+          "max": {
+            "x": 49.76550851294635,
+            "y": 11.022569859944342,
+            "z": 12.539930555555557
+          }
+        },
+        "length_ft": 26.08,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 36.723841846279676,
+          "y": 10.751736526611001
+        }
       },
       {
         "id": 2488806,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2488806,
+          "has_bbox": true,
+          "min": {
+            "x": 39.84884184627963,
+            "y": -5.685763473388983,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 40.39050851294632,
+            "y": 10.751736526611003,
+            "z": 12.870659722222223
+          }
+        },
+        "length_ft": 16.44,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 40.119675179612976,
+          "y": 2.53298652661101
+        }
       },
       {
         "id": 2528661,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2528661,
+          "has_bbox": true,
+          "min": {
+            "x": -23.875488744264477,
+            "y": 31.876736526610973,
+            "z": 0
+          },
+          "max": {
+            "x": -23.333822077597798,
+            "y": 38.5850698599443,
+            "z": 23.391493055555532
+          }
+        },
+        "length_ft": 6.71,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -23.604655410931137,
+          "y": 35.23090319327763
+        }
       },
       {
         "id": 2530289,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2530289,
+          "has_bbox": true,
+          "min": {
+            "x": -13.319051968623455,
+            "y": 33.43923652661098,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -12.777385301956762,
+            "y": 44.08628106921553,
+            "z": 18.354166666666668
+          }
+        },
+        "length_ft": 10.65,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -13.048218635290109,
+          "y": 38.76275879791326
+        }
       },
       {
         "id": 2532834,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2532834,
+          "has_bbox": true,
+          "min": {
+            "x": -23.604655410931123,
+            "y": 43.544614402548866,
+            "z": 0
+          },
+          "max": {
+            "x": -13.048218635290096,
+            "y": 44.086281069215566,
+            "z": 13.30633346801137
+          }
+        },
+        "length_ft": 10.56,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -18.32643702311061,
+          "y": 43.815447735882216
+        }
       },
       {
         "id": 2539457,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2539457,
+          "has_bbox": true,
+          "min": {
+            "x": -56.18259059023803,
+            "y": 31.605903193277634,
+            "z": 11
+          },
+          "max": {
+            "x": -42.4742572569047,
+            "y": 32.147569859944305,
+            "z": 23.402777777777754
+          }
+        },
+        "length_ft": 13.71,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -49.328423923571364,
+          "y": 31.87673652661097
+        }
       },
       {
         "id": 2544416,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2544416,
+          "has_bbox": true,
+          "min": {
+            "x": -39.108678372701355,
+            "y": 31.60590319327763,
+            "z": 11
+          },
+          "max": {
+            "x": -17.59007751676814,
+            "y": 32.147569859944305,
+            "z": 23.402777777777754
+          }
+        },
+        "length_ft": 21.52,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -28.349377944734748,
+          "y": 31.87673652661097
+        }
       },
       {
         "id": 2553649,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2553649,
+          "has_bbox": true,
+          "min": {
+            "x": -36.88801626012479,
+            "y": 26.141352186112588,
+            "z": 11
+          },
+          "max": {
+            "x": -17.590077516768147,
+            "y": 26.68301885278568,
+            "z": 21
+          }
+        },
+        "length_ft": 19.3,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -27.23904688844647,
+          "y": 26.41218551944913
+        }
       },
       {
         "id": 2554367,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2554367,
+          "has_bbox": true,
+          "min": {
+            "x": -27.34007751676815,
+            "y": 26.41218551944914,
+            "z": 11
+          },
+          "max": {
+            "x": -26.798410850101476,
+            "y": 31.87673652661097,
+            "z": 21
+          }
+        },
+        "length_ft": 5.46,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -27.06924418343481,
+          "y": 29.144461023030054
+        }
       },
       {
         "id": 2554599,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2554599,
+          "has_bbox": true,
+          "min": {
+            "x": -56.182590590238036,
+            "y": 26.14135218611264,
+            "z": 11
+          },
+          "max": {
+            "x": -42.557590590238036,
+            "y": 26.683018852785732,
+            "z": 21
+          }
+        },
+        "length_ft": 13.62,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -49.370090590238036,
+          "y": 26.41218551944919
+        }
       },
       {
         "id": 2554669,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2554669,
+          "has_bbox": true,
+          "min": {
+            "x": -46.974257256904714,
+            "y": 26.412185519449178,
+            "z": 11
+          },
+          "max": {
+            "x": -46.43259059023804,
+            "y": 31.87673652661097,
+            "z": 21
+          }
+        },
+        "length_ft": 5.46,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -46.70342392357138,
+          "y": 29.144461023030075
+        }
       },
       {
         "id": 2555070,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2555070,
+          "has_bbox": true,
+          "min": {
+            "x": -31.492182926794673,
+            "y": 11.664764601457152,
+            "z": 11
+          },
+          "max": {
+            "x": -30.950516260121585,
+            "y": 26.412185519449153,
+            "z": 21
+          }
+        },
+        "length_ft": 14.75,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -31.22134959345813,
+          "y": 19.038475060453152
+        }
       },
       {
         "id": 2560343,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2560343,
+          "has_bbox": true,
+          "min": {
+            "x": 43.51550851294634,
+            "y": 10.751736526611001,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 44.05717517961302,
+            "y": 18.230903193277676,
+            "z": 10.145833333333334
+          }
+        },
+        "length_ft": 7.48,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 43.78634184627968,
+          "y": 14.491319859944339
+        }
       },
       {
         "id": 2560947,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2560947,
+          "has_bbox": true,
+          "min": {
+            "x": 40.119675179612976,
+            "y": -0.36402346416713055,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 42.515508512946305,
+            "y": 0.17764320249954313,
+            "z": 2.895833333333333
+          }
+        },
+        "length_ft": 2.4,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 41.31759184627964,
+          "y": -0.09319013083379371
+        }
       },
       {
         "id": 2561068,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2561068,
+          "has_bbox": true,
+          "min": {
+            "x": 47.34884184627967,
+            "y": -0.36402346416715425,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 49.76550851294633,
+            "y": 0.1776432024995192,
+            "z": 2.895833333333333
+          }
+        },
+        "length_ft": 2.42,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 48.557175179613,
+          "y": -0.09319013083381752
+        }
       },
       {
         "id": 2642927,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2642927,
+          "has_bbox": true,
+          "min": {
+            "x": -60.30759059023807,
+            "y": 10.499469474761877,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -57.89092392357141,
+            "y": 11.04113614142855,
+            "z": 3.5
+          }
+        },
+        "length_ft": 2.42,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -59.099257256904735,
+          "y": 10.770302808095213
+        }
       },
       {
         "id": 2658386,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2658386,
+          "has_bbox": true,
+          "min": {
+            "x": 24.223841846279676,
+            "y": 27.395067251151136,
+            "z": 0
+          },
+          "max": {
+            "x": 34.182175179613026,
+            "y": 27.93673391781784,
+            "z": 12.187552137683191
+          }
+        },
+        "length_ft": 9.96,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 29.20300851294635,
+          "y": 27.66590058448449
+        }
       },
       {
         "id": 2658612,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2658612,
+          "has_bbox": true,
+          "min": {
+            "x": 27.932175179613004,
+            "y": 22.05710864937168,
+            "z": -0.6041666666666667
+          },
+          "max": {
+            "x": 28.47384184627968,
+            "y": 27.66590058448449,
+            "z": 12.298759608553597
+          }
+        },
+        "length_ft": 5.61,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 28.20300851294634,
+          "y": 24.861504616928087
+        }
       },
       {
         "id": 2702611,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2702611,
+          "has_bbox": true,
+          "min": {
+            "x": 42.59884184627962,
+            "y": -5.384856797500467,
+            "z": 10.008463541666666
+          },
+          "max": {
+            "x": 43.14050851294631,
+            "y": 10.751736526611003,
+            "z": 12.508463541666666
+          }
+        },
+        "length_ft": 16.14,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 42.86967517961297,
+          "y": 2.683439864555268
+        }
       },
       {
         "id": 2702783,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2702783,
+          "has_bbox": true,
+          "min": {
+            "x": 46.723841846279676,
+            "y": -5.68576347338897,
+            "z": 10.008463541666666
+          },
+          "max": {
+            "x": 47.26550851294637,
+            "y": 10.751736526611001,
+            "z": 12.508463541666666
+          }
+        },
+        "length_ft": 16.44,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 46.994675179613026,
+          "y": 2.5329865266110154
+        }
       },
       {
         "id": 2792167,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2792167,
+          "has_bbox": true,
+          "min": {
+            "x": -11.173745085325752,
+            "y": 8.607974056806,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -8.901378806342091,
+            "y": 9.149640723472672,
+            "z": 2.875
+          }
+        },
+        "length_ft": 2.27,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -10.037561945833922,
+          "y": 8.878807390139336
+        }
       },
       {
         "id": 2998738,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 2998738,
+          "has_bbox": true,
+          "min": {
+            "x": -52.224257256904714,
+            "y": 21.86328998981514,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -51.68259059023804,
+            "y": 27.07885218611586,
+            "z": 10
+          }
+        },
+        "length_ft": 5.22,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -51.95342392357138,
+          "y": 24.4710710879655
+        }
       },
       {
         "id": 3000262,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 3000262,
+          "has_bbox": true,
+          "min": {
+            "x": -54.103265343476046,
+            "y": 17.68625926725137,
+            "z": 0
+          },
+          "max": {
+            "x": -49.86330096924208,
+            "y": 21.734715554913972,
+            "z": 10
+          }
+        },
+        "length_ft": 4.24,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -51.983283156359064,
+          "y": 19.71048741108267
+        }
       },
       {
         "id": 3036169,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 3036169,
+          "has_bbox": true,
+          "min": {
+            "x": -55.92656305104335,
+            "y": 17.30324309410865,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -53.911757256904686,
+            "y": 19.318048888247322,
+            "z": 10
+          }
+        },
+        "length_ft": 2.01,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -54.91916015397402,
+          "y": 18.310645991177985
+        }
       },
       {
         "id": 3036365,
         "name": "Wall 6.5 Interior\"",
         "category": "Walls",
-        "type": "Wall 6.5 Interior\""
+        "type": "Wall 6.5 Interior\"",
+        "bbox": {
+          "element_id": 3036365,
+          "has_bbox": true,
+          "min": {
+            "x": -52.1154692275933,
+            "y": 21.110328830987367,
+            "z": 0
+          },
+          "max": {
+            "x": -50.54661325826757,
+            "y": 22.679184800313102,
+            "z": 10
+          }
+        },
+        "length_ft": 1.57,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -51.33104124293044,
+          "y": 21.894756815650233
+        }
       }
     ],
     "other": [
@@ -800,1583 +2724,3454 @@
         "id": 2420668,
         "name": "Wall 2x10",
         "category": "Walls",
-        "type": "Wall 2x10"
+        "type": "Wall 2x10",
+        "bbox": {
+          "element_id": 2420668,
+          "has_bbox": true,
+          "min": {
+            "x": -18.122662554756808,
+            "y": 8.6496407234726,
+            "z": 0
+          },
+          "max": {
+            "x": -17.226829221423447,
+            "y": 26.588882221580647,
+            "z": 20
+          }
+        },
+        "length_ft": 17.94,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -17.67474588809013,
+          "y": 17.619261472526624
+        }
       },
       {
         "id": 2605884,
         "name": "1/8\" Shower Glass",
         "category": "Walls",
-        "type": "1/8\" Shower Glass"
+        "type": "1/8\" Shower Glass",
+        "bbox": {
+          "element_id": 2605884,
+          "has_bbox": true,
+          "min": {
+            "x": 47.34884184627967,
+            "y": -0.16610679750048818,
+            "z": 3.5
+          },
+          "max": {
+            "x": 49.76550851294633,
+            "y": -0.020273464167146992,
+            "z": 9.5
+          }
+        },
+        "length_ft": 2.42,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 48.557175179613,
+          "y": -0.09319013083381758
+        }
       },
       {
         "id": 2606005,
         "name": "1/8\" Shower Glass",
         "category": "Walls",
-        "type": "1/8\" Shower Glass"
+        "type": "1/8\" Shower Glass",
+        "bbox": {
+          "element_id": 2606005,
+          "has_bbox": true,
+          "min": {
+            "x": 40.119675179612976,
+            "y": -0.16610679750046392,
+            "z": 3.5
+          },
+          "max": {
+            "x": 42.515508512946305,
+            "y": -0.02027346416712279,
+            "z": 9.5
+          }
+        },
+        "length_ft": 2.4,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 41.31759184627964,
+          "y": -0.09319013083379335
+        }
       },
       {
         "id": 2608876,
         "name": "1/8\" Shower",
         "category": "Walls",
-        "type": "1/8\" Shower"
+        "type": "1/8\" Shower",
+        "bbox": {
+          "element_id": 2608876,
+          "has_bbox": true,
+          "min": {
+            "x": 49.46863351294632,
+            "y": -5.39006513083382,
+            "z": -0.6666666666666666
+          },
+          "max": {
+            "x": 49.479050179613,
+            "y": 0.21006985994432625,
+            "z": 10.333333333333334
+          }
+        },
+        "length_ft": 5.6,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 49.473841846279655,
+          "y": -2.589997635444747
+        }
       },
       {
         "id": 2609030,
         "name": "1/8\" Shower",
         "category": "Walls",
-        "type": "1/8\" Shower"
+        "type": "1/8\" Shower",
+        "bbox": {
+          "element_id": 2609030,
+          "has_bbox": true,
+          "min": {
+            "x": 40.11967517961297,
+            "y": -5.39006513083382,
+            "z": -0.6666666666666666
+          },
+          "max": {
+            "x": 49.473841846279655,
+            "y": -5.379648464167124,
+            "z": 10.333333333333336
+          }
+        },
+        "length_ft": 9.35,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": 44.79675851294631,
+          "y": -5.384856797500472
+        }
       },
       {
         "id": 2609163,
         "name": "1/8\" Shower",
         "category": "Walls",
-        "type": "1/8\" Shower"
+        "type": "1/8\" Shower",
+        "bbox": {
+          "element_id": 2609163,
+          "has_bbox": true,
+          "min": {
+            "x": 40.38530017961297,
+            "y": -5.384856797500459,
+            "z": -0.6666666666666666
+          },
+          "max": {
+            "x": 40.39571684627965,
+            "y": 0.21006985994433158,
+            "z": 10.333333333333334
+          }
+        },
+        "length_ft": 5.59,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 40.39050851294631,
+          "y": -2.5873934687780635
+        }
       },
       {
         "id": 2610953,
         "name": "1/8\" Shower",
         "category": "Walls",
-        "type": "1/8\" Shower"
+        "type": "1/8\" Shower",
+        "bbox": {
+          "element_id": 2610953,
+          "has_bbox": true,
+          "min": {
+            "x": -54.47946559023805,
+            "y": 6.922215554913935,
+            "z": 0
+          },
+          "max": {
+            "x": -54.46904892357137,
+            "y": 11.172215554913935,
+            "z": 10
+          }
+        },
+        "length_ft": 4.25,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -54.47425725690471,
+          "y": 9.047215554913935
+        }
       },
       {
         "id": 2611037,
         "name": "1/8\" Shower",
         "category": "Walls",
-        "type": "1/8\" Shower"
+        "type": "1/8\" Shower",
+        "bbox": {
+          "element_id": 2611037,
+          "has_bbox": true,
+          "min": {
+            "x": -60.30759059023808,
+            "y": 7.208673888247267,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -54.182590590238036,
+            "y": 7.219090554913953,
+            "z": 10
+          }
+        },
+        "length_ft": 6.13,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -57.24509059023806,
+          "y": 7.21388222158061
+        }
       },
       {
         "id": 2611177,
         "name": "1/8\" Shower",
         "category": "Walls",
-        "type": "1/8\" Shower"
+        "type": "1/8\" Shower",
+        "bbox": {
+          "element_id": 2611177,
+          "has_bbox": true,
+          "min": {
+            "x": -59.937798923571386,
+            "y": 6.922215554913933,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -59.92738225690471,
+            "y": 11.088882221580599,
+            "z": 10
+          }
+        },
+        "length_ft": 4.17,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -59.93259059023805,
+          "y": 9.005548888247265
+        }
       },
       {
         "id": 2640958,
         "name": "1/8\" Back Splash",
         "category": "Walls",
-        "type": "1/8\" Back Splash"
+        "type": "1/8\" Back Splash",
+        "bbox": {
+          "element_id": 2640958,
+          "has_bbox": true,
+          "min": {
+            "x": -17.30454971511944,
+            "y": 12.047810283999212,
+            "z": 3
+          },
+          "max": {
+            "x": -17.29413304845275,
+            "y": 22.797215554913983,
+            "z": 9
+          }
+        },
+        "length_ft": 10.75,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -17.299341381786093,
+          "y": 17.422512919456597
+        }
       },
       {
         "id": 2641276,
         "name": "1/8\" Back Splash",
         "category": "Walls",
-        "type": "1/8\" Back Splash"
+        "type": "1/8\" Back Splash",
+        "bbox": {
+          "element_id": 2641276,
+          "has_bbox": true,
+          "min": {
+            "x": -26.317824820387063,
+            "y": 2.6006948599442627,
+            "z": 3
+          },
+          "max": {
+            "x": -15.42474588809014,
+            "y": 2.6111115266109657,
+            "z": 10
+          }
+        },
+        "length_ft": 10.89,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -20.8712853542386,
+          "y": 2.605903193277614
+        }
       },
       {
         "id": 2641436,
         "name": "1/8\" Back Splash",
         "category": "Walls",
-        "type": "1/8\" Back Splash"
+        "type": "1/8\" Back Splash",
+        "bbox": {
+          "element_id": 2641436,
+          "has_bbox": true,
+          "min": {
+            "x": -25.909383850927856,
+            "y": 2.314236526610948,
+            "z": -6.217248937900877e-15
+          },
+          "max": {
+            "x": -25.898967184261153,
+            "y": 26.588882221580654,
+            "z": 10
+          }
+        },
+        "length_ft": 24.27,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -25.904175517594503,
+          "y": 14.451559374095801
+        }
       },
       {
         "id": 2642031,
         "name": "1/8\" Back Splash",
         "category": "Walls",
-        "type": "1/8\" Back Splash"
+        "type": "1/8\" Back Splash",
+        "bbox": {
+          "element_id": 2642031,
+          "has_bbox": true,
+          "min": {
+            "x": 49.468633512946326,
+            "y": 0.21006985994432623,
+            "z": -0.6666666666666666
+          },
+          "max": {
+            "x": 49.47905017961301,
+            "y": 10.751736526611,
+            "z": 10.333333333333334
+          }
+        },
+        "length_ft": 10.54,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 49.47384184627967,
+          "y": 5.480903193277663
+        }
       },
       {
         "id": 2642256,
         "name": "1/8\" Back Splash",
         "category": "Walls",
-        "type": "1/8\" Back Splash"
+        "type": "1/8\" Back Splash",
+        "bbox": {
+          "element_id": 2642256,
+          "has_bbox": true,
+          "min": {
+            "x": 40.385300179612976,
+            "y": 0.21006985994433156,
+            "z": -0.6666666666666666
+          },
+          "max": {
+            "x": 40.395716846279655,
+            "y": 6.793403193277665,
+            "z": 10.333333333333334
+          }
+        },
+        "length_ft": 6.58,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": 40.39050851294631,
+          "y": 3.501736526610998
+        }
       },
       {
         "id": 2643228,
         "name": "1/8\" Shower Glass",
         "category": "Walls",
-        "type": "1/8\" Shower Glass"
+        "type": "1/8\" Shower Glass",
+        "bbox": {
+          "element_id": 2643228,
+          "has_bbox": true,
+          "min": {
+            "x": -59.93259059023804,
+            "y": 10.718219474761863,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -54.47425725690471,
+            "y": 10.864052808095215,
+            "z": 8
+          }
+        },
+        "length_ft": 5.46,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -57.20342392357138,
+          "y": 10.791136141428538
+        }
       },
       {
         "id": 2643675,
         "name": "1/8\" Back Splash",
         "category": "Walls",
-        "type": "1/8\" Back Splash"
+        "type": "1/8\" Back Splash",
+        "bbox": {
+          "element_id": 2643675,
+          "has_bbox": true,
+          "min": {
+            "x": -59.93779892357138,
+            "y": 10.770302808095215,
+            "z": 6.9387189883494696e-18
+          },
+          "max": {
+            "x": -59.92738225690469,
+            "y": 19.04721555491399,
+            "z": 10
+          }
+        },
+        "length_ft": 8.28,
+        "orientation": "vertical",
+        "midpoint": {
+          "x": -59.932590590238036,
+          "y": 14.908759181504603
+        }
       },
       {
         "id": 2836493,
         "name": "Wall Island Waterfall",
         "category": "Walls",
-        "type": "Wall Island Waterfall"
+        "type": "Wall Island Waterfall",
+        "bbox": {
+          "element_id": 2836493,
+          "has_bbox": true,
+          "min": {
+            "x": -11.274551722982519,
+            "y": 8.526382221580636,
+            "z": 0
+          },
+          "max": {
+            "x": -6.607885056315852,
+            "y": 8.693048888247318,
+            "z": 2.875
+          }
+        },
+        "length_ft": 4.67,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -8.941218389649185,
+          "y": 8.609715554913977
+        }
       },
       {
         "id": 2836614,
         "name": "Wall Island Waterfall",
         "category": "Walls",
-        "type": "Wall Island Waterfall"
+        "type": "Wall Island Waterfall",
+        "bbox": {
+          "element_id": 2836614,
+          "has_bbox": true,
+          "min": {
+            "x": -11.27455172298255,
+            "y": 26.1305488882473,
+            "z": 0
+          },
+          "max": {
+            "x": -6.607885056315884,
+            "y": 26.297215554913983,
+            "z": 2.875
+          }
+        },
+        "length_ft": 4.67,
+        "orientation": "horizontal",
+        "midpoint": {
+          "x": -8.941218389649217,
+          "y": 26.21388222158064
+        }
       }
     ]
   },
   "doors": [
     {
       "id": 2402815,
-      "name": "10x10",
-      "category": "Doors",
-      "type": "10x10"
+      "family_name": "Glass_Panel_Overhead_2705",
+      "type_name": "10x10",
+      "width_ft": 10.0,
+      "height_ft": 10.0,
+      "width_in": 120.0,
+      "height_in": 120.0,
+      "bbox": {
+        "element_id": 2402815,
+        "has_bbox": true,
+        "min": {
+          "x": -7.057088356328828,
+          "y": 66.6072685168375,
+          "z": -3.729655490841691e-14
+        },
+        "max": {
+          "x": 1.6363659678576958,
+          "y": 76.60726851683752,
+          "z": 11.117363256494091
+        }
+      },
+      "center": {
+        "x": -2.710361194235566,
+        "y": 71.60726851683751
+      }
     },
     {
       "id": 2406773,
-      "name": "6'-0\"W. x 8'-0\"H.",
-      "category": "Doors",
-      "type": "6'-0\"W. x 8'-0\"H."
+      "family_name": "Exterior_Sliding_Door_3843",
+      "type_name": "6'-0\"W. x 8'-0\"H.",
+      "width_ft": 5.917,
+      "height_ft": 8.0,
+      "width_in": 71.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2406773,
+        "has_bbox": true,
+        "min": {
+          "x": -53.2242572569047,
+          "y": 5.963882221580625,
+          "z": 6.938718988349298e-18
+        },
+        "max": {
+          "x": -46.807590590238036,
+          "y": 7.255548888247266,
+          "z": 8.249999999999998
+        }
+      },
+      "center": {
+        "x": -50.015923923571364,
+        "y": 6.6097155549139455
+      }
     },
     {
       "id": 2406863,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2406863,
+        "has_bbox": true,
+        "min": {
+          "x": -43.5301788421345,
+          "y": 18.193048888247297,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": -40.07184550880116,
+          "y": 21.79721555491718,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -41.80101217546783,
+        "y": 19.99513222158224
+      }
     },
     {
       "id": 2416235,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2416235,
+        "has_bbox": true,
+        "min": {
+          "x": -57.45342392357137,
+          "y": 11.234715554914002,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": -53.84925725690149,
+          "y": 14.693048888247343,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -55.65134059023643,
+        "y": 12.963882221580672
+      }
     },
     {
       "id": 2420400,
-      "name": "6'-0\"W. x 9'-6\"H",
-      "category": "Doors",
-      "type": "6'-0\"W. x 9'-6\"H"
+      "family_name": "Exterior_Sliding_Door_3843",
+      "type_name": "6'-0\"W. x 9'-6\"H",
+      "width_ft": 5.917,
+      "height_ft": 9.5,
+      "width_in": 71.0,
+      "height_in": 114.0,
+      "bbox": {
+        "element_id": 2420400,
+        "has_bbox": true,
+        "min": {
+          "x": -1.794645427050987,
+          "y": 1.9809031932776269,
+          "z": 6.938718988349298e-18
+        },
+        "max": {
+          "x": 4.622021239615682,
+          "y": 3.27256985994428,
+          "z": 9.749999999999998
+        }
+      },
+      "center": {
+        "x": 1.4136879062823475,
+        "y": 2.6267365266109532
+      }
     },
     {
       "id": 2430375,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2430375,
+        "has_bbox": true,
+        "min": {
+          "x": -20.062988744264494,
+          "y": 40.54461440254887,
+          "z": -6.216555066002041e-14
+        },
+        "max": {
+          "x": -16.604655410931148,
+          "y": 44.14878106921877,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -18.333822077597823,
+        "y": 42.34669773588382
+      }
     },
     {
       "id": 2442399,
-      "name": "10x10",
-      "category": "Doors",
-      "type": "10x10"
+      "family_name": "Glass_Panel_Overhead_2705",
+      "type_name": "10x10",
+      "width_ft": 10.0,
+      "height_ft": 10.0,
+      "width_in": 120.0,
+      "height_in": 120.0,
+      "bbox": {
+        "element_id": 2442399,
+        "has_bbox": true,
+        "min": {
+          "x": -26.515816167528396,
+          "y": 66.60711440254889,
+          "z": -3.729655490841691e-14
+        },
+        "max": {
+          "x": -17.822361843341874,
+          "y": 76.60711440254892,
+          "z": 11.117363256494091
+        }
+      },
+      "center": {
+        "x": -22.169089005435133,
+        "y": 71.6071144025489
+      }
     },
     {
       "id": 2450130,
-      "name": "Bifold door [parametric]",
-      "category": "Doors",
-      "type": "Bifold door [parametric]"
+      "family_name": "Parametric_folding_door_9123",
+      "type_name": "Bifold door [parametric]",
+      "width_ft": 12.0,
+      "height_ft": 6.5,
+      "width_in": 144.0,
+      "height_in": 78.0,
+      "bbox": {
+        "element_id": 2450130,
+        "has_bbox": true,
+        "min": {
+          "x": -15.179913210924777,
+          "y": 0.04093348997360735,
+          "z": 2.8749999999999103
+        },
+        "max": {
+          "x": -2.5237452319221663,
+          "y": 2.671519991177883,
+          "z": 9.703083989501263
+        }
+      },
+      "center": {
+        "x": -8.851829221423472,
+        "y": 1.356226740575745
+      }
     },
     {
       "id": 2470651,
-      "name": "Exterior_Pivot_Door_22942",
-      "category": "Doors",
-      "type": "Exterior_Pivot_Door_22942"
+      "family_name": "Exterior_Pivot_Door_22942",
+      "type_name": "Exterior_Pivot_Door_22942",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2470651,
+        "has_bbox": true,
+        "min": {
+          "x": 10.921758512946319,
+          "y": 31.526178783825586,
+          "z": -8.812397007117757e-16
+        },
+        "max": {
+          "x": 16.921758512946326,
+          "y": 38.7505032156413,
+          "z": 7.999999999999998
+        }
+      },
+      "center": {
+        "x": 13.921758512946322,
+        "y": 35.138340999733444
+      }
     },
     {
       "id": 2473915,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2473915,
+        "has_bbox": true,
+        "min": {
+          "x": -43.530178842134475,
+          "y": 26.745518852779316,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": -40.07184550880114,
+          "y": 30.3496855194492,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -41.801012175467804,
+        "y": 28.547602186114258
+      }
     },
     {
       "id": 2488903,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2488903,
+        "has_bbox": true,
+        "min": {
+          "x": 24.203008512946347,
+          "y": 7.480903193277671,
+          "z": -0.6250000000000329
+        },
+        "max": {
+          "x": 27.661341846279683,
+          "y": 11.08506985994755,
+          "z": 7.604166666666675
+        }
+      },
+      "center": {
+        "x": 25.932175179613015,
+        "y": 9.28298652661261
+      }
     },
     {
       "id": 2488975,
-      "name": "6'-0\"W. x 9'-0\"H.",
-      "category": "Doors",
-      "type": "6'-0\"W. x 9'-0\"H."
+      "family_name": "Exterior_Sliding_Door_3843",
+      "type_name": "6'-0\"W. x 9'-0\"H.",
+      "width_ft": 5.917,
+      "height_ft": 9.0,
+      "width_in": 71.0,
+      "height_in": 108.0,
+      "bbox": {
+        "element_id": 2488975,
+        "has_bbox": true,
+        "min": {
+          "x": 23.890508512946308,
+          "y": -6.644096806722319,
+          "z": -0.6041666666666667
+        },
+        "max": {
+          "x": 30.307175179612976,
+          "y": -5.3524301400556675,
+          "z": 8.64583333333333
+        }
+      },
+      "center": {
+        "x": 27.09884184627964,
+        "y": -5.9982634733889935
+      }
     },
     {
       "id": 2490080,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2490080,
+        "has_bbox": true,
+        "min": {
+          "x": 35.703008512946326,
+          "y": 10.418403193274465,
+          "z": -0.6250000000000329
+        },
+        "max": {
+          "x": 39.16134184627966,
+          "y": 14.022569859944344,
+          "z": 7.604166666666675
+        }
+      },
+      "center": {
+        "x": 37.432175179613,
+        "y": 12.220486526609404
+      }
     },
     {
       "id": 2491535,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2491535,
+        "has_bbox": true,
+        "min": {
+          "x": -55.74509059023805,
+          "y": 23.808018852782517,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": -52.286757256904714,
+          "y": 27.4121855194524,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -54.01592392357138,
+        "y": 25.61010218611746
+      }
     },
     {
       "id": 2491581,
-      "name": "72\" x 96\"",
-      "category": "Doors",
-      "type": "72\" x 96\""
+      "family_name": "Door-Exterior-Double-Full Glass-Wood_Clad",
+      "type_name": "72\" x 96\"",
+      "width_ft": 6.0,
+      "height_ft": 8.0,
+      "width_in": 72.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2491581,
+        "has_bbox": true,
+        "min": {
+          "x": -50.927382256904735,
+          "y": 38.23090319327446,
+          "z": -4.797204317957818e-14
+        },
+        "max": {
+          "x": -44.46904892357139,
+          "y": 41.87673652661096,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -47.698215590238064,
+        "y": 40.053819859942706
+      }
     },
     {
       "id": 2492995,
-      "name": "Interior_barn_door_18732",
-      "category": "Doors",
-      "type": "Interior_barn_door_18732"
+      "family_name": "Interior_barn_door_18732",
+      "type_name": "Interior_barn_door_18732",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2492995,
+        "has_bbox": true,
+        "min": {
+          "x": -23.258079221423454,
+          "y": 24.970621047267574,
+          "z": -3.5457749598121516e-15
+        },
+        "max": {
+          "x": -16.50807922142345,
+          "y": 27.136625989172135,
+          "z": 8.793281227850777
+        }
+      },
+      "center": {
+        "x": -19.88307922142345,
+        "y": 26.053623518219855
+      }
     },
     {
       "id": 2497231,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-Pocket-2_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2497231,
+        "has_bbox": true,
+        "min": {
+          "x": -44.18490857135337,
+          "y": 18.870518852782464,
+          "z": 11
+        },
+        "max": {
+          "x": -42.224257256901495,
+          "y": 25.1413521861158,
+          "z": 19.229166666666707
+        }
+      },
+      "center": {
+        "x": -43.20458291412743,
+        "y": 22.00593551944913
+      }
     },
     {
       "id": 2505367,
-      "name": "16x10'",
-      "category": "Doors",
-      "type": "16x10'"
+      "family_name": "Glass_Panel_Overhead_2705",
+      "type_name": "16x10'",
+      "width_ft": 16.0,
+      "height_ft": 10.0,
+      "width_in": 192.0,
+      "height_in": 120.0,
+      "bbox": {
+        "element_id": 2505367,
+        "has_bbox": true,
+        "min": {
+          "x": -7.0570883563288564,
+          "y": 47.60590319327764,
+          "z": -3.729655490841691e-14
+        },
+        "max": {
+          "x": 1.6363659678576767,
+          "y": 63.60590319327767,
+          "z": 11.117363256494091
+        }
+      },
+      "center": {
+        "x": -2.71036119423559,
+        "y": 55.605903193277655
+      }
     },
     {
       "id": 2531471,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2531471,
+        "has_bbox": true,
+        "min": {
+          "x": 23.869675179609807,
+          "y": 30.270067251151136,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": 27.51550851294636,
+          "y": 33.728400584484476,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": 25.692591846278084,
+        "y": 31.999233917817804
+      }
     },
     {
       "id": 2543851,
-      "name": "32\" x 96\"",
-      "category": "Doors",
-      "type": "32\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "32\" x 96\"",
+      "width_ft": 2.667,
+      "height_ft": 8.0,
+      "width_in": 32.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2543851,
+        "has_bbox": true,
+        "min": {
+          "x": -44.63434550880436,
+          "y": 22.74011720384824,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": -42.66327752768582,
+          "y": 25.865117203848243,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -43.64881151824509,
+        "y": 24.302617203848243
+      }
     },
     {
       "id": 2545105,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-Pocket-2_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2545105,
+        "has_bbox": true,
+        "min": {
+          "x": -22.87548874426448,
+          "y": 32.082751878829,
+          "z": -4.0939491524608125e-16
+        },
+        "max": {
+          "x": -16.604655410931144,
+          "y": 34.04340319328087,
+          "z": 8.229166666666707
+        }
+      },
+      "center": {
+        "x": -19.740072077597812,
+        "y": 33.063077536054934
+      }
     },
     {
       "id": 2552066,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2552066,
+        "has_bbox": true,
+        "min": {
+          "x": -23.958822077600995,
+          "y": 50.37794773588221,
+          "z": -6.216555066002041e-14
+        },
+        "max": {
+          "x": -20.31298874426444,
+          "y": 53.83628106921556,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -22.13590541093272,
+        "y": 52.10711440254889
+      }
     },
     {
       "id": 2552318,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2552318,
+        "has_bbox": true,
+        "min": {
+          "x": -2.4397250998353917,
+          "y": 42.7934031932776,
+          "z": 0.6249999999999378
+        },
+        "max": {
+          "x": 1.2061082335011615,
+          "y": 46.25173652661095,
+          "z": 8.854166666666675
+        }
+      },
+      "center": {
+        "x": -0.6168084331671151,
+        "y": 44.52256985994427
+      }
     },
     {
       "id": 2555606,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2555606,
+        "has_bbox": true,
+        "min": {
+          "x": -46.20342392357139,
+          "y": 23.14135218611582,
+          "z": 10.999999999999968
+        },
+        "max": {
+          "x": -42.74509059023804,
+          "y": 26.745518852785718,
+          "z": 19.229166666666675
+        }
+      },
+      "center": {
+        "x": -44.47425725690472,
+        "y": 24.94343551945077
+      }
     },
     {
       "id": 2555637,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2555637,
+        "has_bbox": true,
+        "min": {
+          "x": -30.908849593458125,
+          "y": 23.141352186115796,
+          "z": 10.999999999999968
+        },
+        "max": {
+          "x": -27.45051626012478,
+          "y": 26.745518852785693,
+          "z": 19.229166666666675
+        }
+      },
+      "center": {
+        "x": -29.17968292679145,
+        "y": 24.943435519450745
+      }
     },
     {
       "id": 2555700,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-Pocket-2_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2555700,
+        "has_bbox": true,
+        "min": {
+          "x": -32.84866757457346,
+          "y": 18.87051885278246,
+          "z": 11
+        },
+        "max": {
+          "x": -30.88801626012158,
+          "y": 25.1413521861158,
+          "z": 19.229166666666707
+        }
+      },
+      "center": {
+        "x": -31.86834191734752,
+        "y": 22.00593551944913
+      }
     },
     {
       "id": 2555792,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-Pocket-2_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2555792,
+        "has_bbox": true,
+        "min": {
+          "x": -25.94424418343482,
+          "y": 24.78486753833379,
+          "z": 11
+        },
+        "max": {
+          "x": -19.673410850101483,
+          "y": 26.74551885278568,
+          "z": 19.229166666666707
+        }
+      },
+      "center": {
+        "x": -22.80882751676815,
+        "y": 25.765193195559732
+      }
     },
     {
       "id": 2555859,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-Pocket-2_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2555859,
+        "has_bbox": true,
+        "min": {
+          "x": -53.92601217546782,
+          "y": 24.784867538333852,
+          "z": 11
+        },
+        "max": {
+          "x": -47.655178842134475,
+          "y": 26.745518852785743,
+          "z": 19.229166666666707
+        }
+      },
+      "center": {
+        "x": -50.79059550880115,
+        "y": 25.765193195559796
+      }
     },
     {
       "id": 2561125,
-      "name": "32\" x 96\"",
-      "category": "Doors",
-      "type": "32\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "32\" x 96\"",
+      "width_ft": 2.667,
+      "height_ft": 8.0,
+      "width_in": 32.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2561125,
+        "has_bbox": true,
+        "min": {
+          "x": 44.20300851294631,
+          "y": 10.418403193274461,
+          "z": -0.6250000000000329
+        },
+        "max": {
+          "x": 47.32800851294632,
+          "y": 13.689236526611007,
+          "z": 7.604166666666675
+        }
+      },
+      "center": {
+        "x": 45.76550851294631,
+        "y": 12.053819859942735
+      }
     },
     {
       "id": 2996752,
-      "name": "36\" x 96\"",
-      "category": "Doors",
-      "type": "36\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "36\" x 96\"",
+      "width_ft": 3.0,
+      "height_ft": 8.0,
+      "width_in": 36.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2996752,
+        "has_bbox": true,
+        "min": {
+          "x": 39.78634184627645,
+          "y": 6.668403193277659,
+          "z": -0.6250000000000329
+        },
+        "max": {
+          "x": 43.39050851294633,
+          "y": 10.126736526611001,
+          "z": 7.604166666666675
+        }
+      },
+      "center": {
+        "x": 41.58842517961139,
+        "y": 8.39756985994433
+      }
     },
     {
       "id": 2999167,
-      "name": "32\" x 96\"",
-      "category": "Doors",
-      "type": "32\" x 96\""
+      "family_name": "Door-Interior-Single-1_Panel-Wood",
+      "type_name": "32\" x 96\"",
+      "width_ft": 2.667,
+      "height_ft": 8.0,
+      "width_in": 32.0,
+      "height_in": 96.0,
+      "bbox": {
+        "element_id": 2999167,
+        "has_bbox": true,
+        "min": {
+          "x": -50.1551788421345,
+          "y": 21.1305488882441,
+          "z": -3.285566280991628e-14
+        },
+        "max": {
+          "x": -47.03017884213449,
+          "y": 24.401382221580647,
+          "z": 8.229166666666675
+        }
+      },
+      "center": {
+        "x": -48.59267884213449,
+        "y": 22.765965554912373
+      }
     }
   ],
   "windows": [
     {
       "id": 2419963,
-      "name": "60\" x 48\"",
-      "category": "Windows",
-      "type": "60\" x 48\""
+      "family_name": "Window-Awning-Single",
+      "type_name": "60\" x 48\"",
+      "width_ft": 5.0,
+      "height_ft": 4.0,
+      "sill_ft": 0.0,
+      "width_in": 60.0,
+      "height_in": 48.0,
+      "bbox": {
+        "element_id": 2419963,
+        "has_bbox": true,
+        "min": {
+          "x": -59.911757256904686,
+          "y": 4.818048888247292,
+          "z": 3.739723192635423
+        },
+        "max": {
+          "x": -54.45342392357133,
+          "y": 7.213882221583805,
+          "z": 8.187500000000016
+        }
+      },
+      "center": {
+        "x": -57.18259059023801,
+        "y": 6.015965554915549
+      }
     },
     {
       "id": 2419990,
-      "name": "60\" x 48\"",
-      "category": "Windows",
-      "type": "60\" x 48\""
+      "family_name": "Window-Awning-Single",
+      "type_name": "60\" x 48\"",
+      "width_ft": 5.0,
+      "height_ft": 4.0,
+      "sill_ft": 0.0,
+      "width_in": 60.0,
+      "height_in": 48.0,
+      "bbox": {
+        "element_id": 2419990,
+        "has_bbox": true,
+        "min": {
+          "x": -45.578423923571364,
+          "y": 4.818048888247294,
+          "z": 3.739723192635423
+        },
+        "max": {
+          "x": -40.12009059023801,
+          "y": 7.213882221583806,
+          "z": 8.187500000000016
+        }
+      },
+      "center": {
+        "x": -42.849257256904686,
+        "y": 6.0159655549155495
+      }
     },
     {
       "id": 2489255,
-      "name": "54\" X 108\"",
-      "category": "Windows",
-      "type": "54\" X 108\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "54\" X 108\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2489255,
+        "has_bbox": true,
+        "min": {
+          "x": 30.255718956830577,
+          "y": -7.242363420147777,
+          "z": -0.6041666666666756
+        },
+        "max": {
+          "x": 34.75571895683059,
+          "y": -5.394096806722324,
+          "z": 8.395833333333336
+        }
+      },
+      "center": {
+        "x": 32.505718956830584,
+        "y": -6.3182301134350505
+      }
     },
     {
       "id": 2489295,
-      "name": "54\" X 108\"",
-      "category": "Windows",
-      "type": "54\" X 108\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "54\" X 108\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2489295,
+        "has_bbox": true,
+        "min": {
+          "x": 34.76550851294644,
+          "y": -7.242363420147768,
+          "z": -0.6041666666666756
+        },
+        "max": {
+          "x": 39.265508512946454,
+          "y": -5.394096806722317,
+          "z": 8.395833333333336
+        }
+      },
+      "center": {
+        "x": 37.01550851294645,
+        "y": -6.3182301134350425
+      }
     },
     {
       "id": 2491225,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491225,
+        "has_bbox": true,
+        "min": {
+          "x": -30.220518210191855,
+          "y": 23.56094190429519,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -26.765382008578605,
+          "y": 26.335970297279292,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -28.49295010938523,
+        "y": 24.94845610078724
+      }
     },
     {
       "id": 2491229,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491229,
+        "has_bbox": true,
+        "min": {
+          "x": -33.03382418134694,
+          "y": 22.519160011256563,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -29.578687979733683,
+          "y": 25.294188404240664,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -31.306256080540308,
+        "y": 23.906674207748615
+      }
     },
     {
       "id": 2491262,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491262,
+        "has_bbox": true,
+        "min": {
+          "x": -35.84713015250201,
+          "y": 21.477378118217935,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -32.391993950888754,
+          "y": 24.252406511202036,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -34.11956205169538,
+        "y": 22.864892314709984
+      }
     },
     {
       "id": 2491302,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491302,
+        "has_bbox": true,
+        "min": {
+          "x": -38.66043612365712,
+          "y": 20.435596225179296,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -35.205299922043864,
+          "y": 23.210624618163397,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -36.93286802285049,
+        "y": 21.823110421671345
+      }
     },
     {
       "id": 2491331,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491331,
+        "has_bbox": true,
+        "min": {
+          "x": -33.031082986241564,
+          "y": 38.29340319327765,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -30.031082986241543,
+          "y": 40.141669806703106,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -31.531082986241554,
+        "y": 39.21753649999037
+      }
     },
     {
       "id": 2491337,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491337,
+        "has_bbox": true,
+        "min": {
+          "x": -36.031082986241564,
+          "y": 38.29340319327766,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -33.03108298624154,
+          "y": 40.14166980670312,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -34.53108298624156,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2491363,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491363,
+        "has_bbox": true,
+        "min": {
+          "x": -39.031082986241564,
+          "y": 38.29340319327767,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -36.03108298624154,
+          "y": 40.14166980670313,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -37.53108298624156,
+        "y": 39.2175364999904
+      }
     },
     {
       "id": 2491868,
-      "name": "36\" x 96\"",
-      "category": "Windows",
-      "type": "36\" x 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491868,
+        "has_bbox": true,
+        "min": {
+          "x": -53.84404892357139,
+          "y": 38.29340319327767,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -50.76836959778815,
+          "y": 40.14166980670311,
+          "z": 8
+        }
+      },
+      "center": {
+        "x": -52.30620926067977,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2491954,
-      "name": "36\" x 96\"",
-      "category": "Windows",
-      "type": "36\" x 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2491954,
+        "has_bbox": true,
+        "min": {
+          "x": -44.67738225690473,
+          "y": 38.29340319327767,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -41.677382256904714,
+          "y": 40.14166980670311,
+          "z": 8
+        }
+      },
+      "center": {
+        "x": -43.17738225690472,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2492088,
-      "name": "36\" x 96\"",
-      "category": "Windows",
-      "type": "36\" x 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2492088,
+        "has_bbox": true,
+        "min": {
+          "x": -57.73919053699681,
+          "y": 34.79007429965448,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -55.890923923571364,
+          "y": 37.79007429965449,
+          "z": 8
+        }
+      },
+      "center": {
+        "x": -56.81505723028408,
+        "y": 36.290074299654485
+      }
     },
     {
       "id": 2492118,
-      "name": "36\" x 96\"",
-      "category": "Windows",
-      "type": "36\" x 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2492118,
+        "has_bbox": true,
+        "min": {
+          "x": -57.739190536996816,
+          "y": 31.786745406031276,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -55.89092392357137,
+          "y": 34.786745406031294,
+          "z": 8
+        }
+      },
+      "center": {
+        "x": -56.8150572302841,
+        "y": 33.28674540603129
+      }
     },
     {
       "id": 2492159,
-      "name": "36\" x 96\"",
-      "category": "Windows",
-      "type": "36\" x 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2492159,
+        "has_bbox": true,
+        "min": {
+          "x": -57.739190536996816,
+          "y": 28.79721555491393,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -55.89092392357137,
+          "y": 31.79721555491395,
+          "z": 8
+        }
+      },
+      "center": {
+        "x": -56.8150572302841,
+        "y": 30.29721555491394
+      }
     },
     {
       "id": 2495163,
-      "name": "36\" X 84\"",
-      "category": "Windows",
-      "type": "36\" X 84\""
+      "family_name": "Window-Single-Hung",
+      "type_name": "36\" X 84\"",
+      "width_ft": 3.0,
+      "height_ft": 7.0,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 84.0,
+      "bbox": {
+        "element_id": 2495163,
+        "has_bbox": true,
+        "min": {
+          "x": -29.19993302789033,
+          "y": 10.70514332659281,
+          "z": 13.739723192635413
+        },
+        "max": {
+          "x": -25.741599694556974,
+          "y": 12.060597934790481,
+          "z": 21.1875
+        }
+      },
+      "center": {
+        "x": -27.470766361223653,
+        "y": 11.382870630691645
+      }
     },
     {
       "id": 2495340,
-      "name": "36\" X 84\"",
-      "category": "Windows",
-      "type": "36\" X 84\""
+      "family_name": "Window-Single-Hung",
+      "type_name": "36\" X 84\"",
+      "width_ft": 3.0,
+      "height_ft": 7.0,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 84.0,
+      "bbox": {
+        "element_id": 2495340,
+        "has_bbox": true,
+        "min": {
+          "x": -26.199933027890317,
+          "y": 10.70514332659281,
+          "z": 13.739723192635413
+        },
+        "max": {
+          "x": -22.74159969455696,
+          "y": 12.060597934790481,
+          "z": 21.1875
+        }
+      },
+      "center": {
+        "x": -24.47076636122364,
+        "y": 11.382870630691645
+      }
     },
     {
       "id": 2495355,
-      "name": "36\" X 84\"",
-      "category": "Windows",
-      "type": "36\" X 84\""
+      "family_name": "Window-Single-Hung",
+      "type_name": "36\" X 84\"",
+      "width_ft": 3.0,
+      "height_ft": 7.0,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 84.0,
+      "bbox": {
+        "element_id": 2495355,
+        "has_bbox": true,
+        "min": {
+          "x": -23.199933027890317,
+          "y": 10.705143326592811,
+          "z": 13.739723192635413
+        },
+        "max": {
+          "x": -19.74159969455696,
+          "y": 12.060597934790483,
+          "z": 21.1875
+        }
+      },
+      "center": {
+        "x": -21.47076636122364,
+        "y": 11.382870630691647
+      }
     },
     {
       "id": 2495391,
-      "name": "36\" X 84\"",
-      "category": "Windows",
-      "type": "36\" X 84\""
+      "family_name": "Window-Single-Hung",
+      "type_name": "36\" X 84\"",
+      "width_ft": 3.0,
+      "height_ft": 7.0,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 84.0,
+      "bbox": {
+        "element_id": 2495391,
+        "has_bbox": true,
+        "min": {
+          "x": -48.03731533865382,
+          "y": 10.705143326592808,
+          "z": 13.739723192635378
+        },
+        "max": {
+          "x": -44.57898200532046,
+          "y": 12.06059793479048,
+          "z": 21.187499999999964
+        }
+      },
+      "center": {
+        "x": -46.30814867198714,
+        "y": 11.382870630691643
+      }
     },
     {
       "id": 2495494,
-      "name": "36\" X 84\"",
-      "category": "Windows",
-      "type": "36\" X 84\""
+      "family_name": "Window-Single-Hung",
+      "type_name": "36\" X 84\"",
+      "width_ft": 3.0,
+      "height_ft": 7.0,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 84.0,
+      "bbox": {
+        "element_id": 2495494,
+        "has_bbox": true,
+        "min": {
+          "x": -51.03731533865382,
+          "y": 10.705143326592806,
+          "z": 13.739723192635378
+        },
+        "max": {
+          "x": -47.57898200532046,
+          "y": 12.060597934790477,
+          "z": 21.187499999999964
+        }
+      },
+      "center": {
+        "x": -49.30814867198714,
+        "y": 11.382870630691642
+      }
     },
     {
       "id": 2495544,
-      "name": "36\" X 84\"",
-      "category": "Windows",
-      "type": "36\" X 84\""
+      "family_name": "Window-Single-Hung",
+      "type_name": "36\" X 84\"",
+      "width_ft": 3.0,
+      "height_ft": 7.0,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 84.0,
+      "bbox": {
+        "element_id": 2495544,
+        "has_bbox": true,
+        "min": {
+          "x": -54.03731533865383,
+          "y": 10.705143326592806,
+          "z": 13.739723192635378
+        },
+        "max": {
+          "x": -50.578982005320476,
+          "y": 12.060597934790477,
+          "z": 21.187499999999964
+        }
+      },
+      "center": {
+        "x": -52.308148671987155,
+        "y": 11.382870630691642
+      }
     },
     {
       "id": 2506980,
-      "name": "42\" X 96\"",
-      "category": "Windows",
-      "type": "42\" X 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "42\" X 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2506980,
+        "has_bbox": true,
+        "min": {
+          "x": 17.399554220808856,
+          "y": 0.7576365798522176,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": 20.899554220808877,
+          "y": 2.6059031932776686,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": 19.149554220808866,
+        "y": 1.681769886564943
+      }
     },
     {
       "id": 2507819,
-      "name": "42\" X 72\"",
-      "category": "Windows",
-      "type": "42\" X 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "42\" X 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2507819,
+        "has_bbox": true,
+        "min": {
+          "x": 17.3807022540838,
+          "y": 2.022569859944327,
+          "z": 9.999999999999991
+        },
+        "max": {
+          "x": 20.880702254083822,
+          "y": 3.870836473369778,
+          "z": 18.5
+        }
+      },
+      "center": {
+        "x": 19.13070225408381,
+        "y": 2.946703166657053
+      }
     },
     {
       "id": 2508983,
-      "name": "42\" X 96\"",
-      "category": "Windows",
-      "type": "42\" X 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "42\" X 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2508983,
+        "has_bbox": true,
+        "min": {
+          "x": 13.897242862567584,
+          "y": 0.7576365798522113,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": 17.397242862567605,
+          "y": 2.6059031932776624,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": 15.647242862567595,
+        "y": 1.6817698865649369
+      }
     },
     {
       "id": 2508984,
-      "name": "42\" X 72\"",
-      "category": "Windows",
-      "type": "42\" X 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "42\" X 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2508984,
+        "has_bbox": true,
+        "min": {
+          "x": 13.878390895842529,
+          "y": 2.022569859944321,
+          "z": 9.999999999999991
+        },
+        "max": {
+          "x": 17.37839089584255,
+          "y": 3.870836473369772,
+          "z": 18.5
+        }
+      },
+      "center": {
+        "x": 15.62839089584254,
+        "y": 2.9467031666570467
+      }
     },
     {
       "id": 2509141,
-      "name": "42\" X 96\"",
-      "category": "Windows",
-      "type": "42\" X 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "42\" X 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2509141,
+        "has_bbox": true,
+        "min": {
+          "x": 10.39320341876466,
+          "y": 0.7576365798522051,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": 13.893203418764681,
+          "y": 2.605903193277656,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": 12.14320341876467,
+        "y": 1.6817698865649306
+      }
     },
     {
       "id": 2509142,
-      "name": "42\" X 72\"",
-      "category": "Windows",
-      "type": "42\" X 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "42\" X 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2509142,
+        "has_bbox": true,
+        "min": {
+          "x": 10.374351452039605,
+          "y": 2.0225698599443147,
+          "z": 9.999999999999991
+        },
+        "max": {
+          "x": 13.874351452039626,
+          "y": 3.8708364733697658,
+          "z": 18.5
+        }
+      },
+      "center": {
+        "x": 12.124351452039615,
+        "y": 2.9467031666570405
+      }
     },
     {
       "id": 2509247,
-      "name": "60\" X 96\"",
-      "category": "Windows",
-      "type": "60\" X 96\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "60\" X 96\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2509247,
+        "has_bbox": true,
+        "min": {
+          "x": 4.392854572949007,
+          "y": 0.757636579852194,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": 9.39285457294903,
+          "y": 2.6059031932776477,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": 6.892854572949019,
+        "y": 1.6817698865649209
+      }
     },
     {
       "id": 2509248,
-      "name": "60\" X 72\"",
-      "category": "Windows",
-      "type": "60\" X 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "60\" X 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2509248,
+        "has_bbox": true,
+        "min": {
+          "x": 4.390153123890919,
+          "y": 2.0225698599443036,
+          "z": 9.999999999999991
+        },
+        "max": {
+          "x": 9.39015312389094,
+          "y": 3.8708364733697573,
+          "z": 18.5
+        }
+      },
+      "center": {
+        "x": 6.890153123890929,
+        "y": 2.9467031666570307
+      }
     },
     {
       "id": 2512541,
-      "name": "72\" x 72\"",
-      "category": "Windows",
-      "type": "72\" x 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "72\" x 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2512541,
+        "has_bbox": true,
+        "min": {
+          "x": -1.6071454270509995,
+          "y": 0.7576365798521834,
+          "z": 9.999999999999991
+        },
+        "max": {
+          "x": 4.392854572949022,
+          "y": 2.605903193277639,
+          "z": 18.5
+        }
+      },
+      "center": {
+        "x": 1.3928545729490114,
+        "y": 1.681769886564911
+      }
     },
     {
       "id": 2513058,
-      "name": "144\" X 60\"",
-      "category": "Windows",
-      "type": "144\" X 60\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "144\" X 60\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2513058,
+        "has_bbox": true,
+        "min": {
+          "x": -14.768495888090154,
+          "y": 0.7576365798521745,
+          "z": 9.999999999999991
+        },
+        "max": {
+          "x": -2.7684958880901376,
+          "y": 2.6059031932776207,
+          "z": 14.000000000000002
+        }
+      },
+      "center": {
+        "x": -8.768495888090145,
+        "y": 1.6817698865648976
+      }
     },
     {
       "id": 2519295,
-      "name": "60\" x 24\"",
-      "category": "Windows",
-      "type": "60\" x 24\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "60\" x 24\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2519295,
+        "has_bbox": true,
+        "min": {
+          "x": 49.47384184627968,
+          "y": 11.939236526610985,
+          "z": 6.999999999999991
+        },
+        "max": {
+          "x": 51.32210845970513,
+          "y": 16.939236526611005,
+          "z": 9
+        }
+      },
+      "center": {
+        "x": 50.3979751529924,
+        "y": 14.439236526610994
+      }
     },
     {
       "id": 2521108,
-      "name": "60\" x 36\"",
-      "category": "Windows",
-      "type": "60\" x 36\""
+      "family_name": "Window-Awning-Single",
+      "type_name": "60\" x 36\"",
+      "width_ft": 5.0,
+      "height_ft": 3.0,
+      "sill_ft": 0.0,
+      "width_in": 60.0,
+      "height_in": 36.0,
+      "bbox": {
+        "element_id": 2521108,
+        "has_bbox": true,
+        "min": {
+          "x": -42.453423923571386,
+          "y": 10.060597934790502,
+          "z": 17.739723192635427
+        },
+        "max": {
+          "x": -36.99509059023803,
+          "y": 11.956431268127023,
+          "z": 21.187500000000018
+        }
+      },
+      "center": {
+        "x": -39.72425725690471,
+        "y": 11.008514601458764
+      }
     },
     {
       "id": 2527729,
-      "name": "36\" x 114\"",
-      "category": "Windows",
-      "type": "36\" x 114\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" x 114\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2527729,
+        "has_bbox": true,
+        "min": {
+          "x": -30.031082986241582,
+          "y": 38.29340319327764,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": -27.03108298624156,
+          "y": 40.1416698067031,
+          "z": 9.5
+        }
+      },
+      "center": {
+        "x": -28.53108298624157,
+        "y": 39.21753649999037
+      }
     },
     {
       "id": 2536993,
-      "name": "60\" x 24\"",
-      "category": "Windows",
-      "type": "60\" x 24\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "60\" x 24\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2536993,
+        "has_bbox": true,
+        "min": {
+          "x": 33.89050851294635,
+          "y": 28.395067251151133,
+          "z": 6.999999999999991
+        },
+        "max": {
+          "x": 35.738775126371806,
+          "y": 33.395067251151154,
+          "z": 9
+        }
+      },
+      "center": {
+        "x": 34.81464181965907,
+        "y": 30.895067251151143
+      }
     },
     {
       "id": 2538542,
-      "name": "60\" x 36\"",
-      "category": "Windows",
-      "type": "60\" x 36\""
+      "family_name": "Window-Awning-Single",
+      "type_name": "60\" x 36\"",
+      "width_ft": 5.0,
+      "height_ft": 3.0,
+      "sill_ft": 0.0,
+      "width_in": 60.0,
+      "height_in": 36.0,
+      "bbox": {
+        "element_id": 2538542,
+        "has_bbox": true,
+        "min": {
+          "x": -36.78384959345817,
+          "y": 10.060597934790504,
+          "z": 17.739723192635427
+        },
+        "max": {
+          "x": -31.325516260124814,
+          "y": 11.956431268127025,
+          "z": 21.187500000000018
+        }
+      },
+      "center": {
+        "x": -34.05468292679149,
+        "y": 11.008514601458764
+      }
     },
     {
       "id": 2540863,
-      "name": "36\" x 78\"",
-      "category": "Windows",
-      "type": "36\" x 78\""
+      "family_name": "Window-Awning-Single",
+      "type_name": "36\" x 78\"",
+      "width_ft": 3.0,
+      "height_ft": 6.5,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 78.0,
+      "bbox": {
+        "element_id": 2540863,
+        "has_bbox": true,
+        "min": {
+          "x": -22.921991487053692,
+          "y": -1.0399301400556729,
+          "z": 2.7397231926354273
+        },
+        "max": {
+          "x": -19.463658153720335,
+          "y": 2.6059031932808203,
+          "z": 9.687500000000016
+        }
+      },
+      "center": {
+        "x": -21.192824820387013,
+        "y": 0.7829865266125737
+      }
     },
     {
       "id": 2576867,
-      "name": "36\" x 78\"",
-      "category": "Windows",
-      "type": "36\" x 78\""
+      "family_name": "Window-Awning-Single",
+      "type_name": "36\" x 78\"",
+      "width_ft": 3.0,
+      "height_ft": 6.5,
+      "sill_ft": 0.0,
+      "width_in": 36.0,
+      "height_in": 78.0,
+      "bbox": {
+        "element_id": 2576867,
+        "has_bbox": true,
+        "min": {
+          "x": -29.671991487053695,
+          "y": 4.6267365266109275,
+          "z": 2.7397231926354273
+        },
+        "max": {
+          "x": -26.026158153717198,
+          "y": 8.08506985994429,
+          "z": 9.687500000000016
+        }
+      },
+      "center": {
+        "x": -27.849074820385447,
+        "y": 6.355903193277609
+      }
     },
     {
       "id": 2609554,
-      "name": "36\" X 120\"",
-      "category": "Windows",
-      "type": "36\" X 120\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" X 120\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2609554,
+        "has_bbox": true,
+        "min": {
+          "x": -33.007463244782414,
+          "y": 38.29340319327766,
+          "z": 9.499999999999991
+        },
+        "max": {
+          "x": -30.0074632447824,
+          "y": 40.141669806703106,
+          "z": 19.5
+        }
+      },
+      "center": {
+        "x": -31.507463244782407,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2609555,
-      "name": "36\" X 120\"",
-      "category": "Windows",
-      "type": "36\" X 120\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" X 120\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2609555,
+        "has_bbox": true,
+        "min": {
+          "x": -30.007463244782418,
+          "y": 38.29340319327766,
+          "z": 9.499999999999991
+        },
+        "max": {
+          "x": -27.0074632447824,
+          "y": 40.141669806703106,
+          "z": 19.5
+        }
+      },
+      "center": {
+        "x": -28.507463244782407,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2610387,
-      "name": "84\" X 24\"",
-      "category": "Windows",
-      "type": "84\" X 24\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "84\" X 24\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2610387,
+        "has_bbox": true,
+        "min": {
+          "x": -61.86419053699686,
+          "y": 11.213882221580654,
+          "z": 6.999999999999991
+        },
+        "max": {
+          "x": -60.0159239235714,
+          "y": 18.213882221580675,
+          "z": 9.000000000000002
+        }
+      },
+      "center": {
+        "x": -60.940057230284125,
+        "y": 14.713882221580665
+      }
     },
     {
       "id": 2659482,
-      "name": "60\" x 24\"",
-      "category": "Windows",
-      "type": "60\" x 24\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "60\" x 24\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2659482,
+        "has_bbox": true,
+        "min": {
+          "x": 33.89050851294633,
+          "y": 20.395067251151133,
+          "z": 6.999999999999991
+        },
+        "max": {
+          "x": 35.73877512637179,
+          "y": 25.395067251151154,
+          "z": 9
+        }
+      },
+      "center": {
+        "x": 34.81464181965906,
+        "y": 22.895067251151143
+      }
     },
     {
       "id": 2680128,
-      "name": "48\" X 72\"",
-      "category": "Windows",
-      "type": "48\" X 72\""
+      "family_name": "Skylight-Pyramid",
+      "type_name": "48\" X 72\"",
+      "width_ft": 4.0,
+      "height_ft": 15.0,
+      "sill_ft": 0.0,
+      "width_in": 48.0,
+      "height_in": 180.0,
+      "bbox": {
+        "element_id": 2680128,
+        "has_bbox": true,
+        "min": {
+          "x": 42.8229149232001,
+          "y": -5.001706285319366,
+          "z": 12.54550119141812
+        },
+        "max": {
+          "x": 47.04143543602574,
+          "y": 10.29312963847885,
+          "z": 16.684099316692322
+        }
+      },
+      "center": {
+        "x": 44.932175179612926,
+        "y": 2.6457116765797424
+      }
     },
     {
       "id": 2689528,
-      "name": "108\" X 48\"",
-      "category": "Windows",
-      "type": "108\" X 48\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "108\" X 48\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2689528,
+        "has_bbox": true,
+        "min": {
+          "x": 40.432175179612976,
+          "y": -7.242363420147759,
+          "z": 3.895833333333325
+        },
+        "max": {
+          "x": 49.432175179613,
+          "y": -5.394096806722299,
+          "z": 8.395833333333334
+        }
+      },
+      "center": {
+        "x": 44.93217517961298,
+        "y": -6.318230113435029
+      }
     },
     {
       "id": 2689947,
-      "name": "36\" X 120\"",
-      "category": "Windows",
-      "type": "36\" X 120\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" X 120\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2689947,
+        "has_bbox": true,
+        "min": {
+          "x": -36.00746324478241,
+          "y": 38.29340319327766,
+          "z": 9.499999999999991
+        },
+        "max": {
+          "x": -33.00746324478239,
+          "y": 40.141669806703106,
+          "z": 19.5
+        }
+      },
+      "center": {
+        "x": -34.5074632447824,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2690057,
-      "name": "36\" X 120\"",
-      "category": "Windows",
-      "type": "36\" X 120\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" X 120\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2690057,
+        "has_bbox": true,
+        "min": {
+          "x": -39.00746324478241,
+          "y": 38.29340319327766,
+          "z": 9.499999999999991
+        },
+        "max": {
+          "x": -36.00746324478239,
+          "y": 40.141669806703106,
+          "z": 19.5
+        }
+      },
+      "center": {
+        "x": -37.5074632447824,
+        "y": 39.21753649999039
+      }
     },
     {
       "id": 2690231,
-      "name": "144\" X 72\"",
-      "category": "Windows",
-      "type": "144\" X 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "144\" X 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2690231,
+        "has_bbox": true,
+        "min": {
+          "x": -53.76592392357135,
+          "y": 48.35590319327763,
+          "z": 14.999999999999991
+        },
+        "max": {
+          "x": -41.765923923571336,
+          "y": 50.20416980670308,
+          "z": 21.000000000000004
+        }
+      },
+      "center": {
+        "x": -47.76592392357134,
+        "y": 49.28003649999036
+      }
     },
     {
       "id": 2875265,
-      "name": "72\" x 36\"",
-      "category": "Windows",
-      "type": "72\" x 36\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "72\" x 36\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 2875265,
+        "has_bbox": true,
+        "min": {
+          "x": 10.911341846279697,
+          "y": 35.439236526611,
+          "z": 8.999999999999991
+        },
+        "max": {
+          "x": 16.911341846279715,
+          "y": 37.28750314003644,
+          "z": 12.000000000000002
+        }
+      },
+      "center": {
+        "x": 13.911341846279706,
+        "y": 36.363369833323716
+      }
     },
     {
       "id": 3056963,
-      "name": "36\" X 120\"",
-      "category": "Windows",
-      "type": "36\" X 120\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" X 120\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 3056963,
+        "has_bbox": true,
+        "min": {
+          "x": 6.411341846279704,
+          "y": 35.439236526611,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": 9.411341846279722,
+          "y": 37.28750314003644,
+          "z": 12
+        }
+      },
+      "center": {
+        "x": 7.911341846279713,
+        "y": 36.363369833323716
+      }
     },
     {
       "id": 3057014,
-      "name": "36\" X 120\"",
-      "category": "Windows",
-      "type": "36\" X 120\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "36\" X 120\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 3057014,
+        "has_bbox": true,
+        "min": {
+          "x": 18.411341846279697,
+          "y": 35.439236526611,
+          "z": -8.881784197001252e-15
+        },
+        "max": {
+          "x": 21.411341846279715,
+          "y": 37.28750314003644,
+          "z": 12
+        }
+      },
+      "center": {
+        "x": 19.911341846279704,
+        "y": 36.363369833323716
+      }
     },
     {
       "id": 3093243,
-      "name": "72\" x 72\"",
-      "category": "Windows",
-      "type": "72\" x 72\""
+      "family_name": "Instance-Window-Fixed",
+      "type_name": "72\" x 72\"",
+      "width_ft": 0.0,
+      "height_ft": 0.0,
+      "sill_ft": 0.0,
+      "width_in": 0.0,
+      "height_in": 0.0,
+      "bbox": {
+        "element_id": 3093243,
+        "has_bbox": true,
+        "min": {
+          "x": -39.640923923571364,
+          "y": 40.616319859944305,
+          "z": 14.999999999999991
+        },
+        "max": {
+          "x": -37.792657310145906,
+          "y": 46.61631985994432,
+          "z": 21.000000000000004
+        }
+      },
+      "center": {
+        "x": -38.71679061685863,
+        "y": 43.61631985994431
+      }
     }
   ],
   "sheets": {
-    "existing": [
-      {
-        "id": 622317,
-        "sheet_number": "A100",
-        "sheet_name": "COVER SHEET",
-        "is_placeholder": false,
-        "titleblock_id": null,
-        "viewport_count": 0
-      },
-      {
-        "id": 2346779,
-        "sheet_number": "A100.1",
-        "sheet_name": "COVER SHEET INTERIOR",
-        "is_placeholder": false,
-        "titleblock_id": null,
-        "viewport_count": 0
-      },
-      {
-        "id": 2395514,
-        "sheet_number": "A100.2",
-        "sheet_name": "SITE PLAN",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 611405,
-        "sheet_number": "A101.1",
-        "sheet_name": "FLOOR PLAN F1",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 1991712,
-        "sheet_number": "A101.2",
-        "sheet_name": "FLOOR PLAN F2",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 2882605,
-        "sheet_number": "A101.3",
-        "sheet_name": "CEILING PLAN",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 3072415,
-        "sheet_number": "A101.4",
-        "sheet_name": "STEELCROSS SECTIONS",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 914357,
-        "sheet_number": "A102.1",
-        "sheet_name": "DIMENSION PLAN F1",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 1991535,
-        "sheet_number": "A102.2",
-        "sheet_name": "DIMENSION PLAN F2",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 612296,
-        "sheet_number": "A103",
-        "sheet_name": "ROOF LAYOUT",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 623419,
-        "sheet_number": "A104",
-        "sheet_name": "COLUMN PLACEMENT",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 624905,
-        "sheet_number": "A105",
-        "sheet_name": "ELEVATIONS SIDES",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 647856,
-        "sheet_number": "A106",
-        "sheet_name": "ELEVATIONS FRONT BACK",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 1455490,
-        "sheet_number": "A107",
-        "sheet_name": "INTERIOR ELEVATIONS",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 14
-      },
-      {
-        "id": 648053,
-        "sheet_number": "A108.1",
-        "sheet_name": "ELECTRICAL F1",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 2821625,
-        "sheet_number": "A108.2",
-        "sheet_name": "ELECTRICAL F2",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 1752795,
-        "sheet_number": "A109.1",
-        "sheet_name": "FOUNDATION PLAN",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 1
-      },
-      {
-        "id": 1843691,
-        "sheet_number": "A109.2",
-        "sheet_name": "PLUMBING PLAN",
-        "is_placeholder": false,
-        "titleblock_id": 1705,
-        "viewport_count": 2
-      },
-      {
-        "id": 2081289,
-        "sheet_number": "A110",
-        "sheet_name": "TAKE OFFS",
-        "is_placeholder": false,
-        "titleblock_id": null,
-        "viewport_count": 0
-      }
-    ],
-    "missing_draft1": [
-      {
-        "number": "A100",
-        "name": "Cover Sheet"
-      },
-      {
-        "number": "A101.1",
-        "name": "Floor Plan Level 1"
-      },
-      {
-        "number": "A102.1",
-        "name": "Dimension Plan L1"
-      },
-      {
-        "number": "A103",
-        "name": "Roof Plan"
-      }
-    ],
-    "missing_draft2": [
-      {
-        "number": "A105",
-        "name": "Door & Window Schedule"
-      },
-      {
-        "number": "A106",
-        "name": "Exterior Elevations - Front"
-      },
-      {
-        "number": "A106.1",
-        "name": "Exterior Elevations - Left"
-      },
-      {
-        "number": "A106.2",
-        "name": "Exterior Elevations - Right / Rear"
-      },
-      {
-        "number": "A107",
-        "name": "Interior Elevations - Kitchen"
-      },
-      {
-        "number": "A107.1",
-        "name": "Interior Elevations - Master Bath"
-      },
-      {
-        "number": "A107.2",
-        "name": "Interior Elevations - Laundry"
-      }
-    ],
-    "missing_draft3": [
-      {
-        "number": "A104",
-        "name": "Structural Column Grid"
-      },
-      {
-        "number": "A108.1",
-        "name": "Electrical Plan L1"
-      },
-      {
-        "number": "A109.2",
-        "name": "Plumbing Plan L1"
-      }
-    ]
+    "A100": {
+      "id": 622317,
+      "number": "A100",
+      "name": "COVER SHEET",
+      "viewport_count": 0,
+      "has_content": false,
+      "purpose": "cover"
+    },
+    "A100.1": {
+      "id": 2346779,
+      "number": "A100.1",
+      "name": "COVER SHEET INTERIOR",
+      "viewport_count": 0,
+      "has_content": false,
+      "purpose": "cover"
+    },
+    "A100.2": {
+      "id": 2395514,
+      "number": "A100.2",
+      "name": "SITE PLAN",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "site_plan"
+    },
+    "A101.1": {
+      "id": 611405,
+      "number": "A101.1",
+      "name": "FLOOR PLAN F1",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "floor_plan"
+    },
+    "A101.2": {
+      "id": 1991712,
+      "number": "A101.2",
+      "name": "FLOOR PLAN F2",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "floor_plan"
+    },
+    "A101.3": {
+      "id": 2882605,
+      "number": "A101.3",
+      "name": "CEILING PLAN",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "ceiling_plan"
+    },
+    "A101.4": {
+      "id": 3072415,
+      "number": "A101.4",
+      "name": "STEELCROSS SECTIONS",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "section"
+    },
+    "A102.1": {
+      "id": 914357,
+      "number": "A102.1",
+      "name": "DIMENSION PLAN F1",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "dimension_plan"
+    },
+    "A102.2": {
+      "id": 1991535,
+      "number": "A102.2",
+      "name": "DIMENSION PLAN F2",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "dimension_plan"
+    },
+    "A103": {
+      "id": 612296,
+      "number": "A103",
+      "name": "ROOF LAYOUT",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "roof_plan"
+    },
+    "A104": {
+      "id": 623419,
+      "number": "A104",
+      "name": "COLUMN PLACEMENT",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "structural"
+    },
+    "A105": {
+      "id": 624905,
+      "number": "A105",
+      "name": "ELEVATIONS SIDES",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "elevation"
+    },
+    "A106": {
+      "id": 647856,
+      "number": "A106",
+      "name": "ELEVATIONS FRONT BACK",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "elevation"
+    },
+    "A107": {
+      "id": 1455490,
+      "number": "A107",
+      "name": "INTERIOR ELEVATIONS",
+      "viewport_count": 14,
+      "has_content": true,
+      "purpose": "elevation"
+    },
+    "A108.1": {
+      "id": 648053,
+      "number": "A108.1",
+      "name": "ELECTRICAL F1",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "electrical"
+    },
+    "A108.2": {
+      "id": 2821625,
+      "number": "A108.2",
+      "name": "ELECTRICAL F2",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "electrical"
+    },
+    "A109.1": {
+      "id": 1752795,
+      "number": "A109.1",
+      "name": "FOUNDATION PLAN",
+      "viewport_count": 1,
+      "has_content": true,
+      "purpose": "structural"
+    },
+    "A109.2": {
+      "id": 1843691,
+      "number": "A109.2",
+      "name": "PLUMBING PLAN",
+      "viewport_count": 2,
+      "has_content": true,
+      "purpose": "plumbing"
+    },
+    "A110": {
+      "id": 2081289,
+      "number": "A110",
+      "name": "TAKE OFFS",
+      "viewport_count": 0,
+      "has_content": false,
+      "purpose": "schedule"
+    }
   },
   "views": {
-    "on_sheet": [],
-    "unplaced": [
-      {
-        "id": 1213,
-        "name": "Project View",
-        "type": "ProjectBrowser",
-        "scale": 96,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2002,
-        "name": "System Browser",
-        "type": "SystemBrowser",
-        "scale": 96,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 5397,
-        "name": "{3D}",
-        "type": "ThreeD",
-        "scale": 96,
-        "detail_level": "Fine"
-      },
-      {
-        "id": 93747,
-        "name": "Left",
-        "type": "Elevation",
-        "scale": 48,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 598632,
-        "name": "Front",
-        "type": "Elevation",
-        "scale": 48,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 607681,
-        "name": "Right",
-        "type": "Elevation",
-        "scale": 48,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 607691,
-        "name": "Back",
-        "type": "Elevation",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 611405,
-        "name": "FLOOR PLAN F1",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 612296,
-        "name": "ROOF LAYOUT",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 622317,
-        "name": "COVER SHEET",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 623419,
-        "name": "COLUMN PLACEMENT",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 624905,
-        "name": "ELEVATIONS SIDES",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 647856,
-        "name": "ELEVATIONS FRONT BACK",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 648053,
-        "name": "ELECTRICAL F1",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
+    "floor_plans": [
       {
         "id": 722612,
         "name": "Level 1.0",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 722622,
-        "name": "Level 1.0",
-        "type": "CeilingPlan",
-        "scale": 96,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 722631,
-        "name": "Level 1.0",
-        "type": "EngineeringPlan",
-        "scale": 48,
-        "detail_level": "Coarse"
+        "scale": 64
       },
       {
         "id": 723662,
         "name": "Level 2.0",
         "type": "FloorPlan",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 723672,
-        "name": "Level 2.0",
-        "type": "CeilingPlan",
-        "scale": 96,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 723681,
-        "name": "Level 2.0",
-        "type": "EngineeringPlan",
-        "scale": 48,
-        "detail_level": "Coarse"
+        "scale": 48
       },
       {
         "id": 724246,
         "name": "Level 3.0",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 724256,
-        "name": "Level 3.0",
-        "type": "CeilingPlan",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 724265,
-        "name": "Level 3.0",
-        "type": "EngineeringPlan",
-        "scale": 48,
-        "detail_level": "Coarse"
+        "scale": 64
       },
       {
         "id": 754323,
         "name": "Level 1.0 COLUMNS",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Medium"
+        "scale": 64
       },
       {
         "id": 755164,
         "name": "Level 1.0 ELECTRICAL",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 914357,
-        "name": "DIMENSION PLAN F1",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 64
       },
       {
         "id": 940466,
         "name": "Level 2.0 DIMENSIONS",
         "type": "FloorPlan",
-        "scale": 48,
-        "detail_level": "Fine"
-      },
-      {
-        "id": 942600,
-        "name": "DOOR SCHEDULE",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 942834,
-        "name": "WINDOW SCHEDULE",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 989374,
-        "name": "LIGHT FIXTURE SCHEDULE",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 989501,
-        "name": "ELECTRICAL FIXTURE SCHEDULE",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 48
       },
       {
         "id": 990642,
         "name": "Level 2.0 ELECTRICAL",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 1259038,
-        "name": "Level 2.0",
-        "type": "AreaPlan",
-        "scale": 64,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 1259075,
-        "name": "Level 1.0",
-        "type": "AreaPlan",
-        "scale": 120,
-        "detail_level": "Coarse"
+        "scale": 64
       },
       {
         "id": 1306933,
         "name": "Level 1.0 Simple",
         "type": "FloorPlan",
-        "scale": 48,
-        "detail_level": "Fine"
+        "scale": 48
       },
       {
         "id": 1306990,
         "name": "Level 2.0 Simple",
         "type": "FloorPlan",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 1336346,
-        "name": "Area Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1435671,
-        "name": "CABINET SCHEDULE",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1455490,
-        "name": "INTERIOR ELEVATIONS",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1574726,
-        "name": "Ceiling Material Takeoff",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1666833,
-        "name": "ELECTRICAL",
-        "type": "Legend",
-        "scale": 48,
-        "detail_level": "Coarse"
+        "scale": 48
       },
       {
         "id": 1726742,
         "name": "Level 1.0 DIMENSIONS",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 1730738,
-        "name": "Gypsum",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1730962,
-        "name": "Wall Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1731203,
-        "name": "Backsplash",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 64
       },
       {
         "id": 1737255,
         "name": "Level 1.0 FOUNDATION",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 1752795,
-        "name": "FOUNDATION PLAN",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 64
       },
       {
         "id": 1832487,
         "name": "Level 1.0 PLUMBING",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Fine"
-      },
-      {
-        "id": 1843691,
-        "name": "PLUMBING PLAN",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1991535,
-        "name": "DIMENSION PLAN F2",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 1991712,
-        "name": "FLOOR PLAN F2",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2081184,
-        "name": "Countertop Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2081289,
-        "name": "TAKE OFFS",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2095189,
-        "name": "Floor Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2095208,
-        "name": "Ceiling Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2346779,
-        "name": "COVER SHEET INTERIOR",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 64
       },
       {
         "id": 2395495,
         "name": "Level 1.0 Survey",
         "type": "FloorPlan",
-        "scale": 192,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2395514,
-        "name": "SITE PLAN",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2619273,
-        "name": "Kitchen Main",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2619792,
-        "name": "Kitchen Island",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2621866,
-        "name": "Kitchen Back",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2622457,
-        "name": "Pantry",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2622733,
-        "name": "Utility",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2623093,
-        "name": "Utility 2",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2625388,
-        "name": "Bar",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2625906,
-        "name": "Fireplace",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2626334,
-        "name": "M Bath 1",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2627059,
-        "name": "M Bath 2",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2627380,
-        "name": "Half Bath",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2627826,
-        "name": "Guest Suite Bath",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2628347,
-        "name": "Kid Bath 1",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2628615,
-        "name": "Kid Bath 2",
-        "type": "Section",
-        "scale": 48,
-        "detail_level": "Coarse"
-      },
-      {
-        "id": 2657228,
-        "name": "Roof Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2657240,
-        "name": "Roof Soffit Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2821625,
-        "name": "ELECTRICAL F2",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2882605,
-        "name": "CEILING PLAN",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 2971711,
-        "name": "Multi-Category Material Takeoff",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 192
       },
       {
         "id": 3004710,
         "name": "Level 2.0 Plumbing",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Fine"
-      },
-      {
-        "id": 3005030,
-        "name": "Plumbing Fixture Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 3005041,
-        "name": "Plumbing Equipment Schedule",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 3058051,
-        "name": "Stucco",
-        "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 3071082,
-        "name": "Section 1",
-        "type": "Section",
-        "scale": 64,
-        "detail_level": "Medium"
-      },
-      {
-        "id": 3072415,
-        "name": "STEELCROSS SECTIONS",
-        "type": "DrawingSheet",
-        "scale": 1,
-        "detail_level": "Undefined"
-      },
-      {
-        "id": 3075882,
-        "name": "Section 2",
-        "type": "Section",
-        "scale": 64,
-        "detail_level": "Medium"
+        "scale": 64
       },
       {
         "id": 3084894,
         "name": "Level 3.0 Copy 1",
         "type": "FloorPlan",
-        "scale": 64,
-        "detail_level": "Medium"
+        "scale": 64
+      }
+    ],
+    "elevations": [
+      {
+        "id": 93747,
+        "name": "Left",
+        "type": "Elevation",
+        "scale": 48
+      },
+      {
+        "id": 598632,
+        "name": "Front",
+        "type": "Elevation",
+        "scale": 48
+      },
+      {
+        "id": 607681,
+        "name": "Right",
+        "type": "Elevation",
+        "scale": 48
+      },
+      {
+        "id": 607691,
+        "name": "Back",
+        "type": "Elevation",
+        "scale": 48
+      }
+    ],
+    "sections": [
+      {
+        "id": 2619273,
+        "name": "Kitchen Main",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2619792,
+        "name": "Kitchen Island",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2621866,
+        "name": "Kitchen Back",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2622457,
+        "name": "Pantry",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2622733,
+        "name": "Utility",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2623093,
+        "name": "Utility 2",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2625388,
+        "name": "Bar",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2625906,
+        "name": "Fireplace",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2626334,
+        "name": "M Bath 1",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2627059,
+        "name": "M Bath 2",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2627380,
+        "name": "Half Bath",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2627826,
+        "name": "Guest Suite Bath",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2628347,
+        "name": "Kid Bath 1",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 2628615,
+        "name": "Kid Bath 2",
+        "type": "Section",
+        "scale": 48
+      },
+      {
+        "id": 3071082,
+        "name": "Section 1",
+        "type": "Section",
+        "scale": 64
+      },
+      {
+        "id": 3075882,
+        "name": "Section 2",
+        "type": "Section",
+        "scale": 64
       },
       {
         "id": 3093092,
         "name": "Section 3",
         "type": "Section",
-        "scale": 64,
-        "detail_level": "Coarse"
+        "scale": 64
+      }
+    ],
+    "schedules": [
+      {
+        "id": 942600,
+        "name": "DOOR SCHEDULE",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 942834,
+        "name": "WINDOW SCHEDULE",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 989374,
+        "name": "LIGHT FIXTURE SCHEDULE",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 989501,
+        "name": "ELECTRICAL FIXTURE SCHEDULE",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 1336346,
+        "name": "Area Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 1435671,
+        "name": "CABINET SCHEDULE",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 1574726,
+        "name": "Ceiling Material Takeoff",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 1730738,
+        "name": "Gypsum",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 1730962,
+        "name": "Wall Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 1731203,
+        "name": "Backsplash",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 2081184,
+        "name": "Countertop Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 2095189,
+        "name": "Floor Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 2095208,
+        "name": "Ceiling Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 2657228,
+        "name": "Roof Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 2657240,
+        "name": "Roof Soffit Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 2971711,
+        "name": "Multi-Category Material Takeoff",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 3005030,
+        "name": "Plumbing Fixture Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 3005041,
+        "name": "Plumbing Equipment Schedule",
+        "type": "Schedule",
+        "scale": 1
+      },
+      {
+        "id": 3058051,
+        "name": "Stucco",
+        "type": "Schedule",
+        "scale": 1
       },
       {
         "id": 3097783,
         "name": "Fascia Schedule",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099259,
         "name": "<Revision Schedule>",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099264,
         "name": "<Revision Schedule> 2",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099269,
         "name": "<Revision Schedule> 3",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099274,
         "name": "<Revision Schedule> 5",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099279,
         "name": "<Revision Schedule> 6",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099284,
         "name": "<Revision Schedule> 7",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099289,
         "name": "<Revision Schedule> 8",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099294,
         "name": "<Revision Schedule> 9",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099299,
         "name": "<Revision Schedule> 10",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099304,
         "name": "<Revision Schedule> 13",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099309,
         "name": "<Revision Schedule> 12",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099314,
         "name": "<Revision Schedule> 4",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099319,
         "name": "<Revision Schedule> 14",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099324,
         "name": "<Revision Schedule> 15",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099329,
         "name": "<Revision Schedule> 16",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099334,
         "name": "<Revision Schedule> 17",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099339,
         "name": "<Revision Schedule> 18",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099344,
         "name": "<Revision Schedule> 11",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
       },
       {
         "id": 3099349,
         "name": "<Revision Schedule> 19",
         "type": "Schedule",
-        "scale": 1,
-        "detail_level": "Undefined"
+        "scale": 1
+      }
+    ],
+    "ceiling_plans": [
+      {
+        "id": 722622,
+        "name": "Level 1.0",
+        "type": "CeilingPlan",
+        "scale": 96
+      },
+      {
+        "id": 723672,
+        "name": "Level 2.0",
+        "type": "CeilingPlan",
+        "scale": 96
+      },
+      {
+        "id": 724256,
+        "name": "Level 3.0",
+        "type": "CeilingPlan",
+        "scale": 48
+      }
+    ],
+    "area_plans": [
+      {
+        "id": 1259038,
+        "name": "Level 2.0",
+        "type": "AreaPlan",
+        "scale": 64
+      },
+      {
+        "id": 1259075,
+        "name": "Level 1.0",
+        "type": "AreaPlan",
+        "scale": 120
+      }
+    ],
+    "three_d": [
+      {
+        "id": 5397,
+        "name": "{3D}",
+        "type": "ThreeD",
+        "scale": 96
       },
       {
         "id": 3170749,
         "name": "{3D} Copy 1",
         "type": "ThreeD",
-        "scale": 96,
-        "detail_level": "Fine"
+        "scale": 96
+      }
+    ],
+    "other": [
+      {
+        "id": 722631,
+        "name": "Level 1.0",
+        "type": "EngineeringPlan",
+        "scale": 48
+      },
+      {
+        "id": 723681,
+        "name": "Level 2.0",
+        "type": "EngineeringPlan",
+        "scale": 48
+      },
+      {
+        "id": 724265,
+        "name": "Level 3.0",
+        "type": "EngineeringPlan",
+        "scale": 48
+      },
+      {
+        "id": 1666833,
+        "name": "ELECTRICAL",
+        "type": "Legend",
+        "scale": 48
       }
     ]
   },
@@ -2635,137 +6430,11 @@
       ]
     }
   ],
-  "loaded_families": [
-    "System Panel",
-    "Rectangular Mullion",
-    "Circular Mullion",
-    "L Corner Mullion",
-    "V Corner Mullion",
-    "Trapezoid Corner Mullion",
-    "Quad Corner Mullion",
-    "Timber-Column",
-    "Baluster - Square",
-    "Muntin Pattern_2x2",
-    "Trim-Window-Interior-Flat",
-    "Trim-Window-Exterior-Flat",
-    "Instance-Window-Fixed",
-    "Door-Interior-Single-Pocket-2_Panel-Wood",
-    "Door-Exterior-Double-Full Glass-Wood_Clad",
-    "Door-Exterior-Single-Entry-Half Flat Glass-Wood_Clad",
-    "Tub-Rectangular-3D",
-    "Bed-Standard",
-    "Toilet-Domestic-3D",
-    "Sink Kitchen-Single",
-    "Sink Vanity-Round",
-    "123_or_4_seats_couch_4554",
-    "AGENT_BAR_STOOL_18681",
-    "TV - Flat Screen",
-    "Int-Opening-Craftsman_Casing_1726",
-    "Shower_Head_4441 (2)",
-    "gooseneck_exterior_wall_light_19146",
-    "Outlet Floor-Duplex",
-    "Outlet-Duplex",
-    "Outlet-GFI",
-    "Outlet-Range",
-    "Switch-Dimmer",
-    "Switch-Single",
-    "Downlight - Recessed Can",
-    "Ceiling_Fan_With_Light_15608",
-    "Bathroom_Ceiling_Fan_71",
-    "Downlight - Rectangle - LED",
-    "Exterior_Sliding_Door_3843",
-    "Empty System Panel",
-    "Window Tag",
-    "Door Tag",
-    "Area Tag",
-    "Glass_Panel_Overhead_2705",
-    "Parametric_folding_door_9123",
-    "Shelf-_Parametric_17480",
-    "Vanity Cabinet-Double Door Sink Unit",
-    "Shower_columns_15486",
-    "Upper Cabinet-Double Door-Wall",
-    "Base Cabinet-4 Drawers",
-    "Base Cabinet-Double Door & 2 Drawer",
-    "Base Cabinet-Double Door Sink Unit",
-    "Base Cabinet-Single Door",
-    "Casework Tag",
-    "Sink Kitchen-Double",
-    "Exo_Pendant_Lamp_Tech_Lighting_Parametric_18718",
-    "Edison_Wall_Sconce_20320",
-    "Security_Flood_Light_20223",
-    "Modern_Pot_Filler_Faucet_22179",
-    "Security_Flood_Light_1",
-    "Pendant Light - Disk",
-    "Tall Cabinet-Double Door(2)",
-    "Tall Cabinet-Single Door",
-    "Enscape AssetDefinition - Faucet 016",
-    "View Title w Sheet",
-    "Enscape AssetDefinition - Car 052",
-    "Enscape AssetDefinition - Deciduous Tree 105 Tree",
-    "Enscape AssetDefinition - Deciduous Tree 014 Chestnut",
-    "Enscape AssetDefinition - Bush 077 Dwarf Peppermint",
-    "Enscape AssetDefinition - Bush 123 Pampas Grass",
-    "Enscape AssetDefinition - Coniferous Tree 004 Japanese Black Pine",
-    "Enscape AssetDefinition - Coniferous Tree 021 Stone Pine",
-    "70284",
-    "Door-Interior-Single-1_Panel-Wood",
-    "Hood-Wall",
-    "Refrigerator-Over-and-Under-Glass_Door",
-    "Freezer-Stainless_Steel_Door",
-    "Dishwasher",
-    "Furniture_Sofas-Armchairs_Icons-of-Denmark_ EC1-Sofa_Configuration1",
-    "Table-Night Stand",
-    "Washer-Top_Load",
-    "Dryer",
-    "Fireplace-Gas-Heat&Glo-Cerona",
-    "Casework 2",
-    "Casework 3",
-    "Casework 4",
-    "Casework 5",
-    "Casework 6",
-    "Casework 7",
-    "Casework 9",
-    "Casework 11",
-    "Casework 10",
-    "Casework 8",
-    "Enscape AssetDefinition - Adhesive 001",
-    "Casework 12",
-    "Casework 13",
-    "Casework 1",
-    "Casework 14",
-    "Casework 15",
-    "Casework 16",
-    "Range-48_Inch",
-    "Skylight-Pyramid",
-    "Range-60_Inch",
-    "Window-Single-Hung",
-    "Data Outlet",
-    "Interior_barn_door_18732",
-    "Electrical Panel",
-    "Water Heater - Tankless",
-    "Floor_light_perfect_for_exterior_16733",
-    "W-Wide Flange",
-    "Enscape AssetDefinition - Bush 108 Kangaroo Paw",
-    "HSS-Hollow Structural Section-Column",
-    "Floor Drain-2D",
-    "W-Wide Flange-Column",
-    "Duplex Receptacle",
-    "Recessed Direct-Indirect Light - Asymmetrical",
-    "Level Head - Circle",
-    "Plain Recessed Lighting Fixture",
-    "Window-Awning-Single",
-    "Exterior_Pivot_Door_22942",
-    "1x6 Baseboard",
-    "ARCH D 24 X 36 HORIZONTAL",
-    "12039_Big_curse_Fan_19134",
-    "Enscape AssetDefinition - Bed 006 208 x 245 cm (82 x 96 in)",
-    "Enscape AssetDefinition - Marcel Open Shelf Nightstand",
-    "ClosetMaid - MasterSuite Reach-In - Drawer Tower",
-    "ClosetMaid - MasterSuite Deluxe 6x8 Walk-In - Drawer Tower",
-    "ClosetMaid - MasterSuite Standard 8x8 Walk-In - Drawer Tower",
-    "ClosetMaid - MasterSuite Deluxe 8x8 Walk-In - Drawer Tower"
-  ],
   "summary": {
+    "title": "Spring Mountian Construction Set",
+    "level_count": 3,
+    "is_two_story": true,
+    "is_three_story": true,
     "room_count": 13,
     "room_names": [
       "Office",
@@ -2782,15 +6451,24 @@
       "Room",
       "Mud"
     ],
-    "has_master": true,
-    "has_kitchen": false,
-    "has_garage": false,
-    "is_two_story": false,
+    "total_sf": 2178.0,
     "door_count": 31,
     "window_count": 52,
     "sheet_count": 19,
-    "draft1_complete": false,
-    "draft2_complete": false,
-    "draft3_complete": false
+    "empty_sheets": [
+      "A100",
+      "A100.1",
+      "A110"
+    ],
+    "schedule_count": 39,
+    "section_count": 17,
+    "warnings": {
+      "overlapping_walls": 11,
+      "overlapping_inserts": 2,
+      "missing_targets": 3,
+      "off_axis": 9,
+      "stair_issues": 2
+    },
+    "family_count": 128
   }
 }
