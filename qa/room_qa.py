@@ -36,6 +36,11 @@ def _check_sizing(room: dict) -> list:
     if not norm or sf == 0:
         return issues
 
+    # Water closets are small by design — don't flag them
+    # Heuristic: if it's a bath room under 60 SF it's probably a WC/toilet room
+    if "bath" in name.lower() and sf < 60:
+        return []
+
     if sf < norm["min"]:
         issues.append({
             "type": "room_undersized",

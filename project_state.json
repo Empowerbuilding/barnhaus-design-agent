@@ -1,5 +1,5 @@
 {
-  "scanned_at": "2026-06-14T22:41:10",
+  "scanned_at": "2026-06-14T22:57:58",
   "document": {
     "title": "Spring Mountian Construction Set",
     "path": "C:\\Revit Projects\\Spring Mountian Construction Set.rvt",
@@ -12,7 +12,268 @@
     "project_status": null
   },
   "levels": [],
-  "rooms": [],
+  "rooms": [
+    {
+      "id": 3172236,
+      "name": "Office",
+      "area_sf": 178.1,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172236,
+        "has_bbox": true,
+        "min": {
+          "x": -55.89092392357138,
+          "y": 27.34968551944919,
+          "z": 0
+        },
+        "max": {
+          "x": -39.62009059023803,
+          "y": 38.29340319327767,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172238,
+      "name": "Guest Suite",
+      "area_sf": 188.1,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172238,
+        "has_bbox": true,
+        "min": {
+          "x": -53.9117572569047,
+          "y": 7.2138822215806,
+          "z": 0
+        },
+        "max": {
+          "x": -40.01592392357136,
+          "y": 21.193048888247308,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172240,
+      "name": "Bath 2",
+      "area_sf": 42.9,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172240,
+        "has_bbox": true,
+        "min": {
+          "x": -59.92738225690471,
+          "y": 10.864052808095197,
+          "z": 0
+        },
+        "max": {
+          "x": -54.453423923571364,
+          "y": 18.776382221580658,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172242,
+      "name": "Bath 2",
+      "area_sf": 18.6,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172242,
+        "has_bbox": true,
+        "min": {
+          "x": -59.927382256904714,
+          "y": 7.219090554913934,
+          "z": 0
+        },
+        "max": {
+          "x": -54.47946559023804,
+          "y": 10.718219474761876,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172248,
+      "name": "Master Bedroom",
+      "area_sf": 252.0,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172248,
+        "has_bbox": true,
+        "min": {
+          "x": 23.97384184627964,
+          "y": -5.394096806722343,
+          "z": 0
+        },
+        "max": {
+          "x": 39.848841846279655,
+          "y": 10.480903193277676,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172250,
+      "name": "Master Bath",
+      "area_sf": 143.9,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172250,
+        "has_bbox": true,
+        "min": {
+          "x": 40.390508512946326,
+          "y": -5.379648464167155,
+          "z": 0
+        },
+        "max": {
+          "x": 49.46863351294634,
+          "y": 10.480903193277669,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172252,
+      "name": "Master Bath",
+      "area_sf": 37.5,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172252,
+        "has_bbox": true,
+        "min": {
+          "x": 44.05717517961301,
+          "y": 11.022569859944333,
+          "z": 0
+        },
+        "max": {
+          "x": 49.47384184627969,
+          "y": 17.939236526611005,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172254,
+      "name": "Master Closet",
+      "area_sf": 155.3,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172254,
+        "has_bbox": true,
+        "min": {
+          "x": 28.47384184627965,
+          "y": 11.022569859944335,
+          "z": 0
+        },
+        "max": {
+          "x": 43.515508512946354,
+          "y": 27.395067251151158,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172256,
+      "name": "Office Closet",
+      "area_sf": 47.7,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172256,
+        "has_bbox": true,
+        "min": {
+          "x": -60.0159239235714,
+          "y": 18.26078352696544,
+          "z": 0
+        },
+        "max": {
+          "x": -51.0916747354322,
+          "y": 26.808018852782528,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172258,
+      "name": "Room",
+      "area_sf": 22.8,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172258,
+        "has_bbox": true,
+        "min": {
+          "x": -51.68259059023805,
+          "y": 21.734715554913972,
+          "z": 0
+        },
+        "max": {
+          "x": -47.113512175467825,
+          "y": 26.808018852782528,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172260,
+      "name": "Room",
+      "area_sf": 55.5,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172260,
+        "has_bbox": true,
+        "min": {
+          "x": 24.515508512946344,
+          "y": 27.9367339178178,
+          "z": 0
+        },
+        "max": {
+          "x": 33.89050851294636,
+          "y": 33.85340058448447,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172262,
+      "name": "Room",
+      "area_sf": 940.3,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172262,
+        "has_bbox": true,
+        "min": {
+          "x": -25.43972509983536,
+          "y": 36.02256985994432,
+          "z": 0
+        },
+        "max": {
+          "x": 0.5602749001646603,
+          "y": 77.85711440254889,
+          "z": 8
+        }
+      }
+    },
+    {
+      "id": 3172264,
+      "name": "Mud",
+      "area_sf": 95.6,
+      "category": "Rooms",
+      "bbox": {
+        "element_id": 3172264,
+        "has_bbox": true,
+        "min": {
+          "x": -23.333822077597805,
+          "y": 33.980903193277655,
+          "z": 0
+        },
+        "max": {
+          "x": -13.31905196862343,
+          "y": 43.5446144025489,
+          "z": 8
+        }
+      }
+    }
+  ],
   "walls": {
     "exterior": [
       {
@@ -2119,7 +2380,261 @@
       }
     ]
   },
-  "warnings": [],
+  "warnings": [
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        171945,
+        2005970
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1399958,
+        1402695
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1697368,
+        1703110
+      ]
+    },
+    {
+      "description": "Elements have duplicate \"Type Mark\" values.",
+      "severity": "Warning",
+      "failing_elements": [
+        1697370,
+        1703112
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2397431,
+        2660146
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2420668,
+        2475479
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2420668,
+        2640958
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2488806,
+        2609163
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2488806,
+        2642256
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2504676,
+        2608876
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2504676,
+        2642031
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2528661,
+        2535322
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2611177,
+        2643675
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2642927,
+        2643228
+      ]
+    },
+    {
+      "description": "Highlighted walls overlap. One of them may be ignored when Revit finds room boundaries. Use Cut Geometry to embed one wall within the other.",
+      "severity": "Warning",
+      "failing_elements": [
+        2792167,
+        2836493
+      ]
+    },
+    {
+      "description": "Highlighted walls are attached to, but miss, the highlighted targets.",
+      "severity": "Warning",
+      "failing_elements": [
+        2381749,
+        2390412
+      ]
+    },
+    {
+      "description": "Highlighted walls are attached to, but miss, the highlighted targets.",
+      "severity": "Warning",
+      "failing_elements": [
+        2383194,
+        2390412
+      ]
+    },
+    {
+      "description": "Highlighted walls are attached to, but miss, the highlighted targets.",
+      "severity": "Warning",
+      "failing_elements": [
+        2390708,
+        2445089
+      ]
+    },
+    {
+      "description": "Highlighted inserts overlap with other inserts or completely miss their hosts.",
+      "severity": "Warning",
+      "failing_elements": [
+        2473428,
+        2491868
+      ]
+    },
+    {
+      "description": "Highlighted inserts overlap with other inserts or completely miss their hosts.",
+      "severity": "Warning",
+      "failing_elements": [
+        2509247,
+        2572225
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2441978,
+        2441979,
+        2441985
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2441978,
+        2441980,
+        2441985
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2441978,
+        2441981,
+        2441985
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2441978,
+        2441982,
+        2441985
+      ]
+    },
+    {
+      "description": "Area separation line is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2556690
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2576712,
+        2576713,
+        2576719
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2576712,
+        2576714,
+        2576719
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2576712,
+        2576715,
+        2576719
+      ]
+    },
+    {
+      "description": "Line in Sketch is slightly off axis and may cause inaccuracies.",
+      "severity": "Warning",
+      "failing_elements": [
+        2576712,
+        2576716,
+        2576719
+      ]
+    },
+    {
+      "description": "The Actual Tread Depth of stair is less than the Minimum Tread Depth specified in the stair type.",
+      "severity": "Warning",
+      "failing_elements": [
+        3061478
+      ]
+    },
+    {
+      "description": "Stair top end exceeds or cannot reach the top elevation of the stair. Add/remove risers at the top end by control or change the stair run's \"Relative Top Height\" parameter in the properties palette.",
+      "severity": "Warning",
+      "failing_elements": [
+        3061478
+      ]
+    }
+  ],
   "loaded_families": [
     "System Panel",
     "Rectangular Mullion",
@@ -2251,9 +2766,23 @@
     "ClosetMaid - MasterSuite Deluxe 8x8 Walk-In - Drawer Tower"
   ],
   "summary": {
-    "room_count": 0,
-    "room_names": [],
-    "has_master": false,
+    "room_count": 13,
+    "room_names": [
+      "Office",
+      "Guest Suite",
+      "Bath 2",
+      "Bath 2",
+      "Master Bedroom",
+      "Master Bath",
+      "Master Bath",
+      "Master Closet",
+      "Office Closet",
+      "Room",
+      "Room",
+      "Room",
+      "Mud"
+    ],
+    "has_master": true,
     "has_kitchen": false,
     "has_garage": false,
     "is_two_story": false,

@@ -55,7 +55,21 @@ def scan_project(save: bool = True) -> dict:
 
     # ── Rooms ──────────────────────────────────────────────────────────────
     print("  Rooms...")
-    rooms = rc.get_all_rooms()
+    raw_rooms = rc.call("revit.list_elements_by_category", {"category": "Rooms"})
+    raw_list = raw_rooms.get("result", {}).get("elements", []) if raw_rooms.get("success") else []
+    # Enrich each room with area + clean name from parameters
+    rooms = []
+    for r in raw_list:
+        eid = r.get("id")
+        name_result = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Name"})
+        area_result = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Area"})
+        name = name_result.get("result", {}).get("value") or r.get("name", "")
+        area_raw = area_result.get("result", {}).get("value", 0)
+        try:
+            area_sf = round(float(area_raw), 1)
+        except:
+            area_sf = 0
+        rooms.append({"id": eid, "name": name, "area_sf": area_sf, "category": "Rooms"})
     state["rooms"] = rooms
     print(f"    {len(rooms)} rooms found")
 
@@ -111,6 +125,29 @@ def scan_project(save: bool = True) -> dict:
           f"{len(state['sheets']['missing_draft1'])} missing D1, "
           f"{len(state['sheets']['missing_draft2'])} missing D2, "
           f"{len(state['sheets']['missing_draft3'])} missing D3")
+
+    # ── Room bounding boxes (for adjacency detection) ──────────────────────
+    print("  Enriching rooms with bounding boxes...")
+    for room in state["rooms"]:
+        bb_result = rc.call("revit.get_element_bounding_box", {"element_id": room["id"]})
+        if bb_result.get("success") and bb_result.get("result", {}).get("has_bbox"):
+            room["bbox"] = bb_result["result"]
+
+    # ── Revit warnings ─────────────────────────────────────────────────────
+    print("  Warnings...")
+    warn_result = rc.call("revit.get_warnings", {})
+    if warn_result.get("success"):
+        warnings = warn_result.get("result", {}).get("warnings", [])
+        state["warnings"] = warnings
+        # Categorize
+        overlap_walls   = [w for w in warnings if "overlap" in w["description"].lower() and "wall" in w["description"].lower()]
+        miss_target     = [w for w in warnings if "miss" in w["description"].lower()]
+        overlap_inserts = [w for w in warnings if "insert" in w["description"].lower()]
+        off_axis        = [w for w in warnings if "off axis" in w["description"].lower()]
+        stair_issues    = [w for w in warnings if "stair" in w["description"].lower()]
+        print(f"    {len(warnings)} total — {len(overlap_walls)} overlapping walls, "
+              f"{len(overlap_inserts)} overlapping inserts, "
+              f"{len(off_axis)} off-axis, {len(stair_issues)} stair issues")
 
     # ── Views ──────────────────────────────────────────────────────────────
     print("  Views...")

@@ -29,6 +29,7 @@ def run_qa(state: dict, auto_fix: bool = False) -> dict:
     print("\n🔎 Running QA checks...")
 
     all_issues = []
+    all_issues += _check_revit_warnings(state)
     all_issues += check_model_integrity(state)
     all_issues += check_all_rooms(state)
     all_issues += check_all_doors(state)
@@ -55,6 +56,40 @@ def run_qa(state: dict, auto_fix: bool = False) -> dict:
         report["auto_fixed"] = _apply_auto_fixes(fix_issues + consider_issues)
 
     return report
+
+
+def _check_revit_warnings(state: dict) -> list:
+    """Surface Revit's own warnings directly into the QA report."""
+    issues = []
+    for w in state.get("warnings", []):
+        desc = w.get("description", "")
+        elements = w.get("failing_elements", [])
+        desc_lower = desc.lower()
+
+        if "overlap" in desc_lower and "wall" in desc_lower:
+            severity = "fix"
+        elif "insert" in desc_lower and "overlap" in desc_lower:
+            severity = "fix"
+        elif "miss" in desc_lower and "target" in desc_lower:
+            severity = "fix"
+        elif "stair" in desc_lower:
+            severity = "fix"
+        elif "off axis" in desc_lower:
+            severity = "consider"
+        elif "duplicate" in desc_lower:
+            severity = "fyi"
+        else:
+            severity = "fyi"
+
+        issues.append({
+            "type": "revit_warning",
+            "severity": severity,
+            "element_id": elements[0] if elements else None,
+            "room": None,
+            "message": f"[Revit Warning] {desc} (elements: {', '.join(str(e) for e in elements[:3])})",
+            "auto_fixable": False,
+        })
+    return issues
 
 
 def _print_report(report: dict):
