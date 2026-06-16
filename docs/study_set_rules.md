@@ -152,3 +152,26 @@ Same pattern works for any type parameter: Bold, Italic, Text Size, etc.
 | `revit.create_height_dimension` | ⚠️ Broken | `HostObjectUtils` doesn't work for walls; needs rethink |
 | Camera orientation for 3D views | ❌ Missing | `revit.set_3d_view_orientation` not implemented |
 | Duplicate view | ❌ Missing | `revit.duplicate_view` not in bridge |
+
+---
+
+## ⚠️ CRITICAL: Never Delete Annotations Project-Wide
+
+When cleaning up elevation views, NEVER delete by category project-wide.
+Dimensions and text notes exist in FLOOR PLANS too.
+
+**WRONG:**
+```python
+# This deletes from ALL views including floor plans
+r = rc.call('revit.list_elements_by_category', {'category': 'Dimensions'})
+for e in elems: rc.call('revit.delete_element', ...)
+```
+
+**RIGHT (future fix):** Filter by view before deleting — need `revit.get_view_origin` 
+and view-specific element queries. Until then, have user manually delete elevation 
+annotations via Revit UI (VG → Annotations → uncheck), or accept that deletion 
+will be project-wide and recreate floor plan text notes afterward.
+
+Floor plan text notes to recreate if deleted:
+- Room dimension labels: query rooms from project_state.json, recreate via create_text_note
+- Other annotations: must be re-added manually from full set reference
