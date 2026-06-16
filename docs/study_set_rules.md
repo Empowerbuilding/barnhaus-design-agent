@@ -115,6 +115,34 @@ For each new project:
 
 ---
 
+## Changing Fonts / Text Type Parameters
+
+`set_type_parameter` requires `type_id` NOT `element_id`. Get the type ID from `get_type_parameters` result field `type_id`.
+
+```python
+# CORRECT way to change font on all text types:
+notes = rc.call('revit.list_elements_by_category', {'category': 'Text Notes'})
+seen_type_ids = {}
+for n in notes['result']['elements']:
+    type_name = n.get('type', '')
+    if type_name not in seen_type_ids:
+        r2 = rc.call('revit.get_type_parameters', {'element_id': n['id']})
+        type_id = r2.get('result', {}).get('type_id')
+        if type_id:
+            seen_type_ids[type_name] = type_id
+
+for tname, type_id in seen_type_ids.items():
+    rc.call('revit.set_type_parameter', {
+        'type_id': type_id,          # <-- type_id, not element_id
+        'parameter_name': 'Text Font',
+        'value': 'Arial Narrow',
+    })
+```
+
+Same pattern works for any type parameter: Bold, Italic, Text Size, etc.
+
+---
+
 ## Known Bridge Gaps (TODO)
 
 | Feature | Status | Notes |
