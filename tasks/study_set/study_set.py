@@ -45,13 +45,34 @@ HIDE_CATEGORIES = [
 STUDY_SHEET_NUMBERS = {"A100", "A100.1", "A100.2.1", "A100.2.2", "A101.1", "A101.2", "A105", "A106"}
 
 
+def _get_titleblock_name() -> str:
+    """Query the model for the actual title block family name."""
+    r = rc.call("revit.list_families", {})
+    families = r.get("result", {}).get("families", []) if r.get("success") else []
+    tb = next((f["name"] for f in families if f.get("category") == "Title Blocks"), None)
+    if tb:
+        print(f"  📋 Title block: {tb}")
+        return tb
+    print("  ⚠️  No title block found — sheets may not render correctly")
+    return "ARCH D 24 X 36 HORIZONTAL"  # fallback
+
+
+def _is_two_story(state: dict) -> bool:
+    """Check if project has rooms on Level 2 (not just level count)."""
+    rooms = state.get("rooms", [])
+    return any(
+        r.get("area_sf", 0) > 50 and "2" in (r.get("level") or "")
+        for r in rooms
+    )
+
+
 def run(state: dict = None):
     """Main entry point — generate the study set."""
     if state is None:
         state = load_state()
 
     doc_title = state.get("summary", {}).get("title", "Unknown Project")
-    is_two_story = state.get("summary", {}).get("is_two_story", False)
+    is_two_story = _is_two_story(state)  # room-based check, not level count
 
     print(f"\n📐 Study Set Generator — {doc_title}")
     print("=" * 55)
@@ -76,7 +97,8 @@ def run(state: dict = None):
 
     # Step 4: Build study set sheet set
     print("\n── Step 4: Building Study Set Sheets ──")
-    _build_study_sheets(sheet_map, view_map, study_elev_views, is_two_story)
+    titleblock = _get_titleblock_name()
+    _build_study_sheets(sheet_map, view_map, study_elev_views, is_two_story, titleblock)
 
     # Step 5: Generate A111 upsell page
     print("\n── Step 5: A111 Upsell Page ──")
@@ -203,12 +225,30 @@ def _try_create_3d_views(view_map: dict) -> bool:
     return created_any
 
 
+def _delete_elevation_annotations():
+    """
+    Delete door tags, window tags, and dimensions from the model.
+    Safe because study set is a separate Save As copy.
+    set_category_visibility does NOT work in this bridge — must delete elements.
+    """
+    deleted = 0
+    for cat in ["Door Tags", "Window Tags", "Dimensions"]:
+        r = rc.call("revit.list_elements_by_category", {"category": cat})
+        elems = r.get("result", {}).get("elements", []) if r and r.get("success") else []
+        for e in elems:
+            if rc.call("revit.delete_element", {"element_id": e["id"]}).get("success"):
+                deleted += 1
+    print(f"  ✅ Deleted {deleted} annotation elements (tags + dims)")
+    return deleted
+
+
 def _create_study_elevations(view_map: dict, sheet_map: dict) -> dict:
     """
-    Duplicate the A105/A106 elevation views and apply study set visibility
-    (tags and detailed dimensions hidden).
+    Clean up elevation views for study set by deleting tags and dimensions.
+    NOTE: set_category_visibility is NOT supported by this bridge (silently no-ops).
+    Deletion is safe because study set is a Save As copy.
 
-    Returns: {sheet_number: view_id} mapping for the clean study views.
+    Returns: empty dict (no new views needed, existing elevation sheets stay).
     """
     # Map sheet numbers to the view names we want to find/create
     elevation_targets = {
@@ -292,7 +332,8 @@ def _hide_categories_in_view(view_id: int) -> int:
 
 
 def _build_study_sheets(sheet_map: dict, view_map: dict,
-                         study_elev_views: dict, is_two_story: bool):
+                         study_elev_views: dict, is_two_story: bool,
+                         titleblock: str = "ARCH D 24 X 36 HORIZONTAL"):
     """
     Ensure the study set sheet set exists. Creates any missing sheets.
     Creates a sheet set named 'STUDY SET' containing only study sheets.
@@ -325,7 +366,7 @@ def _build_study_sheets(sheet_map: dict, view_map: dict,
             result = rc.call("revit.create_sheet", {
                 "sheet_number": num,
                 "sheet_name":   name,
-                "title_block_family": "Barnhaus Title Block",
+                "titleblock_name": titleblock,  # NOTE: param is titleblock_name not title_block_family
             })
             if result.get("success"):
                 new_sheet_id = result.get("result", {}).get("sheet_id")
