@@ -175,3 +175,40 @@ will be project-wide and recreate floor plan text notes afterward.
 Floor plan text notes to recreate if deleted:
 - Room dimension labels: query rooms from project_state.json, recreate via create_text_note
 - Other annotations: must be re-added manually from full set reference
+
+---
+
+## Bridge Health Endpoint Shows Stale Document
+`health_check()` and `/health` endpoint can show old document name when switching files.
+Always verify with `revit.get_document_info` — that's the reliable check:
+```python
+r = rc.call('revit.get_document_info', {})
+print(r['result']['title'])  # actual active doc
+```
+
+---
+
+## Floor Plan View for Text Notes
+The view placed on A101.1 is NOT always "Level 1.0 Simple".
+Always find the correct floor plan view dynamically:
+```python
+# Find the simple/clean floor plan view on A101.1
+result = rc.call('revit.list_sheets', {})
+# Get viewport's view by querying viewport elements with Sheet Number = A101.1
+# Then get that view's ID and use it for text note placement
+```
+Hardcoding view ID 1306933 will break on next project.
+
+---
+
+## Study Set Workflow Summary (what actually worked on Allen)
+1. scan → get room sizes + bounding boxes
+2. list_sheets → find existing sheets, note which are missing
+3. list_families → get titleblock_name (don't hardcode)
+4. create_sheet with titleblock_name → creates real sheets
+3D views: create_3d_view → place on sheets → user positions camera
+5. delete Door Tags, Window Tags, Dimensions (project-wide — be aware floor plan loses dims too)
+6. set room Name params to "W' x D'" via set_parameter_value
+7. create_text_note on the correct floor plan view for room labels
+8. generate_a111 → A111 upsell page PDF
+9. Manual: user adds elevation dimensions + exports PDF
