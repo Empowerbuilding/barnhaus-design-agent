@@ -116,6 +116,15 @@ def main():
 
         print("\n✅ Full run complete.")
 
+    elif cmd == "study-set":
+        from tasks.study_set.study_set import run as study_run
+        state = scan_project()
+        study_run(state)
+
+    elif cmd == "study-set-export":
+        from tasks.study_set.study_set import export_study_set
+        export_study_set()
+
     else:
         print(f"Unknown command: {cmd}")
         print(__doc__)
