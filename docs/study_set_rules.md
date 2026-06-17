@@ -212,3 +212,57 @@ Hardcoding view ID 1306933 will break on next project.
 7. create_text_note on the correct floor plan view for room labels
 8. generate_a111 → A111 upsell page PDF
 9. Manual: user adds elevation dimensions + exports PDF
+
+---
+
+## Room Color Schemes
+
+List existing schemes: `revit.list_color_schemes` → returns all ColorFillScheme elements
+Apply scheme to view: `revit.apply_color_scheme_to_view` with `view_id` + `scheme_id`
+Update colors: `revit.update_room_color_scheme` with `scheme_id` + `entries: [{name, r, g, b}]`
+
+The "Name" scheme (auto-created by Revit) works by room Name parameter.
+Match is case-insensitive and partial — "Bathroom" matches "Bathroom 1", "Bathroom 2" etc.
+
+### Barnhaus Color Palette
+- Bathroom → soft blue (173, 216, 230)
+- Bedroom / Master Bed → warm tan (222, 196, 160)
+- Living / Kitchen / Flex → warm cream (245, 235, 210)
+- Hallway / Entry → light yellow (255, 248, 200)
+- Porch / Patio → light grey (200, 200, 200)
+- Garage → light grey (220, 220, 220)
+- Laundry → light lavender (220, 208, 235)
+
+### ColorFillScheme API Notes (Revit 2025)
+- `ColorFillScheme.Create` does NOT exist in 2025 → use existing "Name" scheme
+- `scheme.GetEntries()` + `scheme.SetEntries(entries)` → modify existing entries
+- `entry.Color` = Revit `Color` struct (NOT nullable — use bool flag pattern)
+- `entry.GetStringValue()` → gets the room name for that entry
+- `view.SetColorFillSchemeId(new ElementId(BuiltInCategory.OST_Rooms), schemeId)` → applies
+
+---
+
+## Open Home V2 — Session State (2026-06-16)
+
+Project: `H:\Shared drives\Barnhaus\Revit\Revit\Projects\Open Home V2.rvt`
+Status: 3D model being developed into full construction set
+
+Sheets created/populated:
+- A101.1 ← Level 1 view placed
+- A101.2 ← Level 2 Floor Plan + Level 2 views placed (NEW)
+- A102.0 ← Ground Level Dimensions placed  
+- A102.1 ← Dimensions L2 (NEW, no view yet)
+- A106 ← Left & Right elevations (empty — views on A105, need duplicates)
+- A107, A107.1, A107.2 ← Interior elevations (NEW, no views exist yet)
+- A109 ← Plumbing L1 + L2 placed
+- A109.1, A109.2 ← Foundation + Plumbing variants (NEW, empty)
+
+Rooms placed (9): Living, Master Bed, Garage, Kitchen, Bathroom, Bedroom, Hallway, Entry, Porch
+Color scheme applied: "Name" scheme (id=131668) with Barnhaus palette
+Fonts: Arial Narrow on all 14 text types
+
+Next session:
+- Interior elevations still need to be created
+- A106 needs Left/Right elevation duplicates
+- Room labels need bold red styling (like Allen reference)
+- Area diagram / SF breakdown on A101
