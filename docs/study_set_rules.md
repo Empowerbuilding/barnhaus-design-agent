@@ -231,6 +231,7 @@ Match is case-insensitive and partial — "Bathroom" matches "Bathroom 1", "Bath
 - Hallway / Entry → light yellow (255, 248, 200)
 - Porch / Patio → light grey (200, 200, 200)
 - Garage → light grey (220, 220, 220)
+- Carport → gray (195, 195, 195)
 - Laundry → light lavender (220, 208, 235)
 
 ### ColorFillScheme API Notes (Revit 2025)
