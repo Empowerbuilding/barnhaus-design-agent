@@ -202,19 +202,35 @@ def _scan_walls(state: dict):
     ext, int_, other = [], [], []
     for w in walls:
         wtype = w.get("type", w.get("type_name", "")).lower()
-        # Enrich with bounding box for position-based checks
-        bb_res = rc.call("revit.get_element_bounding_box", {"element_id": w["id"]})
-        if bb_res.get("success") and bb_res.get("result", {}).get("has_bbox"):
-            bb = bb_res["result"]
-            dx = abs(bb["max"]["x"] - bb["min"]["x"])
-            dy = abs(bb["max"]["y"] - bb["min"]["y"])
-            w["bbox"]       = bb
-            w["length_ft"]  = round(max(dx, dy), 2)
+
+        # Read start/end points directly from bridge response (no extra API call)
+        sx = w.get("start_x")
+        sy = w.get("start_y")
+        ex = w.get("end_x")
+        ey = w.get("end_y")
+
+        if sx is not None and ex is not None:
+            w["start_point"] = {"x": sx, "y": sy}
+            w["end_point"]   = {"x": ex, "y": ey}
+            dx = abs(ex - sx)
+            dy = abs(ey - sy)
+            w["length_ft"]   = round(w.get("length_ft") or max(dx, dy), 2)
             w["orientation"] = "horizontal" if dx > dy else "vertical"
-            w["midpoint"]    = {
-                "x": (bb["min"]["x"] + bb["max"]["x"]) / 2,
-                "y": (bb["min"]["y"] + bb["max"]["y"]) / 2,
-            }
+            w["midpoint"]    = {"x": (sx + ex) / 2, "y": (sy + ey) / 2}
+        else:
+            # Fallback: bounding box (slower but still works)
+            bb_res = rc.call("revit.get_element_bounding_box", {"element_id": w["id"]})
+            if bb_res.get("success") and bb_res.get("result", {}).get("has_bbox"):
+                bb = bb_res["result"]
+                dx = abs(bb["max"]["x"] - bb["min"]["x"])
+                dy = abs(bb["max"]["y"] - bb["min"]["y"])
+                w["bbox"]        = bb
+                w["length_ft"]   = round(max(dx, dy), 2)
+                w["orientation"] = "horizontal" if dx > dy else "vertical"
+                w["midpoint"]    = {
+                    "x": (bb["min"]["x"] + bb["max"]["x"]) / 2,
+                    "y": (bb["min"]["y"] + bb["max"]["y"]) / 2,
+                }
 
         if any(x in wtype for x in ["ext", "7.5", "pbr", "exterior", "2x6", "6\""]):
             ext.append(w)
