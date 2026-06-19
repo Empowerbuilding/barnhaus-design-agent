@@ -1,193 +1,241 @@
 """
 dimension_plans.py — Auto-dimensions floor plan views for A102 sheets.
 
-Barnhaus dimension standard (3-string system):
-  String 1 (outermost): Overall building length/width
-  String 2 (middle):    Opening-to-opening (door/window centerlines)  
-  String 3 (innermost): Wall-end to wall-end segments
+3-string exterior dimension system (Barnhaus standard):
+  String 1 (4ft out):  Individual wall segments / opening locations
+  String 2 (7ft out):  Sub-group totals
+  String 3 (10ft out): Overall building dimension
 
-Uses revit.create_dimension bridge tool.
+Building footprint determined from ROOMS bounding box (not walls),
+so outer roof/site boundary rectangles don't throw off placement.
 """
 
 from core import revit_client as rc
 from core.project_state import load_state
 
-# Offset from building edge for each dimension string (ft)
-OFFSET_S1 = 8.0   # overall
-OFFSET_S2 = 5.0   # openings
-OFFSET_S3 = 2.5   # wall ends
+# Offsets from building edge (ft)
+OFFSET_SEGMENTS = 4.0   # string 1 — individual segments
+OFFSET_SUBTOTAL = 7.0   # string 2 — sub-totals  
+OFFSET_OVERALL  = 10.0  # string 3 — overall
 
 
 def run(state: dict = None, level_key: str = "L1"):
     if state is None:
         state = load_state()
 
-    print(f"\n📐 Running dimension plans for {level_key}...")
+    print(f"\n📐 Dimension plans — {level_key}")
 
     view = _get_dimension_view(state, level_key)
     if not view:
         print(f"  ❌ No dimension view found for {level_key}")
-        print(f"     Available floor plans: {[v.get('name') for v in state.get('views', {}).get('floor_plans', [])]}")
+        print(f"     Views: {[v.get('name') for v in state.get('views', {}).get('floor_plans', [])]}")
         return
 
     view_id = view.get("id")
     print(f"  🎯 View: {view.get('name')} (ID: {view_id})")
 
+    # ── Get building footprint from ROOMS (not walls) ───────────────────────
+    footprint = _get_building_footprint(state)
+    if not footprint:
+        print("  ❌ No rooms found — can't determine building footprint")
+        return
+
+    min_x, max_x, min_y, max_y = footprint
+    print(f"  📐 Footprint: X({min_x:.1f}→{max_x:.1f}) Y({min_y:.1f}→{max_y:.1f})")
+
+    # ── Get walls with geometry ──────────────────────────────────────────────
     ext_walls = state.get("walls", {}).get("exterior", [])
     walls_with_geo = [w for w in ext_walls if w.get("start_point") and w.get("end_point")]
 
     if not walls_with_geo:
-        print("  ❌ No wall geometry in state — run scan first with latest bridge")
+        print("  ❌ No wall geometry — run scan with latest bridge")
         return
 
-    print(f"  📏 {len(walls_with_geo)} exterior walls with geometry")
+    # Filter to walls actually within the building footprint (exclude outer boundary)
+    building_walls = _filter_building_walls(walls_with_geo, footprint)
+    print(f"  🧱 {len(building_walls)} building walls (of {len(walls_with_geo)} exterior)")
 
-    h_walls = [w for w in walls_with_geo if _is_horizontal(w)]  # N/S walls (run E-W)
-    v_walls = [w for w in walls_with_geo if _is_vertical(w)]    # E/W walls (run N-S)
+    h_walls = sorted([w for w in building_walls if _is_horizontal(w)],
+                     key=lambda w: (w["start_point"]["y"] + w["end_point"]["y"]) / 2)
+    v_walls = sorted([w for w in building_walls if _is_vertical(w)],
+                     key=lambda w: (w["start_point"]["x"] + w["end_point"]["x"]) / 2)
 
     placed = 0
 
-    # ── Overall E-W dimension (across top) ──────────────────────────────────
-    if v_walls:
-        result = _place_overall_dimension(v_walls, "vertical", view_id)
-        if result:
-            placed += 1
-            print(f"  ✅ Overall E-W: {result}")
+    # ── TOP (north side) ────────────────────────────────────────────────────
+    placed += _dimension_side("TOP",    v_walls, h_walls, "north", footprint, view_id)
 
-    # ── Overall N-S dimension (down the side) ────────────────────────────────
-    if h_walls:
-        result = _place_overall_dimension(h_walls, "horizontal", view_id)
-        if result:
-            placed += 1
-            print(f"  ✅ Overall N-S: {result}")
+    # ── BOTTOM (south side) ─────────────────────────────────────────────────
+    placed += _dimension_side("BOTTOM", v_walls, h_walls, "south", footprint, view_id)
 
-    # ── Wall-to-wall segment dimensions ─────────────────────────────────────
-    if v_walls:
-        placed += _place_segment_dimensions(v_walls, "vertical", view_id)
+    # ── LEFT (west side) ────────────────────────────────────────────────────
+    placed += _dimension_side("LEFT",   h_walls, v_walls, "west",  footprint, view_id)
 
-    if h_walls:
-        placed += _place_segment_dimensions(h_walls, "horizontal", view_id)
+    # ── RIGHT (east side) ───────────────────────────────────────────────────
+    placed += _dimension_side("RIGHT",  h_walls, v_walls, "east",  footprint, view_id)
 
-    if placed == 0:
-        print("  ❌ No dimensions placed — bridge returned errors on all attempts")
-        print("     Check that the dimension view is open/accessible in Revit")
+    print(f"\n  ✅ {placed} dimension strings placed in {view.get('name')}")
+
+
+def _dimension_side(label, span_walls, depth_walls, side, footprint, view_id):
+    """
+    Place 3 dimension strings on one side of the building.
+    span_walls  = walls that run parallel to this side (vary in depth direction)
+    depth_walls = walls that run perpendicular to this side (span across)
+    side        = 'north' | 'south' | 'east' | 'west'
+    """
+    min_x, max_x, min_y, max_y = footprint
+    placed = 0
+
+    if not depth_walls or len(depth_walls) < 2:
+        return 0
+
+    is_horizontal_side = side in ("north", "south")  # dimension line runs E-W or N-S
+
+    if is_horizontal_side:
+        # Dimension line runs E-W, positioned above (north) or below (south)
+        sign = 1 if side == "north" else -1
+        base = max_y if side == "north" else min_y
+        line_x0 = min_x - 3
+        line_x1 = max_x + 3
+
+        # String 3 — overall (outermost)
+        if len(depth_walls) >= 2:
+            w1 = depth_walls[0]
+            w2 = depth_walls[-1]
+            dim_y = base + sign * OFFSET_OVERALL
+            r = _place_dim(w1["id"], w2["id"],
+                           {"x": line_x0, "y": dim_y, "z": 0},
+                           {"x": line_x1, "y": dim_y, "z": 0}, view_id)
+            if r: placed += 1
+
+        # String 1 — segments (innermost, one dim per adjacent wall pair)
+        dim_y = base + sign * OFFSET_SEGMENTS
+        for i in range(len(depth_walls) - 1):
+            w1 = depth_walls[i]
+            w2 = depth_walls[i + 1]
+            mid1 = (w1["start_point"]["x"] + w1["end_point"]["x"]) / 2
+            mid2 = (w2["start_point"]["x"] + w2["end_point"]["x"]) / 2
+            if abs(mid2 - mid1) < 0.5: continue
+            r = _place_dim(w1["id"], w2["id"],
+                           {"x": min(mid1, mid2) - 1, "y": dim_y, "z": 0},
+                           {"x": max(mid1, mid2) + 1, "y": dim_y, "z": 0}, view_id)
+            if r: placed += 1
+
     else:
-        print(f"\n  ✅ {placed} dimension strings placed in {view.get('name')}")
+        # Dimension line runs N-S, positioned left (west) or right (east)
+        sign = -1 if side == "west" else 1
+        base = min_x if side == "west" else max_x
+        line_y0 = min_y - 3
+        line_y1 = max_y + 3
+
+        # String 3 — overall
+        if len(depth_walls) >= 2:
+            w1 = depth_walls[0]
+            w2 = depth_walls[-1]
+            dim_x = base + sign * OFFSET_OVERALL
+            r = _place_dim(w1["id"], w2["id"],
+                           {"x": dim_x, "y": line_y0, "z": 0},
+                           {"x": dim_x, "y": line_y1, "z": 0}, view_id)
+            if r: placed += 1
+
+        # String 1 — segments
+        dim_x = base + sign * OFFSET_SEGMENTS
+        for i in range(len(depth_walls) - 1):
+            w1 = depth_walls[i]
+            w2 = depth_walls[i + 1]
+            mid1 = (w1["start_point"]["y"] + w1["end_point"]["y"]) / 2
+            mid2 = (w2["start_point"]["y"] + w2["end_point"]["y"]) / 2
+            if abs(mid2 - mid1) < 0.5: continue
+            r = _place_dim(w1["id"], w2["id"],
+                           {"x": dim_x, "y": min(mid1, mid2) - 1, "z": 0},
+                           {"x": dim_x, "y": max(mid1, mid2) + 1, "z": 0}, view_id)
+            if r: placed += 1
+
+    print(f"  {label}: {placed} strings")
+    return placed
 
 
-def _place_overall_dimension(walls: list, orientation: str, view_id: int):
-    """Place one overall dimension across the full building extent."""
-    if orientation == "vertical":
-        # Walls run N-S — measure E-W extent
-        # Find westmost and eastmost walls by their X midpoints
-        sorted_walls = sorted(walls, key=lambda w: (w["start_point"]["x"] + w["end_point"]["x"]) / 2)
-    else:
-        # Walls run E-W — measure N-S extent
-        sorted_walls = sorted(walls, key=lambda w: (w["start_point"]["y"] + w["end_point"]["y"]) / 2)
-
-    if len(sorted_walls) < 2:
-        return None
-
-    wall1 = sorted_walls[0]   # min
-    wall2 = sorted_walls[-1]  # max
-
-    # Find bounding box of all walls to position the dimension line
-    all_x = [w["start_point"]["x"] for w in walls] + [w["end_point"]["x"] for w in walls]
-    all_y = [w["start_point"]["y"] for w in walls] + [w["end_point"]["y"] for w in walls]
-    min_x, max_x = min(all_x), max(all_x)
-    min_y, max_y = min(all_y), max(all_y)
-
-    if orientation == "vertical":
-        # Dimension line runs N-S, placed above (north) of building
-        dim_y = max_y + OFFSET_S1
-        line_start = {"x": min_x - 2, "y": dim_y, "z": 0}
-        line_end   = {"x": max_x + 2, "y": dim_y, "z": 0}
-    else:
-        # Dimension line runs E-W, placed to the left (west) of building
-        dim_x = min_x - OFFSET_S1
-        line_start = {"x": dim_x, "y": min_y - 2, "z": 0}
-        line_end   = {"x": dim_x, "y": max_y + 2, "z": 0}
-
+def _place_dim(e1_id, e2_id, start, end, view_id):
     result = rc.call("revit.create_dimension", {
-        "element1_id": wall1["id"],
-        "element2_id": wall2["id"],
-        "start_point": line_start,
-        "end_point":   line_end,
+        "element1_id": e1_id,
+        "element2_id": e2_id,
+        "start_point": start,
+        "end_point":   end,
         "view_id":     view_id,
     })
+    if not result.get("success"):
+        err = (result.get("error") or "")[:80]
+        if err:
+            print(f"    ⚠️  {err}")
+    return result.get("success", False)
 
-    if result.get("success"):
-        data = result.get("result", {})
-        return data.get("value_string", "placed")
-    else:
-        print(f"    ⚠️  Overall {orientation} failed: {result.get('error', 'unknown error')}")
+
+def _get_building_footprint(state: dict):
+    """Get building XY footprint from rooms bounding box."""
+    rooms = state.get("rooms", [])
+    valid = [r for r in rooms if r.get("area_sf", 0) > 10]
+    if not valid:
         return None
 
+    xs, ys = [], []
+    for r in valid:
+        bb = r.get("bounding_box") or r.get("bbox")
+        if bb:
+            xs += [bb.get("min_x", 0), bb.get("max_x", 0)]
+            ys += [bb.get("min_y", 0), bb.get("max_y", 0)]
+        elif r.get("x") and r.get("y"):
+            xs.append(r["x"])
+            ys.append(r["y"])
 
-def _place_segment_dimensions(walls: list, orientation: str, view_id: int):
-    """Place segment-to-segment dimensions between adjacent parallel walls."""
-    placed = 0
+    if not xs:
+        # Fallback: use wall midpoints to estimate footprint
+        ext_walls = state.get("walls", {}).get("exterior", [])
+        for w in ext_walls:
+            mp = w.get("midpoint")
+            if mp:
+                xs.append(mp["x"])
+                ys.append(mp["y"])
 
-    if orientation == "vertical":
-        sorted_walls = sorted(walls, key=lambda w: (w["start_point"]["x"] + w["end_point"]["x"]) / 2)
-        all_y = [w["start_point"]["y"] for w in walls] + [w["end_point"]["y"] for w in walls]
-        dim_y = max(all_y) + OFFSET_S2
-    else:
-        sorted_walls = sorted(walls, key=lambda w: (w["start_point"]["y"] + w["end_point"]["y"]) / 2)
-        all_x = [w["start_point"]["x"] for w in walls] + [w["end_point"]["x"] for w in walls]
-        dim_x = min(all_x) - OFFSET_S2
+    if not xs:
+        return None
 
-    for i in range(len(sorted_walls) - 1):
-        w1 = sorted_walls[i]
-        w2 = sorted_walls[i + 1]
+    return min(xs), max(xs), min(ys), max(ys)
 
-        if orientation == "vertical":
-            x1 = (w1["start_point"]["x"] + w1["end_point"]["x"]) / 2
-            x2 = (w2["start_point"]["x"] + w2["end_point"]["x"]) / 2
-            if abs(x2 - x1) < 0.5:
-                continue  # Too close, skip
-            line_start = {"x": x1, "y": dim_y, "z": 0}
-            line_end   = {"x": x2, "y": dim_y, "z": 0}
-        else:
-            y1 = (w1["start_point"]["y"] + w1["end_point"]["y"]) / 2
-            y2 = (w2["start_point"]["y"] + w2["end_point"]["y"]) / 2
-            if abs(y2 - y1) < 0.5:
-                continue
-            line_start = {"x": dim_x, "y": y1, "z": 0}
-            line_end   = {"x": dim_x, "y": y2, "z": 0}
 
-        result = rc.call("revit.create_dimension", {
-            "element1_id": w1["id"],
-            "element2_id": w2["id"],
-            "start_point": line_start,
-            "end_point":   line_end,
-            "view_id":     view_id,
-        })
+def _filter_building_walls(walls, footprint):
+    """Remove walls outside the building footprint (outer boundary rectangle)."""
+    min_x, max_x, min_y, max_y = footprint
+    margin = 5.0  # allow 5ft margin beyond room bbox
 
-        if result.get("success"):
-            placed += 1
-        else:
-            print(f"    ⚠️  Segment dim failed: {result.get('error', '')[:60]}")
-
-    return placed
+    result = []
+    for w in walls:
+        sp = w["start_point"]
+        ep = w["end_point"]
+        # Wall midpoint must be within footprint + margin
+        mx = (sp["x"] + ep["x"]) / 2
+        my = (sp["y"] + ep["y"]) / 2
+        if (min_x - margin <= mx <= max_x + margin and
+                min_y - margin <= my <= max_y + margin):
+            result.append(w)
+    return result
 
 
 def _get_dimension_view(state: dict, level_key: str) -> dict | None:
     keywords = {
-        "L1": ["level 1", "l1", "first", "f1"],
+        "L1": ["level 1", "l1", "first", "f1", "floor plan f1", "dimension plan f1"],
         "L2": ["level 2", "l2", "second", "f2"],
     }.get(level_key, [])
 
     floor_plans = state.get("views", {}).get("floor_plans", [])
 
-    # Prefer views with "dimension" or "dim" in the name
+    # Prefer dimension-specific views
     for v in floor_plans:
         name = v.get("name", "").lower()
-        if any(kw in name for kw in keywords):
-            if "dim" in name:
-                return v
+        if any(kw in name for kw in keywords) and "dim" in name:
+            return v
 
-    # Fallback: any matching level view
+    # Fallback: any matching level
     for v in floor_plans:
         name = v.get("name", "").lower()
         if any(kw in name for kw in keywords):
