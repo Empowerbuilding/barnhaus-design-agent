@@ -392,3 +392,55 @@ def get_elements_in_room(room_id: int) -> list:
     if result.get("success"):
         return result.get("result", {}).get("elements", [])
     return []
+
+
+# ─────────────────────────────────────────────
+# DIAGNOSTIC TOOLS
+# ─────────────────────────────────────────────
+
+def try_delete(element_id: int) -> dict:
+    """
+    Attempt to delete an element in a transaction that is ALWAYS rolled back.
+    Captures every Revit error/warning via IFailuresPreprocessor before
+    any popup appears. Returns {can_delete, errors, warnings, summary}.
+    """
+    result = call("revit.try_delete", {"element_id": element_id})
+    if result.get("success"):
+        return result.get("result", result)
+    return {"can_delete": False, "errors": [result.get("error", "unknown")], "warnings": []}
+
+
+def get_dependencies(element_id: int) -> dict:
+    """
+    Call GetDependentElements(null) and return full context per dependent.
+    Shows what’s attached — hosted families, sketch lines, constraints, etc.
+    Returns {dependent_count, dependents: [{id, category, class_name, name, location}]}
+    """
+    result = call("revit.get_dependencies", {"element_id": element_id})
+    if result.get("success"):
+        return result.get("result", result)
+    return {"dependent_count": 0, "dependents": [], "error": result.get("error")}
+
+
+def inspect_roof_sketch(element_id: int) -> dict:
+    """
+    Walk the element’s dependent ModelCurve sketch lines and check each for
+    locked Dimension constraints (alignment locks to wall faces).
+    Returns {sketch_curve_count, constrained_curve_count, diagnosis, sketch_curves}
+    """
+    result = call("revit.inspect_roof_sketch", {"element_id": element_id})
+    if result.get("success"):
+        return result.get("result", result)
+    return {"sketch_curve_count": 0, "constrained_curve_count": 0, "error": result.get("error")}
+
+
+def inspect_element(element_id: int) -> dict:
+    """
+    Deep-dive inspection of a single element: class, category, type, level,
+    location, bounding box, host, joined walls, all instance + type params,
+    and all dependent element IDs.
+    """
+    result = call("revit.inspect_element", {"element_id": element_id})
+    if result.get("success"):
+        return result.get("result", result)
+    return {"error": result.get("error", "unknown")}
