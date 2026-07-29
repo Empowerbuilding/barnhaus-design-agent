@@ -13,6 +13,10 @@ Usage:
     python3 run.py electrical        # Run electrical plan (A108)
     python3 run.py plumbing          # Run plumbing plan (A109)
     python3 run.py all               # Full run: scan → qa → draft1 → draft2 → draft3
+    python3 run.py try_delete <id>   # Dry-run delete — captures Revit error messages, always rolls back
+    python3 run.py deps <id>         # Dependency map — what is attached to this element ID
+    python3 run.py sketch <id>       # Roof sketch inspector — find locked alignment constraints
+    python3 run.py inspect <id>      # Deep element inspection — all params, host, joins, bbox
 """
 
 import sys
@@ -66,7 +70,12 @@ def main():
     elif cmd == "dimensions":
         from tasks.dimensions.dimension_plans import run
         state = scan_project()
-        run(state)
+        run(state, level_key='L1')
+        # Auto-detect 2-story and dimension L2 if it has rooms
+        rooms_l2 = [r for r in state.get('rooms', []) if r.get('area_sf', 0) > 50 and '2' in str(r.get('level', ''))]
+        if rooms_l2:
+            print(f"\n  🏗️  2-story detected ({len(rooms_l2)} rooms on L2) — dimensioning Level 2...")
+            run(state, level_key='L2')
 
     elif cmd == "electrical":
         from tasks.mep.electrical import run_l1, run_l2

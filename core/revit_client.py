@@ -9,10 +9,11 @@ Health:     http://localhost:3000/health
 import requests
 import json
 import time
+import os
 from core.constants import WALL, LEVEL, FACE_TO_ROT, WALL_FACE_TO_FRONT
 
-BRIDGE_URL    = "http://localhost:3000/execute"
-HEALTH_URL    = "http://localhost:3000/health"
+BRIDGE_URL    = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/execute"
+HEALTH_URL    = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/health"
 REQUEST_TIMEOUT = 30  # seconds
 
 DRY_RUN = False  # Set True to preview without touching Revit
