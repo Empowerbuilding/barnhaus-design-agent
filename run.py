@@ -134,6 +134,42 @@ def main():
         from tasks.study_set.study_set import export_study_set
         export_study_set()
 
+    elif cmd == "try_delete":
+        if not flags:
+            print("Usage: python3 run.py try_delete <element_id>")
+            sys.exit(1)
+        from core.revit_client import try_delete
+        import json
+        result = try_delete(int(flags[0]))
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "deps":
+        if not flags:
+            print("Usage: python3 run.py deps <element_id>")
+            sys.exit(1)
+        from core.revit_client import get_dependencies
+        import json
+        result = get_dependencies(int(flags[0]))
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "sketch":
+        if not flags:
+            print("Usage: python3 run.py sketch <element_id>")
+            sys.exit(1)
+        from core.revit_client import inspect_roof_sketch
+        import json
+        result = inspect_roof_sketch(int(flags[0]))
+        print(json.dumps(result, indent=2))
+
+    elif cmd == "inspect":
+        if not flags:
+            print("Usage: python3 run.py inspect <element_id>")
+            sys.exit(1)
+        from core.revit_client import inspect_element
+        import json
+        result = inspect_element(int(flags[0]))
+        print(json.dumps(result, indent=2))
+
     else:
         print(f"Unknown command: {cmd}")
         print(__doc__)
