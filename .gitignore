@@ -13,3 +13,5 @@ training_data/elevation_extractions/
 __pycache__/
 *.pyc
 .env
+.frank_keys.json
+*.env

@@ -17,8 +17,27 @@ import urllib.request
 import urllib.parse
 
 # Frank's Supabase
+# Key loaded from environment or local keys file — never hardcoded
+import os as _os
+
 FRANK_URL = 'https://stlvgflkgqhtxfxuorvf.supabase.co'
-FRANK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bHZnZmxrZ3FodHhmeHVvcnZmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTQ0MDExMCwiZXhwIjoyMDkxMDE2MTEwfQ.nZ3Fu0bw36mp1HMyiCdiuKdFJX8koU9jbuYpvj7f0WM'
+
+def _load_frank_key():
+    # 1. Environment variable (preferred)
+    if _os.environ.get('FRANK_SUPABASE_KEY'):
+        return _os.environ['FRANK_SUPABASE_KEY']
+    # 2. Local keys file (Blueprint workspace)
+    _keys_paths = [
+        '/home/node/.openclaw/workspace/.frank_keys.json',
+        '/home/node/.openclaw/workspace/barnhaus-design-agent/.frank_keys.json',
+    ]
+    for _kp in _keys_paths:
+        if _os.path.exists(_kp):
+            with open(_kp) as _f:
+                return json.load(_f)['frank_supabase_key']
+    raise RuntimeError('FRANK_SUPABASE_KEY not set and no .frank_keys.json found. See Blueprint TOOLS.md.')
+
+FRANK_KEY = _load_frank_key()
 
 FH = {
     'apikey': FRANK_KEY,
