@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-frank_sync.py — Blueprint scans Revit for all trade categories needed by Frank's RFQ system,
-then writes the results to Frank's Supabase takeoffs table.
+frank_sync.py — Blueprint scans Revit and writes all trade takeoffs to Frank's Supabase.
 
 Usage:
   python3 frank_sync.py <project_id>
 
-project_id is Frank's Supabase project UUID.
+Extracts:
+  - Instance counts (doors, windows, plumbing, electrical, HVAC, cabinets, columns, etc.)
+  - Material SF: sheetrock, PBR panels, floor SF, roof SF, ceiling SF (via material quantities)
+  - Wall linear footage by type
 """
 
 import sys
@@ -25,35 +27,35 @@ FH = {
     'Prefer': 'return=representation',
 }
 
-# Categories where we also want total area (SF) in addition to instance count
-AREA_CATEGORIES = {'Walls', 'Roofs', 'Floors', 'Ceilings'}
+# Thickness constants for SF conversion
+THICKNESS = {
+    'floor':   0.333,   # 4" slab
+    'roof':    0.5,     # 6" avg assembly
+    'ceiling': 0.052,   # 5/8" drywall
+    'gypsum':  0.042,   # 1/2" drywall
+    'stucco':  0.073,   # 7/8" stucco
+}
 
-# All categories Frank needs for RFQs, mapped to trade
-FRANK_CATEGORIES = [
-    ('Doors',                   'Doors & Windows'),
-    ('Windows',                 'Doors & Windows'),
-    ('Lighting Fixtures',       'Electrical'),
-    ('Electrical Fixtures',     'Electrical'),
-    ('Plumbing Fixtures',       'Plumbing'),
-    ('Mechanical Equipment',    'HVAC'),
-    ('Casework',                'Cabinets'),
-    ('Roofs',                   'Roofing'),
-    ('Floors',                  'Tile & Flooring'),
-    ('Ceilings',                'Drywall'),
-    ('Structural Columns',      'Welder'),
-    ('Structural Foundations',  'Foundation'),
-    ('Specialty Equipment',     'Appliance Install'),
-    ('Walls',                   'Wood Framing'),
-    ('Generic Models',          'Plumbing'),
+# Count-only categories (instances, not area)
+COUNT_CATEGORIES = [
+    ('Doors',                 'Doors & Windows'),
+    ('Windows',               'Doors & Windows'),
+    ('Lighting Fixtures',     'Electrical'),
+    ('Electrical Fixtures',   'Electrical'),
+    ('Plumbing Fixtures',     'Plumbing'),
+    ('Mechanical Equipment',  'HVAC'),
+    ('Casework',              'Cabinets'),
+    ('Structural Columns',    'Welder'),
+    ('Structural Foundations','Foundation'),
+    ('Specialty Equipment',   'Appliance Install'),
+    ('Generic Models',        'Plumbing'),
 ]
 
-
-def frank_get(path, params=None):
-    url = f'{FRANK_URL}/rest/v1/{path}'
-    if params:
-        url += '?' + urllib.parse.urlencode(params)
-    req = urllib.request.Request(url, headers=FH)
-    return json.loads(urllib.request.urlopen(req, timeout=15).read())
+# Keywords to classify wall/roof materials
+GYPSUM_KEYS   = ['gypsum', 'drywall', 'gwb', 'gyp board', 'sheetrock']
+PBR_KEYS      = ['pbr', 'metal panel', 'standing seam', 'corrugated metal', 'steel panel', 'metal roof', 'galvalume']
+STUCCO_KEYS   = ['stucco', 'plaster', 'eifs', 'dryvit']
+CONCRETE_KEYS = ['concrete', 'cmu', 'masonry', 'block']
 
 
 def frank_post(path, data):
@@ -72,49 +74,63 @@ def frank_delete(path, params):
         print(f'  DELETE warning: {e}')
 
 
+def _call(rc, tool, payload):
+    r = rc.call(tool, payload)
+    if not r.get('success'):
+        return None
+    return r.get('result', {})
+
+
+def _list_elements(rc, category):
+    r = _call(rc, 'revit.list_elements_by_category', {'category': category})
+    if r is None:
+        return []
+    return r.get('elements', r.get('rooms', r.get('items', [])))
+
+
+def _material_quantities(rc, category):
+    """Returns {material_name: volume_cf}"""
+    r = _call(rc, 'revit.calculate_material_quantities', {'category': category})
+    if r is None:
+        return {}
+    return {t['material']: t['volume_cf'] for t in r.get('totals', [])}
+
+
+def _classify_material(mat_name):
+    m = mat_name.lower()
+    if any(k in m for k in GYPSUM_KEYS):   return 'gypsum'
+    if any(k in m for k in PBR_KEYS):      return 'pbr'
+    if any(k in m for k in STUCCO_KEYS):   return 'stucco'
+    if any(k in m for k in CONCRETE_KEYS): return 'concrete'
+    return 'other'
+
+
 def sync_takeoffs(project_id: str) -> int:
-    """Scan all Frank trade categories from Revit and write to Frank's takeoffs table."""
-    import sys
     import os
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from core import revit_client as rc
 
     if not rc.health_check():
-        print('❌ Revit bridge not reachable. Open Revit with the project loaded first.')
+        print('❌ Revit bridge not reachable.')
         sys.exit(1)
 
-    print(f'🔍 Syncing takeoffs for project {project_id}...')
+    doc_info = rc.call('revit.health', {})
+    doc_name = doc_info.get('result', {}).get('active_document', 'unknown') if doc_info.get('success') else 'unknown'
+    print(f'📋 Syncing takeoffs for project {project_id} from "{doc_name}"...\n')
 
-    # Clear existing bridge-sourced takeoffs for this project
     frank_delete('takeoffs', {'project_id': f'eq.{project_id}', 'source': 'eq.revit_bridge'})
 
     rows = []
-    for category, trade in FRANK_CATEGORIES:
-        print(f'  [{trade}] {category}...')
-        raw = rc.call('revit.list_elements_by_category', {'category': category})
-        elements = raw.get('result', {}).get('elements', []) if raw.get('success') else []
 
-        # Count by type; also track area (SF) for area categories
+    # ── 1. COUNT-BASED CATEGORIES ─────────────────────────────────────────
+    for category, trade in COUNT_CATEGORIES:
+        print(f'  [count] {category}...')
+        elements = _list_elements(rc, category)
         by_type = {}
-        area_by_type = {}  # type_name -> total SF
         for el in elements:
-            tname = el.get('type') or el.get('type_name') or el.get('name') or 'Unknown'
+            tname = (el.get('type') or el.get('type_name') or
+                     el.get('family_name') or el.get('name') or 'Unknown')
             by_type[tname] = by_type.get(tname, 0) + 1
-
-            if category in AREA_CATEGORIES:
-                el_id = el.get('id')
-                if el_id:
-                    area_raw = rc.call('revit.get_parameter_value', {
-                        'element_id': el_id,
-                        'parameter_name': 'Area',
-                    })
-                    if area_raw.get('success'):
-                        val = area_raw.get('result')
-                        try:
-                            area_sf = float(str(val).replace(',', '').split()[0]) if val else 0.0
-                            area_by_type[tname] = area_by_type.get(tname, 0.0) + area_sf
-                        except (ValueError, TypeError):
-                            pass
 
         for type_name, count in by_type.items():
             rows.append({
@@ -122,34 +138,145 @@ def sync_takeoffs(project_id: str) -> int:
                 'category':    category,
                 'item_type':   type_name,
                 'quantity':    count,
-                'description': f'{count}x {type_name} — from Revit model',
+                'description': f'{count}x {type_name}',
                 'trade':       trade,
                 'source':      'revit_bridge',
                 'unit':        'EA',
-                'notes':       'Extracted via Revit bridge',
+                'notes':       f'From {doc_name}',
             })
+        print(f'    → {len(elements)} elements, {len(by_type)} types')
 
-        # Add area SF rows for Wall/Roof/Floor/Ceiling types
-        for type_name, total_sf in area_by_type.items():
-            if total_sf > 0:
-                rows.append({
-                    'project_id':  project_id,
-                    'category':    category,
-                    'item_type':   f'{type_name} — Area',
-                    'quantity':    round(total_sf, 1),
-                    'description': f'{round(total_sf, 1)} SF of {type_name} — from Revit model',
-                    'trade':       trade,
-                    'source':      'revit_bridge',
-                    'unit':        'SF',
-                    'notes':       'Area extracted via Revit bridge',
-                })
+    # ── 2. WALLS — linear footage + material SF ──────────────────────────
+    print('  [walls] Linear footage by type...')
+    walls = _list_elements(rc, 'Walls')
+    lf_by_type = {}
+    for w in walls:
+        wtype = w.get('type', w.get('wall_type', 'Unknown'))
+        lf = float(w.get('length_ft', 0) or 0)
+        lf_by_type[wtype] = lf_by_type.get(wtype, 0) + lf
 
-        total = len(elements)
-        area_total = sum(area_by_type.values())
-        area_str = f', {round(area_total, 1)} SF total' if area_total else ''
-        print(f'    → {total} elements, {len(by_type)} types{area_str}')
+    for wtype, lf in lf_by_type.items():
+        rows.append({
+            'project_id':  project_id,
+            'category':    'Walls',
+            'item_type':   wtype,
+            'quantity':    round(lf, 1),
+            'description': f'{round(lf, 1)} LF of {wtype}',
+            'trade':       'Wood Framing',
+            'source':      'revit_bridge',
+            'unit':        'LF',
+            'notes':       f'From {doc_name}',
+        })
+    print(f'    → {len(walls)} walls, {round(sum(lf_by_type.values()), 1)} LF total')
 
-    # Batch insert (Supabase accepts arrays)
+    print('  [walls] Material quantities (sheetrock, PBR, stucco)...')
+    wall_mats = _material_quantities(rc, 'Walls')
+    mat_totals = {}  # class -> {mat_name -> sf}
+    for mat, vol_cf in wall_mats.items():
+        cls = _classify_material(mat)
+        thickness = THICKNESS.get(cls, THICKNESS['gypsum'])
+        sf = vol_cf / thickness
+        if cls not in mat_totals:
+            mat_totals[cls] = {}
+        mat_totals[cls][mat] = mat_totals[cls].get(mat, 0) + sf
+
+    trade_map = {'gypsum': 'Drywall', 'pbr': 'Roofing', 'stucco': 'Stucco / Ext Finish', 'other': 'Wood Framing'}
+    for cls, mats in mat_totals.items():
+        for mat_name, sf in mats.items():
+            label = {'gypsum': 'Sheetrock', 'pbr': 'PBR Metal Panel', 'stucco': 'Stucco', 'concrete': 'Concrete'}.get(cls, cls.title())
+            rows.append({
+                'project_id':  project_id,
+                'category':    'Walls',
+                'item_type':   f'{label} — {mat_name}',
+                'quantity':    round(sf, 0),
+                'description': f'{round(sf, 0):,.0f} SF of {mat_name}',
+                'trade':       trade_map.get(cls, 'Wood Framing'),
+                'source':      'revit_bridge',
+                'unit':        'SF',
+                'notes':       f'Material qty from {doc_name}',
+            })
+    total_gyp = sum(sum(v.values()) for k, v in mat_totals.items() if k == 'gypsum')
+    total_pbr = sum(sum(v.values()) for k, v in mat_totals.items() if k == 'pbr')
+    print(f'    → {round(total_gyp):,} SF gypsum, {round(total_pbr):,} SF PBR/metal')
+
+    # ── 3. ROOFS ─────────────────────────────────────────────────────────
+    print('  [roofs] Material quantities...')
+    roof_mats = _material_quantities(rc, 'Roofs')
+    for mat, vol_cf in roof_mats.items():
+        cls = _classify_material(mat)
+        sf = vol_cf / THICKNESS['roof']
+        label = {'pbr': 'PBR Metal Panel', 'gypsum': 'Roof Sheathing/Gyp'}.get(cls, 'Roof Material')
+        rows.append({
+            'project_id':  project_id,
+            'category':    'Roofs',
+            'item_type':   f'{label} — {mat}',
+            'quantity':    round(sf, 0),
+            'description': f'{round(sf, 0):,.0f} SF of {mat} (roof)',
+            'trade':       'Roofing',
+            'source':      'revit_bridge',
+            'unit':        'SF',
+            'notes':       f'Material qty from {doc_name}',
+        })
+    print(f'    → {len(roof_mats)} roof materials')
+
+    # ── 4. FLOORS ────────────────────────────────────────────────────────
+    print('  [floors] Material quantities...')
+    floor_mats = _material_quantities(rc, 'Floors')
+    for mat, vol_cf in floor_mats.items():
+        sf = vol_cf / THICKNESS['floor']
+        rows.append({
+            'project_id':  project_id,
+            'category':    'Floors',
+            'item_type':   f'Floor — {mat}',
+            'quantity':    round(sf, 0),
+            'description': f'{round(sf, 0):,.0f} SF of {mat} (floor)',
+            'trade':       'Tile & Flooring',
+            'source':      'revit_bridge',
+            'unit':        'SF',
+            'notes':       f'Material qty from {doc_name}',
+        })
+    print(f'    → {len(floor_mats)} floor materials')
+
+    # ── 5. CEILINGS ──────────────────────────────────────────────────────
+    print('  [ceilings] Material quantities...')
+    ceiling_mats = _material_quantities(rc, 'Ceilings')
+    for mat, vol_cf in ceiling_mats.items():
+        sf = vol_cf / THICKNESS['ceiling']
+        rows.append({
+            'project_id':  project_id,
+            'category':    'Ceilings',
+            'item_type':   f'Ceiling — {mat}',
+            'quantity':    round(sf, 0),
+            'description': f'{round(sf, 0):,.0f} SF of {mat} (ceiling)',
+            'trade':       'Drywall',
+            'source':      'revit_bridge',
+            'unit':        'SF',
+            'notes':       f'Material qty from {doc_name}',
+        })
+    print(f'    → {len(ceiling_mats)} ceiling materials')
+
+    # ── 6. ROOMS (area schedule) ─────────────────────────────────────────
+    print('  [rooms] Area schedule...')
+    rooms = _list_elements(rc, 'Rooms')
+    for room in rooms:
+        area = float(room.get('area_sf', 0) or 0)
+        if area < 5:
+            continue
+        name = room.get('name', 'Room')
+        rows.append({
+            'project_id':  project_id,
+            'category':    'Rooms',
+            'item_type':   name,
+            'quantity':    round(area, 0),
+            'description': f'{name}: {round(area, 0):,.0f} SF',
+            'trade':       'General',
+            'source':      'revit_bridge',
+            'unit':        'SF',
+            'notes':       f'From {doc_name}',
+        })
+    print(f'    → {len(rooms)} rooms')
+
+    # ── BATCH INSERT ────────────────────────────────────────────────────
     if rows:
         chunk_size = 50
         inserted = 0
@@ -157,7 +284,9 @@ def sync_takeoffs(project_id: str) -> int:
             chunk = rows[i:i + chunk_size]
             frank_post('takeoffs', chunk)
             inserted += len(chunk)
-        print(f'\n✅ Synced {inserted} takeoff rows to Frank\'s Supabase for project {project_id}')
+        print(f'\n✅ Synced {inserted} takeoff rows for project {project_id}')
+    else:
+        print('\n⚠️ No rows to insert — check Revit model has elements.')
 
     return len(rows)
 
