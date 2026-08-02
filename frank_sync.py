@@ -44,11 +44,17 @@ COUNT_CATEGORIES = [
     ('Electrical Fixtures',   'Electrical'),
     ('Plumbing Fixtures',     'Plumbing'),
     ('Mechanical Equipment',  'HVAC'),
-    ('Casework',              'Cabinets'),
     ('Structural Columns',    'Welder'),
-    ('Structural Foundations','Foundation'),
     ('Specialty Equipment',   'Appliance Install'),
     ('Generic Models',        'Plumbing'),
+    ('Stairs',                'Custom Stairs'),
+]
+
+# Linear-footage categories (sum length_ft per element)
+LF_CATEGORIES = [
+    ('Railings',  'Metal Railing'),
+    ('Gutters',   'Gutters / Downspouts'),
+    ('Fascia',    'Fascia / Trim'),
 ]
 
 # Keywords to classify wall/roof materials
@@ -122,6 +128,36 @@ def sync_takeoffs(project_id: str) -> int:
 
     rows = []
 
+    # ── 0. FOUNDATION SF ─────────────────────────────────────────────────
+    print('  [foundation] SF from material quantities...')
+    found_mats = _material_quantities(rc, 'Structural Foundations')
+    found_sf_total = 0
+    for mat, vol_cf in found_mats.items():
+        sf = vol_cf / 0.417  # ~5" avg slab thickness
+        found_sf_total += sf
+        rows.append({
+            'project_id':  project_id, 'category': 'Structural Foundations',
+            'item_type':   f'Foundation Slab — {mat}',
+            'quantity':    round(sf, 0),
+            'description': f'{round(sf, 0):,.0f} SF concrete slab',
+            'trade':       'Foundation', 'source': 'revit_bridge',
+            'unit':        'SF', 'notes': f'From {doc_name} — vol÷5" thickness',
+        })
+    # Also count instances as EA
+    found_els = _list_elements(rc, 'Structural Foundations')
+    for_type = {}
+    for el in found_els:
+        t = el.get('type') or el.get('name') or 'Unknown'
+        for_type[t] = for_type.get(t, 0) + 1
+    for t, c in for_type.items():
+        rows.append({
+            'project_id':  project_id, 'category': 'Structural Foundations',
+            'item_type':   t, 'quantity': c,
+            'description': f'{c}x {t}', 'trade': 'Foundation',
+            'source':      'revit_bridge', 'unit': 'EA', 'notes': f'From {doc_name}',
+        })
+    print(f'    → {round(found_sf_total):,} SF, {len(found_els)} foundation elements')
+
     # ── 1. COUNT-BASED CATEGORIES ─────────────────────────────────────────
     for category, trade in COUNT_CATEGORIES:
         print(f'  [count] {category}...')
@@ -145,6 +181,29 @@ def sync_takeoffs(project_id: str) -> int:
                 'notes':       f'From {doc_name}',
             })
         print(f'    → {len(elements)} elements, {len(by_type)} types')
+
+    # ── 1b. LINEAR-FOOTAGE CATEGORIES ────────────────────────────────────
+    for category, trade in LF_CATEGORIES:
+        print(f'  [LF] {category}...')
+        elements = _list_elements(rc, category)
+        lf_by_type = {}
+        for el in elements:
+            tname = el.get('type') or el.get('type_name') or el.get('name') or 'Unknown'
+            lf = float(el.get('length_ft', 0) or 0)
+            lf_by_type[tname] = lf_by_type.get(tname, 0) + lf
+        for tname, lf in lf_by_type.items():
+            rows.append({
+                'project_id':  project_id,
+                'category':    category,
+                'item_type':   tname,
+                'quantity':    round(lf, 1),
+                'description': f'{round(lf, 1)} LF of {tname}',
+                'trade':       trade,
+                'source':      'revit_bridge',
+                'unit':        'LF',
+                'notes':       f'From {doc_name}',
+            })
+        print(f'    → {len(elements)} elements, {round(sum(lf_by_type.values()), 1)} LF total')
 
     # ── 2. WALLS — linear footage + material SF ──────────────────────────
     print('  [walls] Linear footage by type...')
@@ -275,6 +334,47 @@ def sync_takeoffs(project_id: str) -> int:
             'notes':       f'From {doc_name}',
         })
     print(f'    → {len(rooms)} rooms')
+
+    # ── 7. CASEWORK LF (cabinets by linear footage) ────────────────────
+    print('  [casework] Cabinet LF from bounding boxes...')
+    casework_els = _list_elements(rc, 'Casework')
+    cab_lf_by_type = {}
+    for el in casework_els:
+        tname = el.get('type') or el.get('type_name') or el.get('name') or 'Unknown'
+        # Use bounding box width as LF proxy, fall back to length_ft
+        lf = float(el.get('length_ft', 0) or el.get('width_ft', 0) or 0)
+        if lf == 0:
+            lf = 2.0  # default 2 LF if no geometry returned
+        cab_lf_by_type[tname] = cab_lf_by_type.get(tname, 0) + lf
+    for tname, lf in cab_lf_by_type.items():
+        rows.append({
+            'project_id':  project_id, 'category': 'Casework',
+            'item_type':   f'{tname} — LF',
+            'quantity':    round(lf, 1),
+            'description': f'{round(lf, 1)} LF of {tname}',
+            'trade':       'Cabinets', 'source': 'revit_bridge',
+            'unit':        'LF', 'notes': f'From {doc_name}',
+        })
+    print(f'    → {len(casework_els)} casework elements, {round(sum(cab_lf_by_type.values()), 1)} LF total')
+
+    # ── 8. COUNTERTOP SF (casework material quantities) ────────────────
+    print('  [countertops] SF from casework materials...')
+    counter_mats = _material_quantities(rc, 'Casework')
+    counter_sf_total = 0
+    for mat, vol_cf in counter_mats.items():
+        mat_lower = mat.lower()
+        if any(k in mat_lower for k in ['counter', 'granite', 'quartz', 'marble', 'stone top', 'laminate']):
+            sf = vol_cf / (1.5 / 12)  # ~1.5" countertop thickness
+            counter_sf_total += sf
+            rows.append({
+                'project_id':  project_id, 'category': 'Countertops',
+                'item_type':   f'Countertop — {mat}',
+                'quantity':    round(sf, 0),
+                'description': f'{round(sf, 0):,.0f} SF of {mat}',
+                'trade':       'Countertops', 'source': 'revit_bridge',
+                'unit':        'SF', 'notes': f'From {doc_name}',
+            })
+    print(f'    → {round(counter_sf_total):,} SF countertop material')
 
     # ── BATCH INSERT ────────────────────────────────────────────────────
     if rows:
