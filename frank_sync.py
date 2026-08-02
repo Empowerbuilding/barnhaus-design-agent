@@ -129,21 +129,34 @@ def sync_takeoffs(project_id: str) -> int:
     rows = []
 
     # ── 0. FOUNDATION SF ─────────────────────────────────────────────────
-    print('  [foundation] SF from material quantities...')
-    found_mats = _material_quantities(rc, 'Structural Foundations')
-    found_sf_total = 0
-    for mat, vol_cf in found_mats.items():
-        sf = vol_cf / 0.417  # ~5" avg slab thickness
-        found_sf_total += sf
-        rows.append({
-            'project_id':  project_id, 'category': 'Structural Foundations',
-            'item_type':   f'Foundation Slab — {mat}',
-            'quantity':    round(sf, 0),
-            'description': f'{round(sf, 0):,.0f} SF concrete slab',
-            'trade':       'Foundation', 'source': 'revit_bridge',
-            'unit':        'SF', 'notes': f'From {doc_name} — vol÷5" thickness',
-        })
-    print(f'    → {round(found_sf_total):,} SF foundation')
+    print('  [foundation] SF from element Area parameter...')
+    found_els = _list_elements(rc, 'Structural Foundations')
+    found_sf_by_type = {}
+    for el in found_els:
+        el_id = el.get('id')
+        tname = el.get('type') or el.get('type_name') or el.get('name') or 'Foundation Slab'
+        sf = 0.0
+        if el_id:
+            area_raw = _call(rc, 'revit.get_parameter_value', {'element_id': el_id, 'parameter_name': 'Area'})
+            if area_raw:
+                val = area_raw.get('value')
+                try:
+                    sf = float(str(val).replace(',', '').split()[0]) if val else 0.0
+                except (ValueError, TypeError):
+                    sf = 0.0
+        found_sf_by_type[tname] = found_sf_by_type.get(tname, 0.0) + sf
+    found_sf_total = sum(found_sf_by_type.values())
+    for tname, sf in found_sf_by_type.items():
+        if sf > 0:
+            rows.append({
+                'project_id':  project_id, 'category': 'Structural Foundations',
+                'item_type':   tname,
+                'quantity':    round(sf, 0),
+                'description': f'{round(sf, 0):,.0f} SF concrete slab',
+                'trade':       'Foundation', 'source': 'revit_bridge',
+                'unit':        'SF', 'notes': f'From {doc_name} — Area parameter',
+            })
+    print(f'    → {round(found_sf_total):,} SF foundation ({len(found_els)} elements)')
 
     # ── 1. COUNT-BASED CATEGORIES ─────────────────────────────────────────
     for category, trade in COUNT_CATEGORIES:
