@@ -124,6 +124,27 @@ def sync_takeoffs(project_id: str) -> int:
     doc_name = doc_info.get('result', {}).get('active_document', 'unknown') if doc_info.get('success') else 'unknown'
     print(f'📋 Syncing takeoffs for project {project_id} from "{doc_name}"...\n')
 
+    # ── PRE-SYNC SANITY CHECK ──────────────────────────────────────────────
+    print('Pre-sync model health check:')
+    warnings = []
+    check_cats = ['Walls', 'Roofs', 'Floors', 'Doors', 'Windows', 'Rooms']
+    for cat in check_cats:
+        els = _list_elements(rc, cat)
+        n = len(els)
+        flag = ''
+        if cat == 'Rooms' and n > 20:
+            flag = f' ⚠️  UNUSUAL — {n} rooms likely includes phantom/separator rooms. Verify before sync.'
+            warnings.append(f'Rooms: {n} (high — possible phantom rooms)')
+        elif cat == 'Walls' and n < 4:
+            flag = f' ⚠️  LOW — model may be empty'
+            warnings.append(f'Walls: {n} (low)')
+        print(f'  {cat:<20} {n:>4} elements{flag}')
+    if warnings:
+        print(f'\n⚠️  Warnings: {" | ".join(warnings)}')
+    else:
+        print('  ✅ All counts look reasonable')
+    print()
+
     frank_delete('takeoffs', {'project_id': f'eq.{project_id}', 'source': 'eq.revit_bridge'})
 
     rows = []
