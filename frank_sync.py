@@ -143,20 +143,7 @@ def sync_takeoffs(project_id: str) -> int:
             'trade':       'Foundation', 'source': 'revit_bridge',
             'unit':        'SF', 'notes': f'From {doc_name} — vol÷5" thickness',
         })
-    # Also count instances as EA
-    found_els = _list_elements(rc, 'Structural Foundations')
-    for_type = {}
-    for el in found_els:
-        t = el.get('type') or el.get('name') or 'Unknown'
-        for_type[t] = for_type.get(t, 0) + 1
-    for t, c in for_type.items():
-        rows.append({
-            'project_id':  project_id, 'category': 'Structural Foundations',
-            'item_type':   t, 'quantity': c,
-            'description': f'{c}x {t}', 'trade': 'Foundation',
-            'source':      'revit_bridge', 'unit': 'EA', 'notes': f'From {doc_name}',
-        })
-    print(f'    → {round(found_sf_total):,} SF, {len(found_els)} foundation elements')
+    print(f'    → {round(found_sf_total):,} SF foundation')
 
     # ── 1. COUNT-BASED CATEGORIES ─────────────────────────────────────────
     for category, trade in COUNT_CATEGORIES:
