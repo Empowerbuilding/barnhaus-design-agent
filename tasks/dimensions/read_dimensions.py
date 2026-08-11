@@ -66,14 +66,37 @@ def run(keyword: str = None, save: bool = True) -> dict:
 
     report = {"filter": keyword, "views": [], "total_dimensions": 0}
 
-    for view_id, label in targets.items():
-        dims = rc.list_dimensions(view_id=view_id)
-        if not dims:
-            continue
+    # Detect Phase 2 DLL support once (detailed refs) — fall back gracefully
+    probe = rc.list_dimensions_detailed(view_id=next(iter(targets)))
+    detailed_ok = probe.get("available", False)
+    if not detailed_ok:
+        print("   ℹ️  Installed bridge DLL predates detailed reads — using basic mode")
+        print("      (values only; run the Revit Bridge Updater to get reference detail)")
 
-        entries = []
-        for d in dims:
-            entries.append({
+    first = True
+    for view_id, label in targets.items():
+        if detailed_ok:
+            data = probe if first else rc.list_dimensions_detailed(view_id=view_id)
+            dims = data.get("dimensions", [])
+            entries = []
+            for d in dims:
+                segs = d.get("segments") or []
+                value_str = d.get("value_string") or " + ".join(
+                    s.get("value_string") or "?" for s in segs) or None
+                entries.append({
+                    "id":            d.get("id"),
+                    "value_string":  value_str,
+                    "value_ft":      d.get("value"),
+                    "type":          d.get("type"),
+                    "shape":         d.get("shape"),
+                    "segment_count": d.get("segment_count", 0),
+                    "segments":      segs,
+                    "references":    d.get("references", []),
+                    "line":          d.get("line"),
+                })
+        else:
+            dims = rc.list_dimensions(view_id=view_id)
+            entries = [{
                 "id":           d.get("id"),
                 "value_string": d.get("dim_value_string"),
                 "value_ft":     d.get("dim_value"),
@@ -83,8 +106,12 @@ def run(keyword: str = None, save: bool = True) -> dict:
                     "end_x":   d.get("end_x"),   "end_y":   d.get("end_y"),
                     "length_ft": d.get("length_ft"),
                 },
-                "references": "phase2",  # attachment detail needs DLL upgrade
-            })
+                "references": "upgrade DLL for reference detail",
+            } for d in dims]
+        first = False
+
+        if not entries:
+            continue
 
         report["views"].append({"view_id": view_id, "label": label,
                                 "dimension_count": len(entries), "dimensions": entries})
@@ -92,8 +119,15 @@ def run(keyword: str = None, save: bool = True) -> dict:
 
         print(f"\n   {label} — {len(entries)} dimensions:")
         for e in entries[:30]:
-            vs = e["value_string"] or (f"{e['value_ft']:.2f} ft" if e["value_ft"] else "?")
-            print(f"     • {vs}  (id {e['id']}, {e['type'] or 'Linear'})")
+            vs = e["value_string"] or (f"{e['value_ft']:.2f} ft" if e.get("value_ft") else "?")
+            refs = e.get("references")
+            if isinstance(refs, list) and refs:
+                targets_desc = ", ".join(
+                    f"{r.get('category') or '?'}:{r.get('attached_to') or r.get('reference_type','?')}"
+                    for r in refs[:4] if isinstance(r, dict))
+                print(f"     • {vs}  (id {e['id']}) → {targets_desc}")
+            else:
+                print(f"     • {vs}  (id {e['id']}, {e.get('type') or 'Linear'})")
         if len(entries) > 30:
             print(f"     ... +{len(entries) - 30} more")
 

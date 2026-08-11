@@ -17,6 +17,7 @@ Usage:
     python3 run.py qa-electrical     # Electrical fixture label QA — flag blank Type Marks
     python3 run.py read-dims [kw]    # READ existing dimensions (optionally filter views/sheets by keyword)
     python3 run.py assemble-sheets   # Match views → empty sheets (dry run; add --apply to place)
+    python3 run.py export-image <view_id> [out.png]  # Export view/sheet image through the tunnel (vision QA)
     python3 run.py try_delete <id>   # Dry-run delete — captures Revit error messages, always rolls back
     python3 run.py deps <id>         # Dependency map — what is attached to this element ID
     python3 run.py sketch <id>       # Roof sketch inspector — find locked alignment constraints
@@ -152,6 +153,14 @@ def main():
     elif cmd == "assemble-sheets":
         from tasks.sheets.assemble_sheets import run as assemble
         assemble(apply="--apply" in flags)
+
+    elif cmd == "export-image":
+        if not flags:
+            print("Usage: python3 run.py export-image <view_id> [out.png]")
+            sys.exit(1)
+        from core.revit_client import save_view_image
+        out = flags[1] if len(flags) > 1 else f"view_{flags[0]}.png"
+        save_view_image(int(flags[0]), out)
 
     elif cmd == "study-set":
         from tasks.study_set.study_set import run as study_run

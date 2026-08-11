@@ -488,10 +488,67 @@ def list_dimensions(view_id: int = None) -> list:
     view_id scopes to a single view. Each entry carries:
       dim_value (raw ft), dim_value_string (e.g. 12' - 6\"),
       start/end coords + length_ft of the dimension line.
-    Reference/target detail (which wall layer, core vs finish) requires the
-    Phase 2 DLL command — not available yet.
+    For per-reference attachment detail use list_dimensions_detailed().
     """
     return list_elements_by_category("Dimensions", view_id=view_id)
+
+
+def list_dimensions_detailed(view_id: int = None) -> dict:
+    """
+    Phase 2 detailed dimension read via revit.list_dimensions:
+    values + multi-segment strings + per-reference targets — element,
+    category, and for walls WHICH plane the dim grabs (exterior_finish_face,
+    core_face_exterior, centerline, ...).
+    Returns {available, dimensions, count}. available=False means the
+    installed DLL predates Phase 2 — fall back to list_dimensions().
+    """
+    payload = {}
+    if view_id is not None:
+        payload["view_id"] = view_id
+    result = call("revit.list_dimensions", payload)
+    if result.get("success"):
+        out = result.get("result", {})
+        out["available"] = True
+        return out
+    err = (result.get("error") or "").lower()
+    stale = "unknown" in err or "not supported" in err or "unrecognized" in err
+    return {"available": not stale and False, "dimensions": [], "count": 0,
+            "error": result.get("error")}
+
+
+def export_view_image_base64(view_id: int, resolution: int = 1500,
+                             image_format: str = "PNG") -> dict:
+    """
+    Phase 2: export a view/sheet and get the image bytes back through the
+    tunnel in one call. Returns {view_name, size_bytes, base64, ...}.
+    """
+    result = call("revit.export_view_image_base64", {
+        "view_id": view_id, "resolution": resolution, "format": image_format,
+    })
+    if result.get("success"):
+        return result.get("result", {})
+    return {"error": result.get("error", "unknown")}
+
+
+def save_view_image(view_id: int, out_path: str, resolution: int = 1500) -> str | None:
+    """Export a view/sheet image and save it locally. Returns local path or None."""
+    import base64 as _b64
+    data = export_view_image_base64(view_id, resolution=resolution)
+    if not data.get("base64"):
+        print(f"❌ Image export failed: {data.get('error', 'no data')}")
+        return None
+    with open(out_path, "wb") as f:
+        f.write(_b64.b64decode(data["base64"]))
+    print(f"🖼️  Saved {data.get('view_name')} → {out_path} ({data.get('size_bytes',0)//1024} KB)")
+    return out_path
+
+
+def get_file_base64(path: str, max_bytes: int = 20 * 1024 * 1024) -> dict:
+    """Fetch a file from the bridge host (restricted to RevitMCP/temp dirs)."""
+    result = call("revit.get_file_base64", {"path": path, "max_bytes": max_bytes})
+    if result.get("success"):
+        return result.get("result", {})
+    return {"error": result.get("error", "unknown")}
 
 
 # ─────────────────────────────────────────────
