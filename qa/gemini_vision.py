@@ -37,11 +37,16 @@ def _find_key() -> str:
 
 
 def ask_image(image_path: str, prompt: str, model: str = DEFAULT_MODEL,
-              retries: int = 2) -> str:
+              retries: int = 2, json_mode: bool = False) -> str:
     """Send one image + prompt to Gemini, return text response."""
     key = _find_key()
     with open(image_path, "rb") as f:
         img_b64 = base64.b64encode(f.read()).decode()
+
+    gen_cfg = {"temperature": 0.1, "maxOutputTokens": 8192}
+    if json_mode:
+        # Force structured output — prevents thinking-mode prose eating the JSON
+        gen_cfg["responseMimeType"] = "application/json"
 
     body = {
         "contents": [{
@@ -50,7 +55,7 @@ def ask_image(image_path: str, prompt: str, model: str = DEFAULT_MODEL,
                 {"text": prompt},
             ]
         }],
-        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 2048},
+        "generationConfig": gen_cfg,
     }
 
     last_err = None
@@ -73,7 +78,7 @@ def ask_image(image_path: str, prompt: str, model: str = DEFAULT_MODEL,
 
 def ask_image_json(image_path: str, prompt: str, model: str = DEFAULT_MODEL) -> dict | list:
     """Like ask_image but expects/extracts a JSON payload from the reply."""
-    text = ask_image(image_path, prompt, model=model)
+    text = ask_image(image_path, prompt, model=model, json_mode=True)
     # Strip markdown fences if present
     m = re.search(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)
     raw = m.group(1) if m else text
