@@ -19,6 +19,8 @@ Usage:
     python3 run.py assemble-sheets   # Match views → empty sheets (dry run; add --apply to place)
     python3 run.py export-image <view_id> [out.png]  # Export view/sheet image through the tunnel (vision QA)
     python3 run.py export-tiles <view_id> [out_dir]  # High-res export sliced into vision-ready tiles (sheet QA)
+    python3 run.py qa-visual [filter] [--max N]  # Batch vision QA: every populated sheet → tiles → findings report
+    python3 run.py qa-dims [keyword]  # Dimension consistency QA (mixed planes, line-anchored, duplicates)
     python3 run.py try_delete <id>   # Dry-run delete — captures Revit error messages, always rolls back
     python3 run.py deps <id>         # Dependency map — what is attached to this element ID
     python3 run.py sketch <id>       # Roof sketch inspector — find locked alignment constraints
@@ -170,6 +172,19 @@ def main():
         from qa.visual_qa import export_tiles
         out_dir = flags[1] if len(flags) > 1 else "exports"
         export_tiles(int(flags[0]), out_dir)
+
+    elif cmd == "qa-visual":
+        from qa.visual_qa import run_visual_qa
+        pos = [f for f in flags if not f.startswith("--")]
+        max_sheets = None
+        if "--max" in flags:
+            try: max_sheets = int(flags[flags.index("--max") + 1])
+            except (IndexError, ValueError): pass
+        run_visual_qa(pos[0] if pos else None, max_sheets=max_sheets)
+
+    elif cmd == "qa-dims":
+        from qa.dims_qa import run as dims_qa
+        dims_qa(flags[0] if flags else None)
 
     elif cmd == "study-set":
         from tasks.study_set.study_set import run as study_run
