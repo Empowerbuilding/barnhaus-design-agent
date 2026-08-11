@@ -101,14 +101,29 @@ def export_tiles(view_id: int, out_dir: str = "exports") -> dict:
 # BATCH VISUAL QA — Phase 3
 # ────────────────────────────────────────────────────────────
 
-def run_visual_qa(sheet_filter: str = None, max_sheets: int = None) -> dict:
+REPORT_PATH = "visual_qa_report.json"
+
+
+def _save_report(report: dict):
+    import json
+    tmp = REPORT_PATH + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(report, f, indent=2)
+    os.replace(tmp, REPORT_PATH)
+
+
+def run_visual_qa(sheet_filter: str = None, max_sheets: int = None,
+                  fresh: bool = False) -> dict:
     """
     Export every populated sheet → tiles → Gemini vision pass per tile →
     aggregated report. The agent only reads the final report, not 300 tiles.
 
+    Report is saved INCREMENTALLY after every sheet, and reruns RESUME:
+    sheets already in visual_qa_report.json are skipped unless fresh=True.
+
     sheet_filter: substring match on sheet number or name (e.g. "A104", "dimension")
     """
-    import shutil
+    import json
     from qa.gemini_vision import ask_image_json
 
     sheets = rc.list_sheets()
@@ -125,10 +140,27 @@ def run_visual_qa(sheet_filter: str = None, max_sheets: int = None) -> dict:
         print("   No matching populated sheets.")
         return {"sheets": []}
 
+    # Resume support — skip sheets already analyzed
+    report = {"sheets": [], "total_findings": 0}
+    if not fresh and os.path.exists(REPORT_PATH):
+        try:
+            prev = json.load(open(REPORT_PATH))
+            done = {s.get("sheet") for s in prev.get("sheets", []) if not s.get("error")}
+            if done:
+                report = prev
+                before = len(populated)
+                populated = [s for s in populated if s["sheet_number"] not in done]
+                print(f"   ↩️  Resuming — {before - len(populated)} sheet(s) already in report, "
+                      f"{len(populated)} remaining")
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    if not populated:
+        print("   ✅ All requested sheets already analyzed — report is complete.")
+        return report
+
     print(f"\n🔎 Visual QA — {len(populated)} sheet(s): "
           f"{', '.join(s['sheet_number'] for s in populated)}")
-
-    report = {"sheets": [], "total_findings": 0}
 
     for s in populated:
         num, name, sid = s["sheet_number"], s["sheet_name"], s["id"]
@@ -187,14 +219,15 @@ def run_visual_qa(sheet_filter: str = None, max_sheets: int = None) -> dict:
                                  "finding_count": len(deduped), "findings": deduped})
         report["total_findings"] += len(deduped)
 
+        # Persist after EVERY sheet — a killed run loses nothing
+        _save_report(report)
+
         # Clean tiles after analysis — keep only the overview per sheet
         for t in tiled["tiles"]:
             try: os.remove(t["path"])
             except OSError: pass
 
-    with open("visual_qa_report.json", "w") as f:
-        import json
-        json.dump(report, f, indent=2)
+    _save_report(report)
 
     print(f"\n══ Visual QA complete — {report['total_findings']} findings "
           f"across {len(report['sheets'])} sheets ══")
