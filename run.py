@@ -18,6 +18,7 @@ Usage:
     python3 run.py read-dims [kw]    # READ existing dimensions (optionally filter views/sheets by keyword)
     python3 run.py assemble-sheets   # Match views → empty sheets (dry run; add --apply to place)
     python3 run.py export-image <view_id> [out.png]  # Export view/sheet image through the tunnel (vision QA)
+    python3 run.py export-tiles <view_id> [out_dir]  # High-res export sliced into vision-ready tiles (sheet QA)
     python3 run.py try_delete <id>   # Dry-run delete — captures Revit error messages, always rolls back
     python3 run.py deps <id>         # Dependency map — what is attached to this element ID
     python3 run.py sketch <id>       # Roof sketch inspector — find locked alignment constraints
@@ -160,7 +161,15 @@ def main():
             sys.exit(1)
         from core.revit_client import save_view_image
         out = flags[1] if len(flags) > 1 else f"view_{flags[0]}.png"
-        save_view_image(int(flags[0]), out)
+        save_view_image(int(flags[0]), out, resolution=3000)
+
+    elif cmd == "export-tiles":
+        if not flags:
+            print("Usage: python3 run.py export-tiles <view_id> [out_dir]")
+            sys.exit(1)
+        from qa.visual_qa import export_tiles
+        out_dir = flags[1] if len(flags) > 1 else "exports"
+        export_tiles(int(flags[0]), out_dir)
 
     elif cmd == "study-set":
         from tasks.study_set.study_set import run as study_run
