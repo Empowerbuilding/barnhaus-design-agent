@@ -178,11 +178,18 @@ def _scan_rooms(state: dict):
             if rb_res.get("success") and isinstance(rb_res.get("result"), dict):
                 boundary_wall_ids = rb_res["result"].get("adjacent_wall_ids", [])
 
+        # Placed = has a computed area. Unplaced/phantom rooms (auto-created by
+        # room separators, deleted-but-not-removed, generic "Room" ghosts) have
+        # area 0 and pollute counts — track them but keep them out of summaries.
+        is_placed = area_sf > 0
+
         rooms.append({
             "id":                eid,
             "name":              name,
             "area_sf":           area_sf,
             "level":             level,
+            "is_placed":         is_placed,
+            "is_phantom":        (not is_placed) or is_unnamed,
             "bbox":              bbox,
             "width_ft":          bbox["width_ft"] if bbox else 0,
             "depth_ft":          bbox["depth_ft"] if bbox else 0,
@@ -190,8 +197,13 @@ def _scan_rooms(state: dict):
         })
 
     state["rooms"] = rooms
-    room_names = [r["name"] for r in rooms]
-    print(f"    {len(rooms)} rooms: {', '.join(room_names)}")
+    placed   = [r for r in rooms if r["is_placed"]]
+    unplaced = [r for r in rooms if not r["is_placed"]]
+    room_names = [r["name"] for r in placed]
+    print(f"    {len(placed)} placed rooms: {', '.join(room_names[:20])}")
+    if unplaced:
+        print(f"    ⚠️  {len(unplaced)} unplaced/phantom room elements (area 0) — excluded from counts. "
+              f"Likely room-separator ghosts; consider cleanup.")
 
 
 def _scan_walls(state: dict):
@@ -257,6 +269,7 @@ def _scan_doors(state: dict):
 
         family_name = d.get("name", "")
         type_name   = d.get("type", "")
+        type_mark   = ""
         width_ft    = 0.0
         height_ft   = 0.0
 
@@ -274,6 +287,8 @@ def _scan_doors(state: dict):
                 elif pname == "Height":
                     try: height_ft = round(float(p.get("value", 0)), 3)
                     except: pass
+                elif pname == "Type Mark":
+                    type_mark = p.get("value", "") or ""
 
         bbox = None
         if bb_res.get("success") and bb_res.get("result", {}).get("has_bbox"):
@@ -283,6 +298,7 @@ def _scan_doors(state: dict):
             "id":          eid,
             "family_name": family_name,
             "type_name":   type_name,
+            "type_mark":   type_mark,
             "width_ft":    width_ft,
             "height_ft":   height_ft,
             "width_in":    round(width_ft * 12, 1),
@@ -319,6 +335,7 @@ def _scan_windows(state: dict):
 
         family_name = w.get("name", "")
         type_name   = w.get("type", "")
+        type_mark   = ""
         width_ft    = 0.0
         height_ft   = 0.0
         sill_ft     = 0.0
@@ -340,6 +357,8 @@ def _scan_windows(state: dict):
                 elif pname == "Sill Height":
                     try: sill_ft = round(float(p.get("value", 0)), 3)
                     except: pass
+                elif pname == "Type Mark":
+                    type_mark = p.get("value", "") or ""
 
         bbox = None
         if bb_res.get("success") and bb_res.get("result", {}).get("has_bbox"):
@@ -349,6 +368,7 @@ def _scan_windows(state: dict):
             "id":          eid,
             "family_name": family_name,
             "type_name":   type_name,
+            "type_mark":   type_mark,
             "width_ft":    width_ft,
             "height_ft":   height_ft,
             "sill_ft":     sill_ft,
@@ -473,10 +493,12 @@ def _build_summary(state: dict) -> dict:
     views      = state.get("views", {})
     warnings   = state.get("warnings", [])
 
-    room_names = [r["name"] for r in rooms]
+    placed_rooms   = [r for r in rooms if r.get("is_placed", r.get("area_sf", 0) > 0)]
+    unplaced_rooms = [r for r in rooms if not r.get("is_placed", r.get("area_sf", 0) > 0)]
+    room_names = [r["name"] for r in placed_rooms]
     level_count = len([l for l in levels if "roof" not in l.get("name","").lower()])
 
-    total_sf = sum(r["area_sf"] for r in rooms if r["area_sf"] > 0)
+    total_sf = sum(r["area_sf"] for r in placed_rooms)
 
     empty_sheets = [num for num, s in sheets.items() if not s["has_content"]]
 
@@ -493,7 +515,8 @@ def _build_summary(state: dict) -> dict:
         "level_count":     level_count,
         "is_two_story":    level_count >= 2,
         "is_three_story":  level_count >= 3,
-        "room_count":      len(rooms),
+        "room_count":      len(placed_rooms),
+        "unplaced_room_count": len(unplaced_rooms),
         "room_names":      room_names,
         "total_sf":        round(total_sf, 0),
         "door_count":      len(state.get("doors", [])),
@@ -515,8 +538,10 @@ def _print_summary(state: dict):
     print(f"  Path:    {doc.get('path','')}")
     print("═"*55)
     print(f"  Stories:  {s['level_count']}")
-    print(f"  Rooms:    {s['room_count']}  ({s['total_sf']:.0f} SF total)")
-    print(f"            {', '.join(s['room_names'])}")
+    unplaced = s.get('unplaced_room_count', 0)
+    unplaced_note = f"  [+{unplaced} unplaced/phantom — excluded]" if unplaced else ""
+    print(f"  Rooms:    {s['room_count']} placed  ({s['total_sf']:.0f} SF total){unplaced_note}")
+    print(f"            {', '.join(s['room_names'][:20])}")
     print(f"  Doors:    {s['door_count']}   Windows: {s['window_count']}")
     print(f"  Sheets:   {s['sheet_count']} total — {len(s['empty_sheets'])} empty ({', '.join(s['empty_sheets'])})")
     print(f"  Schedules:{s['schedule_count']}   Sections: {s['section_count']}")

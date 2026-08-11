@@ -395,6 +395,106 @@ def get_elements_in_room(room_id: int) -> list:
 
 
 # ─────────────────────────────────────────────
+# GENERIC QUERIES (wrap existing DLL commands)
+# ─────────────────────────────────────────────
+
+def list_elements_by_category(category: str, view_id: int = None) -> list:
+    """
+    Generic category query. Optional view_id scopes results to elements
+    visible in that view (supported by the bridge since Aug 2026 build).
+    Returns list of {id, name, category, type, start_x/y, end_x/y,
+    length_ft, level, area_sf, dim_value, dim_value_string}.
+    """
+    payload = {"category": category}
+    if view_id is not None:
+        payload["view_id"] = view_id
+    result = call("revit.list_elements_by_category", payload)
+    if result.get("success"):
+        return result.get("result", {}).get("elements", [])
+    return []
+
+
+def get_type_parameters(element_id: int) -> dict:
+    """All type parameters for an element. Returns {type_name, type_family, parameters: [...]}"""
+    result = call("revit.get_type_parameters", {"element_id": element_id})
+    if result.get("success"):
+        return result.get("result", {})
+    return {}
+
+
+def get_type_param_map(element_id: int) -> dict:
+    """Type parameters as a simple {name: value} dict."""
+    info = get_type_parameters(element_id)
+    return {p.get("name"): p.get("value") for p in info.get("parameters", [])}
+
+
+def get_parameter_value(element_id: int, parameter_name: str):
+    """Read a single instance parameter value (or None)."""
+    result = call("revit.get_parameter_value",
+                  {"element_id": element_id, "parameter_name": parameter_name})
+    if result.get("success"):
+        return (result.get("result") or {}).get("value")
+    return None
+
+
+def get_element_bounding_box(element_id: int) -> dict:
+    result = call("revit.get_element_bounding_box", {"element_id": element_id})
+    if result.get("success"):
+        return result.get("result", {})
+    return {}
+
+
+def get_sheet_info(sheet_id: int) -> dict:
+    """Sheet detail incl. viewports: [{viewport_id, view_id, view_name}]."""
+    result = call("revit.get_sheet_info", {"sheet_id": sheet_id})
+    if result.get("success"):
+        return result.get("result", {})
+    return {}
+
+
+def get_warnings() -> list:
+    result = call("revit.get_warnings", {})
+    if result.get("success"):
+        return result.get("result", {}).get("warnings", [])
+    return []
+
+
+def export_image(view_id: int, output_path: str,
+                 image_format: str = "PNG", resolution: int = 1500) -> dict:
+    """
+    Export a view/sheet as an image ON THE BRIDGE HOST (Mitch's Windows disk).
+    Returns {expected_file_path, file_exists, ...}. NOTE: the file lands on
+    the Windows machine — fetching bytes back through the tunnel requires the
+    Phase 2 bridge file-serving endpoint.
+    """
+    result = call("revit.export_image", {
+        "view_id": view_id,
+        "output_path": output_path,
+        "format": image_format,
+        "resolution": resolution,
+    })
+    if result.get("success"):
+        return result.get("result", {})
+    return {"error": result.get("error", "unknown")}
+
+
+# ─────────────────────────────────────────────
+# DIMENSIONS — READ (existing manually placed)
+# ─────────────────────────────────────────────
+
+def list_dimensions(view_id: int = None) -> list:
+    """
+    Read existing Dimension elements (does NOT modify anything).
+    view_id scopes to a single view. Each entry carries:
+      dim_value (raw ft), dim_value_string (e.g. 12' - 6\"),
+      start/end coords + length_ft of the dimension line.
+    Reference/target detail (which wall layer, core vs finish) requires the
+    Phase 2 DLL command — not available yet.
+    """
+    return list_elements_by_category("Dimensions", view_id=view_id)
+
+
+# ─────────────────────────────────────────────
 # DIAGNOSTIC TOOLS
 # ─────────────────────────────────────────────
 

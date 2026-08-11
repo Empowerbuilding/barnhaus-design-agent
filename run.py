@@ -13,6 +13,10 @@ Usage:
     python3 run.py electrical        # Run electrical plan (A108)
     python3 run.py plumbing          # Run plumbing plan (A109)
     python3 run.py all               # Full run: scan → qa → draft1 → draft2 → draft3
+    python3 run.py qa-marks          # Window/Door Type Mark QA — marks vs actual dimensions
+    python3 run.py qa-electrical     # Electrical fixture label QA — flag blank Type Marks
+    python3 run.py read-dims [kw]    # READ existing dimensions (optionally filter views/sheets by keyword)
+    python3 run.py assemble-sheets   # Match views → empty sheets (dry run; add --apply to place)
     python3 run.py try_delete <id>   # Dry-run delete — captures Revit error messages, always rolls back
     python3 run.py deps <id>         # Dependency map — what is attached to this element ID
     python3 run.py sketch <id>       # Roof sketch inspector — find locked alignment constraints
@@ -124,6 +128,30 @@ def main():
         d3(state)
 
         print("\n✅ Full run complete.")
+
+    elif cmd == "qa-marks":
+        from qa.opening_marks_qa import run_opening_marks_qa
+        try:
+            state = load_state()
+        except FileNotFoundError:
+            state = scan_project()
+        if state.get("doors") and "type_mark" not in state["doors"][0]:
+            print("  State predates type_mark capture — rescanning...")
+            state = scan_project()
+        run_opening_marks_qa(state)
+
+    elif cmd == "qa-electrical":
+        from qa.electrical_qa import run_electrical_qa
+        run_electrical_qa()
+
+    elif cmd == "read-dims":
+        from tasks.dimensions.read_dimensions import run as read_dims
+        keyword = flags[0] if flags else None
+        read_dims(keyword)
+
+    elif cmd == "assemble-sheets":
+        from tasks.sheets.assemble_sheets import run as assemble
+        assemble(apply="--apply" in flags)
 
     elif cmd == "study-set":
         from tasks.study_set.study_set import run as study_run
