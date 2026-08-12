@@ -27,6 +27,10 @@ Usage:
     python3 run.py deps <id>         # Dependency map — what is attached to this element ID
     python3 run.py sketch <id>       # Roof sketch inspector — find locked alignment constraints
     python3 run.py inspect <id>      # Deep element inspection — all params, host, joins, bbox
+    python3 run.py review [--visual] [--no-scan] [--upload]   # FULL drafter-submission audit → scorecard + punch list + diff vs last review
+    python3 run.py suppress <key> [reason]   # Accept a finding — never shows again on this document
+    python3 run.py unsuppress <key>          # Re-enable a suppressed finding
+    python3 run.py suppressions              # List suppressed findings for current document
 """
 
 import sys
@@ -210,6 +214,34 @@ def main():
     elif cmd == "qa-dims":
         from qa.dims_qa import run as dims_qa
         dims_qa(flags[0] if flags else None)
+
+    elif cmd == "review":
+        from tasks.review import run_review
+        run_review(visual="--visual" in flags,
+                   no_scan="--no-scan" in flags,
+                   upload="--upload" in flags)
+
+    elif cmd in ("suppress", "unsuppress", "suppressions"):
+        from core.project_state import load_state as _ls
+        from core.snapshots import doc_slug
+        from qa import suppressions as supp
+        try:
+            slug = doc_slug(_ls())
+        except FileNotFoundError:
+            print("❌ No project_state.json — run a scan or review first.")
+            sys.exit(1)
+        if cmd == "suppressions":
+            supp.show(slug)
+        elif cmd == "suppress":
+            if not flags:
+                print("Usage: python3 run.py suppress <key> [reason]")
+                sys.exit(1)
+            supp.add(slug, flags[0], " ".join(flags[1:]))
+        else:
+            if not flags:
+                print("Usage: python3 run.py unsuppress <key>")
+                sys.exit(1)
+            supp.remove(slug, flags[0])
 
     elif cmd == "study-set":
         from tasks.study_set.study_set import run as study_run

@@ -38,8 +38,9 @@ TILE_QA_PROMPT = """You are inspecting ONE TILE of a residential construction sh
 (steel-frame custom home). This tile is a crop — elements cut off at tile edges are
 NORMAL, do not report them. Report ONLY clear quality problems visible within the tile:
 
-1. text_overlap — text/dimensions/tags overlapping each other or drawn through geometry
-   so they are hard to read
+1. text_overlap — text/dimensions/tags ACTUALLY OBSCURED or genuinely hard to read.
+   Text that is merely near, touching, or crossing light linework but remains fully
+   legible is NOT a finding — construction drawings routinely have text over geometry
 2. illegible — text that is garbled, colliding, or unreadable (NOT text cut by tile edge)
 3. bad_annotation — grid lines running through grid-bubble letters, leaders pointing at
    nothing, tags detached from their element, empty tags (?? or blank)
@@ -50,6 +51,8 @@ NORMAL, do not report them. Report ONLY clear quality problems visible within th
 Respond with ONLY a JSON array (no prose). Each finding:
 {"type": "<category>", "severity": "error|warning", "description": "<specific, mention
 the text/values involved>", "location": "<where in this tile, e.g. top-left>"}
+Be conservative: report only what a reviewing architect would mark up. If unsure
+whether something is a real problem, do NOT report it.
 If the tile is clean, respond with []"""
 
 OVERVIEW_QA_PROMPT = """This is a full sheet overview from a residential construction set
@@ -289,6 +292,16 @@ def run_visual_qa(sheet_filter: str = None, max_sheets: int = None,
         for fnd in deduped[:12]:
             icon = "❌" if fnd.get("severity") == "error" else "⚠️ "
             print(f"   {icon} [{fnd.get('type')}] {fnd.get('description','')[:110]}")
+
+        # Annotated crops for the punch list — must happen BEFORE tile cleanup
+        if deduped:
+            try:
+                from qa.annotate import annotate_sheet_findings
+                n_crops = annotate_sheet_findings(tiled, deduped, num)
+                if n_crops:
+                    print(f"   🖼️  {n_crops} annotated crop(s) → exports/findings/")
+            except Exception as e:
+                print(f"   ⚠️  annotation skipped: {e}")
 
         report["sheets"].append({"sheet": num, "name": name,
                                  "export_hash": tiled["pixel_hash"],

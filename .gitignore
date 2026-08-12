@@ -15,3 +15,8 @@ __pycache__/
 .env
 .frank_keys.json
 *.env
+snapshots/
+suppressions/
+review_report.json
+review_punchlist.md
+exports/findings/
