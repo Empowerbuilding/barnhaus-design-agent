@@ -19,7 +19,9 @@ Usage:
     python3 run.py assemble-sheets   # Match views → empty sheets (dry run; add --apply to place)
     python3 run.py export-image <view_id> [out.png]  # Export view/sheet image through the tunnel (vision QA)
     python3 run.py export-tiles <view_id> [out_dir]  # High-res export sliced into vision-ready tiles (sheet QA)
-    python3 run.py qa-visual [filter] [--max N]  # Batch vision QA: every populated sheet → tiles → findings report
+    python3 run.py qa-visual [filter] [--max N] [--fresh] [--include kw] [--exclude kw1,kw2] [--tile-size N] [--workers N]
+                                     # Batch vision QA: populated sheets → tiles → PARALLEL vision → findings report
+                                     # Unchanged sheets (pixel hash) reuse previous findings; blank tiles skipped
     python3 run.py qa-dims [keyword]  # Dimension consistency QA (mixed planes, line-anchored, duplicates)
     python3 run.py try_delete <id>   # Dry-run delete — captures Revit error messages, always rolls back
     python3 run.py deps <id>         # Dependency map — what is attached to this element ID
@@ -175,12 +177,35 @@ def main():
 
     elif cmd == "qa-visual":
         from qa.visual_qa import run_visual_qa
-        pos = [f for f in flags if not f.startswith("--")]
-        max_sheets = None
-        if "--max" in flags:
-            try: max_sheets = int(flags[flags.index("--max") + 1])
-            except (IndexError, ValueError): pass
-        run_visual_qa(pos[0] if pos else None, max_sheets=max_sheets)
+
+        def _flag_val(name):
+            if name in flags:
+                try: return flags[flags.index(name) + 1]
+                except IndexError: return None
+            return None
+
+        # Positional filter = first non-flag token that isn't a flag's value
+        flag_values = set()
+        for fname in ("--max", "--include", "--exclude", "--tile-size", "--workers"):
+            v = _flag_val(fname)
+            if v is not None:
+                flag_values.add(v)
+        pos = [f for f in flags if not f.startswith("--") and f not in flag_values]
+
+        def _int_or_none(v):
+            try: return int(v)
+            except (TypeError, ValueError): return None
+
+        exclude_raw = _flag_val("--exclude")
+        run_visual_qa(
+            pos[0] if pos else None,
+            max_sheets=_int_or_none(_flag_val("--max")),
+            fresh="--fresh" in flags,
+            include=_flag_val("--include"),
+            exclude=[e.strip() for e in exclude_raw.split(",") if e.strip()] if exclude_raw else None,
+            tile_size=_int_or_none(_flag_val("--tile-size")),
+            workers=_int_or_none(_flag_val("--workers")),
+        )
 
     elif cmd == "qa-dims":
         from qa.dims_qa import run as dims_qa
