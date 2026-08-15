@@ -15,6 +15,7 @@ Outputs:
 
 import json
 import os
+import re
 import time
 
 from core.project_state import scan_project, load_state
@@ -220,8 +221,28 @@ def run_review(visual: bool = False, no_scan: bool = False,
     return report
 
 
+_GROUP_MIN = 4  # collapse repeats into one line at this count
+
+
+def _norm_msg(msg: str) -> str:
+    """Normalize a finding message by masking element ids (4+ digit runs)."""
+    return re.sub(r"\b\d{4,}\b", "•", msg)
+
+
+def _item_ids(i: dict) -> list:
+    """Element ids for an item: explicit element_id first, else ids in the message."""
+    if i.get("element_id"):
+        return [str(i["element_id"])]
+    return re.findall(r"\b\d{4,}\b", _msg(i))
+
+
 def _write_punchlist(report: dict):
-    """Drafter-ready numbered punch list, forwardable verbatim."""
+    """Drafter-ready numbered punch list, forwardable verbatim.
+
+    Repetitive findings (same message, different element ids) are grouped
+    into a single numbered item with the full id list — 200 blank type
+    marks read as one task, not 200.
+    """
     lines = [f"# Punch List — {report['document']}",
              f"_Review date: {report['reviewed_at']}_", ""]
     n = 0
@@ -232,18 +253,41 @@ def _write_punchlist(report: dict):
         if not items:
             continue
         lines.append(f"## {title}")
+
+        # First pass: bucket groupable items (no crops, no sheet refs) by
+        # normalized message, preserving first-seen order.
+        groups, order = {}, []
         for i in items:
-            n += 1
-            loc = ""
-            if i.get("sheet"):
-                loc = f" _(sheet {i['sheet']})_"
-            elif i.get("element_id"):
-                loc = f" _(element {i['element_id']})_"
-            lines.append(f"{n}. {_msg(i)}{loc}")
-            if i.get("crop_url"):
-                lines.append(f"   ![finding {n}]({i['crop_url']})")
-            elif i.get("crop_path"):
-                lines.append(f"   _(image: {i['crop_path']})_")
+            groupable = not (i.get("crop_url") or i.get("crop_path") or i.get("sheet"))
+            key = _norm_msg(_msg(i)) if groupable else id(i)
+            if key not in groups:
+                groups[key] = []
+                order.append(key)
+            groups[key].append(i)
+
+        for key in order:
+            members = groups[key]
+            if len(members) >= _GROUP_MIN:
+                n += 1
+                ids = []
+                for m in members:
+                    ids.extend(_item_ids(m))
+                display = re.sub(r"\s*•\s*", " ", _norm_msg(_msg(members[0]))).strip()
+                lines.append(f"{n}. {display} — **{len(members)} elements** "
+                             f"_(ids: {', '.join(ids)})_")
+            else:
+                for i in members:
+                    n += 1
+                    loc = ""
+                    if i.get("sheet"):
+                        loc = f" _(sheet {i['sheet']})_"
+                    elif i.get("element_id"):
+                        loc = f" _(element {i['element_id']})_"
+                    lines.append(f"{n}. {_msg(i)}{loc}")
+                    if i.get("crop_url"):
+                        lines.append(f"   ![finding {n}]({i['crop_url']})")
+                    elif i.get("crop_path"):
+                        lines.append(f"   _(image: {i['crop_path']})_")
         lines.append("")
     if n == 0:
         lines.append("✅ No open findings — set is clean.")
