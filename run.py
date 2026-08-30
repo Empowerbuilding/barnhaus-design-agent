@@ -31,6 +31,10 @@ Usage:
     python3 run.py suppress <key> [reason]   # Accept a finding — never shows again on this document
     python3 run.py unsuppress <key>          # Re-enable a suppressed finding
     python3 run.py suppressions              # List suppressed findings for current document
+    python3 run.py verify <project_name>     # Intent-vs-model check (portal design_intent_items) → PASS/FAIL/NEEDS-HUMAN per item
+    python3 run.py weight                    # Model weight report — heavy families, imports, top-20 strip hit list
+    python3 run.py standards                 # Run standards.yaml rules (sheet order/naming, views, titleblock)
+    python3 run.py gate [project] [--post]   # standards + verify + qa in one shot → GATE: PASS/FAIL (--post → portal juanito-production)
 """
 
 import sys
@@ -287,6 +291,27 @@ def main():
         import json
         result = inspect_element(int(flags[0]))
         print(json.dumps(result, indent=2))
+
+    elif cmd == "verify":
+        if not flags:
+            print("Usage: python3 run.py verify <project_name>")
+            sys.exit(1)
+        from intent_queries import run_verify
+        run_verify(flags[0])
+
+    elif cmd == "weight":
+        from weight_report import run_weight
+        run_weight()
+
+    elif cmd == "standards":
+        from standards_runner import run_standards
+        run_standards()
+
+    elif cmd == "gate":
+        from tasks.gate import run_gate
+        pos = [f for f in flags if not f.startswith("--")]
+        run_gate(project_name=pos[0] if pos else None,
+                 post="--post" in flags)
 
     else:
         print(f"Unknown command: {cmd}")

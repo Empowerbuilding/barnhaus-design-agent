@@ -1,0 +1,53 @@
+# standards.yaml — Barnhaus drafting standards (ROADMAP Priority 4)
+#
+# THIS IS A SKELETON. Michael: this file is YOUR institutional knowledge,
+# captured. Edit the values (not the structure) and the next `gate` run
+# enforces them — no code change needed. Rules are versioned with git.
+#
+# Executed by standards_runner.py (python3 run.py standards / gate).
+# Any section left with "TODO" in it is SKIPPED (reported, not failed).
+
+# ── Sheet order ─────────────────────────────────────────────────────────
+# TODO(Michael): replace with the canonical Barnhaus sheet sequence.
+# These placeholders came from recent sets — AUTHOR THE REAL ORDER.
+# Rule: sheets present in the model must appear in this relative order.
+# Entries are sheet-number PREFIXES — "A101" matches A101, A101.1, A101.2…
+sheet_order:
+  - "A100"      # Cover
+  - "A100.2"    # Site Plan
+  - "A101"      # Floor Plans (A101.x)
+  - "A102"      # TODO(Michael): elevations start here? confirm numbering
+  - "A103"      # TODO(Michael): sections? confirm numbering
+  - "A105"      # Door/Window Schedule
+  - "A106"      # TODO(Michael): confirm
+  - "A108"      # Electrical
+  - "A109"      # Plumbing
+
+# ── Sheet naming ────────────────────────────────────────────────────────
+# Every sheet NUMBER in the model must match at least one regex.
+# TODO(Michael): confirm the numbering grammar (discipline letters? S-series
+# structural sheets? decimal sub-sheets like A100.3?).
+sheet_naming:
+  patterns:
+    - "^A\\d{3}(\\.\\d+)?$"     # A100, A101.1, A100.3 …
+    - "^S\\d{3}(\\.\\d+)?$"     # structural — TODO(Michael): keep or cut?
+
+# ── Required views ──────────────────────────────────────────────────────
+# Keywords — a view whose name contains the keyword (case-insensitive) must
+# exist in the model. TODO(Michael): make this the real minimum set for a
+# submittable D2/D3 (e.g. per-level plans, all 4 elevations, roof plan…).
+required_views:
+  - "Level 1"           # L1 floor plan
+  - "Elevation"         # TODO(Michael): split into North/South/East/West?
+  - "Roof"              # roof plan
+  # - "Section"         # TODO(Michael): required at D2 or only D3?
+  # - "Electrical"      # TODO(Michael)
+  # - "Plumbing"        # TODO(Michael)
+
+# ── Titleblock ──────────────────────────────────────────────────────────
+# Every placed titleblock must be this family.
+# TODO(Michael): put the exact family name from the template here
+# (query with: python3 -c "from core import revit_client as rc; ..."
+#  or just read it off any sheet's Properties in Revit).
+titleblock:
+  name: "TODO — exact Barnhaus titleblock family name"
