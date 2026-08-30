@@ -21,7 +21,9 @@ Where the time actually bleeds (real examples from our own history):
 
 **The target:** Juanito (knows what's *supposed* to be in the model) + Blueprint (knows what *is* in the model) close the loop automatically. Expected impact: ~20-30% more projects/year through the same pipeline, Michael's QA time down 70-80%, fixed-price drafting enforceable, Revit Mechanic hire shrunk or delayed.
 
-**What we're NOT building:** auto-generation of models (draft-from-scratch). QA/verification of human-made models has provable ROI this quarter; generation is a research project. Park it.
+**What we're NOT building:** auto-generation of building *models* (draft-from-scratch). QA/verification of human-made models has provable ROI this quarter; model generation is a research project. Park it.
+
+**What we ARE building toward (Priority 6):** auto-generation of *documentation* — sheets, elevations, cross-sections. That's the Upworker leg of the pipeline (3-5 days per handoff). Different problem, and the bridge already has the primitives.
 
 ---
 
@@ -74,6 +76,11 @@ Barnhaus standards (sheet order, sheet naming, titleblocks, required views, laye
 
 **Done when:** Michael adds a new rule by editing the file, no code change, and the next `gate` run enforces it.
 
+**Ongoing — the Rules Backlog:** the checks we have today are a fraction of what Mitch + Michael carry in their heads. Teaching Blueprint is a continuous process, not a phase:
+- `RULES_BACKLOG.md` in this repo — either of you dumps checks in plain English whenever they occur to you ("flag any door within 4\" of a wall corner", "every wet wall needs a plumbing note")
+- Converting backlog entries → executable rules is standing dev work; expect this to be a large share of total effort over time
+- Rule of thumb: every mistake a drafter makes becomes a rule the same week it's caught
+
 ---
 
 ## Priority 5 — Model Weight Report 🏋️
@@ -85,6 +92,22 @@ Barnhaus standards (sheet order, sheet naming, titleblocks, required views, laye
 - Output: ranked hit list ("strip these 12 families first")
 
 **Done when:** running it on one of the 550MB files produces a hit list that actually shrinks the file.
+
+---
+
+## Priority 6 — Documentation Automation: Sheets, Elevations, Cross-Sections 📐 THE BIG ONE LONG-TERM
+
+Today, the D2/D3 Upworker legs are humans turning the model into documentation: elevations, cross-sections, detail views, sheet layout — 3-5 days per handoff plus polish. Blueprint generating this directly compresses days → hours and attacks drafter spend + drafter errors at the source.
+
+**Build (incremental — each step is useful alone):**
+1. **Sheet formatting:** auto-create the standard Barnhaus sheet set (A100 cover, A101.x plans, elevation/section sheets) with correct titleblocks, naming, and order per `standards.yaml`; place existing views on sheets with consistent positioning
+2. **Elevations:** generate the 4 exterior elevations, correct crop/scale, placed and dimensioned
+3. **Cross-sections:** section line placement at the right cuts (bearing walls, stairs, roof transitions), generated views, placed on sheets — pairs with the 2D typical cross-section templates (wood + metal framing) already being built for the drafters
+4. **Dimensioning pass:** extend the existing exterior/interior dimension commands into the generated views
+
+**Done when:** a D1-complete model can go from "model done" to "reviewable sheet set" in one command, with Michael polishing instead of producing.
+
+**Sequencing note:** start after Priorities 1-2 are live (verify + tunnels prove the loop and build the habit), but pull individual pieces forward whenever they're cheap — sheet formatting especially, since it's mostly `standards.yaml` + existing bridge commands.
 
 ---
 
