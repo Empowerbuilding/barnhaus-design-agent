@@ -24,3 +24,9 @@
 - **Status:** Shipped (Bridge C# commit b9750bf) and packaged in v3 DLL. 
 - **Note:** The live change-feed logs exact element IDs, transaction names, and timestamps to `changes.jsonl`.
 - **Constraint:** Until Mitch updates his machine, the `revit.get_recent_changes` command is ONLY available on Michael's session.
+
+### 5. DEV Log: Reading Live-Written Files in C#
+- **Issue:** The `revit.get_recent_changes` command threw an HTTP 500 error on Michael's machine.
+- **Cause:** Using `File.ReadLines()` opens the file with the default `FileShare.Read`. This conflicted with the `DocumentChanged` event handler which was actively appending to `changes.jsonl`, causing access violation collisions. Additionally, JSON payload parsing was sitting outside the `try/catch` block without `JsonValueKind.Object` guard.
+- **Fix:** Used explicit stream opening: `new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)` combined with a `StreamReader` to read lines safely while another process is writing. Moved payload parsing into the `try/catch` block and added `ValueKind` guard.
+- **Rule:** Readers of live-written files always need `FileShare.ReadWrite`.
