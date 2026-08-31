@@ -63,12 +63,12 @@ def main():
 
 
     elif cmd == "changes":
-        from core.revit_client import send_command
+        from core.revit_client import call
         last_n = 50
         if "--n" in flags:
             try: last_n = int(flags[flags.index("--n") + 1])
             except: pass
-        resp = send_command("revit.get_recent_changes", {"last_n": last_n})
+        resp = call("revit.get_recent_changes", {"last_n": last_n})
         if resp.get("success"):
             changes = resp.get("changes", [])
             print(f"--- Recent Model Changes ({len(changes)} recorded) ---")
