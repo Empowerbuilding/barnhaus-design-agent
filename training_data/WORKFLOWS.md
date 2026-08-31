@@ -20,3 +20,7 @@
 - **Stats:** `Edit Sketch` -> `Drag` -> `Finish sketch` occurred 40 times. Repeated `Area Boundary` -> `Area Boundary` transactions (30 times).
 - **Pattern:** Opening sketch mode for floors/roofs/regions to make micro-drags to boundary lines.
 - **Suggested Automation:** **Area Boundary Generator** script for standard area boxes or rooms to reduce manual boundary sketching loops.
+### 4. Co-Dev Feature: Live Change-Feed
+- **Status:** Shipped (Bridge C# commit b9750bf) and packaged in v3 DLL. 
+- **Note:** The live change-feed logs exact element IDs, transaction names, and timestamps to `changes.jsonl`.
+- **Constraint:** Until Mitch updates his machine, the `revit.get_recent_changes` command is ONLY available on Michael's session.
