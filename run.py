@@ -61,6 +61,27 @@ def main():
         report = run_qa(state, auto_fix=auto_fix)
         save_report(report)
 
+
+    elif cmd == "changes":
+        from core.revit_client import send_command
+        last_n = 50
+        if "--n" in flags:
+            try: last_n = int(flags[flags.index("--n") + 1])
+            except: pass
+        resp = send_command("revit.get_recent_changes", {"last_n": last_n})
+        if resp.get("success"):
+            changes = resp.get("changes", [])
+            print(f"--- Recent Model Changes ({len(changes)} recorded) ---")
+            for c in changes:
+                ts = c.get("timestamp", "")
+                tx = c.get("transaction", "")
+                added = len(c.get("added", []))
+                modified = len(c.get("modified", []))
+                deleted = len(c.get("deleted", []))
+                print(f"[{ts}] Tx: {tx} | Added: {added} | Modified: {modified} | Deleted: {deleted}")
+        else:
+            print(f"Error fetching changes: {resp.get('error', resp)}")
+
     elif cmd == "draft1":
         from tasks.sheets.draft1_bundle import run
         state = scan_project()
