@@ -62,6 +62,26 @@ def main():
         save_report(report)
 
 
+
+    elif cmd == "look":
+        from core.revit_client import call
+        import base64
+        import time
+        import os
+        scope = "window"
+        if "--full" in flags: scope = "full"
+        resp = call("revit.capture_screen", {"scope": scope})
+        if resp.get("success"):
+            ts = int(time.time())
+            os.makedirs("exports", exist_ok=True)
+            path = f"exports/screen_{ts}.jpg"
+            img_data = base64.b64decode(resp["image_base64"])
+            with open(path, "wb") as f:
+                f.write(img_data)
+            print(f"✅ Screen captured ({resp.get('width')}x{resp.get('height')} {resp.get('scope')}) -> {path}")
+        else:
+            print(f"Error capturing screen: {resp.get('error', resp)}")
+
     elif cmd == "changes":
         from core.revit_client import call
         last_n = 50
