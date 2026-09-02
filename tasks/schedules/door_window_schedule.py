@@ -6,7 +6,7 @@ and places them on sheet A105 in Barnhaus format.
 """
 
 from core import revit_client as rc
-from core.project_state import load_state
+from core.project_state import load_state, existing_sheet_numbers
 
 
 def run(state: dict = None):
@@ -16,7 +16,7 @@ def run(state: dict = None):
     print("\n📋 Generating Door & Window Schedule (A105)...")
 
     # Check if A105 already exists
-    existing = {s.get("number") for s in state["sheets"]["existing"]}
+    existing = existing_sheet_numbers(state)
     if "A105" in existing:
         print("  ↩️  A105 already exists — skipping.")
         return

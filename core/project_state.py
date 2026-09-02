@@ -113,6 +113,43 @@ def load_state() -> dict:
         return json.load(f)
 
 
+def existing_sheet_numbers(state: dict) -> set:
+    """Return the set of existing sheet numbers from state.
+
+    Handles both schemas:
+      - current: state["sheets"] is a dict keyed by sheet number
+      - legacy:  state["sheets"]["existing"] is a list of {number, ...}
+    """
+    sheets = state.get("sheets") or {}
+    if isinstance(sheets, dict):
+        if "existing" in sheets and isinstance(sheets["existing"], list):
+            return {s.get("number") for s in sheets["existing"]}
+        return set(sheets.keys())
+    if isinstance(sheets, list):
+        return {s.get("number") for s in sheets}
+    return set()
+
+
+def all_views(state: dict) -> list:
+    """Flat list of all view entries from state.
+
+    Handles both schemas:
+      - current: state["views"] is a dict of category lists
+                 (floor_plans, elevations, sections, ...)
+      - legacy:  state["views"] used "unplaced"/"on_sheet" lists
+    """
+    views = state.get("views") or {}
+    if isinstance(views, dict):
+        flat = []
+        for group in views.values():
+            if isinstance(group, list):
+                flat.extend(group)
+        return flat
+    if isinstance(views, list):
+        return views
+    return []
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # SCAN SECTIONS
 # ─────────────────────────────────────────────────────────────────────────────

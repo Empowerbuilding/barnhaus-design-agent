@@ -13,7 +13,7 @@ Delegates actual plan generation to tasks/mep/electrical.py and tasks/mep/plumbi
 
 from core import revit_client as rc
 from core.constants import SHEETS
-from core.project_state import load_state
+from core.project_state import load_state, existing_sheet_numbers
 from tasks.mep import electrical, plumbing
 
 
@@ -22,7 +22,7 @@ def run(state: dict = None):
         state = load_state()
 
     is_two_story     = state.get("summary", {}).get("is_two_story", False)
-    existing_numbers = {s.get("number") for s in state["sheets"]["existing"]}
+    existing_numbers = existing_sheet_numbers(state)
 
     sheets_to_create = list(SHEETS["draft3_additions"])
     if is_two_story:

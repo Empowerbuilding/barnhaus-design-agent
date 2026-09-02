@@ -18,7 +18,7 @@ Idempotent — skips sheets that already exist.
 
 from core import revit_client as rc
 from core.constants import SHEETS, LEVEL
-from core.project_state import load_state
+from core.project_state import load_state, existing_sheet_numbers, all_views
 
 
 ELEVATION_VIEWS = [
@@ -39,7 +39,7 @@ def run(state: dict = None):
     if state is None:
         state = load_state()
 
-    existing_numbers = {s.get("number") for s in state["sheets"]["existing"]}
+    existing_numbers = existing_sheet_numbers(state)
     sheets_to_create = SHEETS["draft2_additions"]
 
     print(f"\n📋 Draft 2 Bundle — creating {len(sheets_to_create)} sheets...")
@@ -70,9 +70,7 @@ def run(state: dict = None):
 
 def _ensure_exterior_elevations(state: dict):
     """Create exterior elevation views if they don't already exist."""
-    existing_views = {v.get("name") for v in
-                      state.get("views", {}).get("on_sheet", []) +
-                      state.get("views", {}).get("unplaced", [])}
+    existing_views = {v.get("name") for v in all_views(state)}
 
     # Get approximate building center from exterior walls
     ext_walls = state.get("walls", {}).get("exterior", [])
@@ -93,8 +91,7 @@ def _ensure_exterior_elevations(state: dict):
 
 
 def _place_matching_view(sheet_number: str, sheet_id: int, state: dict):
-    all_views = (state.get("views", {}).get("unplaced", []) +
-                 state.get("views", {}).get("on_sheet", []))
+    views = all_views(state)
 
     # Map sheet numbers to view name keywords
     keywords_map = {
@@ -111,7 +108,7 @@ def _place_matching_view(sheet_number: str, sheet_id: int, state: dict):
     if not keywords:
         return
 
-    for view in all_views:
+    for view in views:
         vname = view.get("name", "").lower()
         if any(kw.lower() in vname for kw in keywords):
             result = rc.place_view_on_sheet(sheet_id, view.get("id"), x=1.0, y=1.0)
