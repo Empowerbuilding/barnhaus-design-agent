@@ -75,7 +75,7 @@ def main():
             ts = int(time.time())
             os.makedirs("exports", exist_ok=True)
             path = f"exports/screen_{ts}.jpg"
-            img_data = base64.b64decode(resp["image_base64"])
+            img_data = base64.b64decode(resp["result"]["image_base64"])
             with open(path, "wb") as f:
                 f.write(img_data)
             print(f"✅ Screen captured ({resp.get('width')}x{resp.get('height')} {resp.get('scope')}) -> {path}")
@@ -102,6 +102,15 @@ def main():
         else:
             print(f"Error fetching changes: {resp.get('error', resp)}")
 
+    elif cmd == "tag-elevations":
+        from tasks.sheets.tag_elevations import run
+        run()
+    elif cmd == "auto-tidy":
+        from tasks.sheets.auto_tidy_tags import run
+        run()
+    elif cmd == "auto-fit":
+        from tasks.sheets.auto_fit import run
+        run(flags[0] if flags else None)
     elif cmd == "draft1":
         from tasks.sheets.draft1_bundle import run
         state = scan_project()
@@ -203,6 +212,10 @@ def main():
     elif cmd == "assemble-sheets":
         from tasks.sheets.assemble_sheets import run as assemble
         assemble(apply="--apply" in flags)
+
+    elif cmd == "roof":
+        from tasks.roof_builder import run_roof
+        run_roof(flags)
 
     elif cmd == "export-image":
         if not flags:
