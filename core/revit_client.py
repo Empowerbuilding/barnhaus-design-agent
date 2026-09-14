@@ -14,6 +14,7 @@ from core.constants import WALL, LEVEL, FACE_TO_ROT, WALL_FACE_TO_FRONT
 
 BRIDGE_URL    = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/execute"
 HEALTH_URL    = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/health"
+TOOLS_URL     = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/tools"
 REQUEST_TIMEOUT = 30  # seconds
 
 DRY_RUN = False  # Set True to preview without touching Revit
@@ -28,6 +29,12 @@ def call(tool: str, payload: dict) -> dict:
     Send a command to the Revit MCP bridge.
     Returns normalized dict: {success, result, error, raw}
     """
+    # The bridge dispatch keys on "revit."-prefixed names. Auto-prefix so raw
+    # call()s can never fail with "Unknown tool" over a missing prefix
+    # (this exact bug stalled the 2026-09-14 rebuild kickoff).
+    if tool and not tool.startswith("revit."):
+        tool = "revit." + tool
+
     if DRY_RUN:
         print(f"[DRY RUN] {tool}: {json.dumps(payload, indent=2)}")
         return {"success": True, "dry_run": True}
@@ -64,13 +71,45 @@ def health_check() -> bool:
         r = requests.get(HEALTH_URL, timeout=5)
         data = r.json()
         if data.get("status") == "healthy":
-            print(f"✅ Bridge healthy — Revit {data.get('revit_version')}, doc: {data.get('active_document')}")
+            build = data.get("build", "pre-catalog build (run UpdateBridge.bat)")
+            print(f"✅ Bridge healthy — Revit {data.get('revit_version')}, doc: {data.get('active_document')}, build: {build}")
             return True
         print(f"⚠️  Bridge unhealthy: {data}")
         return False
     except Exception as e:
         print(f"❌ Bridge unreachable: {e}")
         return False
+
+
+def list_tools() -> dict:
+    """
+    GET /tools — THE source of truth for what the installed DLL can do.
+    Returns {"build": sha, "count": n, "tools": [...]} on new builds;
+    older DLLs return only {"tools": [...]} (hand-maintained, unreliable).
+    Call this at session start and after any UpdateBridge.bat run. Never
+    promise a command exists without seeing it in this list.
+    """
+    try:
+        r = requests.get(TOOLS_URL, timeout=10)
+        data = r.json()
+        tools = data.get("tools", [])
+        build = data.get("build")
+        if build is None:
+            print(f"⚠️  Old DLL (pre-catalog): /tools reports {len(tools)} commands "
+                  "but the list is hand-maintained and unreliable. "
+                  "Run UpdateBridge.bat for a trustworthy catalog.")
+        else:
+            print(f"🔧 Bridge build {build}: {len(tools)} commands")
+        return {"success": True, "build": build, "count": len(tools), "tools": tools}
+    except Exception as e:
+        return {"success": False, "error": str(e), "tools": []}
+
+
+def has_tool(name: str) -> bool:
+    """Check a single command against the live catalog (auto-prefixes)."""
+    if name and not name.startswith("revit."):
+        name = "revit." + name
+    return name in list_tools()["tools"]
 
 
 # ─────────────────────────────────────────────
