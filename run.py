@@ -31,6 +31,10 @@ Usage:
     python3 run.py suppress <key> [reason]   # Accept a finding — never shows again on this document
     python3 run.py unsuppress <key>          # Re-enable a suppressed finding
     python3 run.py suppressions              # List suppressed findings for current document
+    python3 run.py kit [project_name]        # CFS kit BOM from open Revit model (extract + BOM + price ballpark)
+    python3 run.py kit-geometry [name]       # Extract kit geometry JSON only (no BOM) — for calibration snapshots
+    python3 run.py kit-from <geometry.json>  # OFFLINE: build kit BOM from a saved geometry JSON (no Revit needed)
+    python3 run.py kit-test                  # OFFLINE: run kit_package fixture pipeline test
 """
 
 import sys
@@ -46,6 +50,20 @@ def main():
     cmd    = sys.argv[1].lower()
     flags  = sys.argv[2:]
     auto_fix = "--fix" in flags
+
+    # Offline commands — no Revit bridge required
+    if cmd == "kit-from":
+        if not flags:
+            print("Usage: python3 run.py kit-from <geometry.json>")
+            sys.exit(1)
+        from tasks.kit_package.kit import run_from_geometry
+        run_from_geometry(flags[0])
+        return
+
+    if cmd == "kit-test":
+        from tasks.kit_package import fixture_test
+        fixture_test.main()
+        return
 
     # Health check first
     if not health_check():
@@ -341,6 +359,18 @@ def main():
         import json
         result = inspect_element(int(flags[0]))
         print(json.dumps(result, indent=2))
+
+    elif cmd == "kit":
+        from tasks.kit_package.kit import run_live
+        name = flags[0] if flags else ""
+        run_live(name)
+
+    elif cmd == "kit-geometry":
+        from tasks.kit_package.extract import extract_to_file
+        name = flags[0] if flags else "project"
+        import os
+        os.makedirs("kit_output", exist_ok=True)
+        extract_to_file(f"kit_output/{name.replace(' ', '_').lower()}_geometry.json", name)
 
     else:
         print(f"Unknown command: {cmd}")

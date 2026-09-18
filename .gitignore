@@ -20,3 +20,4 @@ suppressions/
 review_report.json
 review_punchlist.md
 exports/findings/
+kit_output/
