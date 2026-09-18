@@ -23,13 +23,24 @@ def run_from_geometry(geo, out_dir: str | None = None) -> dict:
     wall_lf, wall_flags = framing.frame_walls(geo["walls"])
     truss_lf, plates, truss_flags = trusses.truss_package(geo["roof"])
 
+    # Hot-rolled allowance when long-span flag trips (ASF Allen precedent:
+    # ~122 LF S7x15.3 on a 46 ft span / 97 ft ridge building ≈ 1.25 x ridge)
+    hot_lf = 0.0
+    roof = geo.get("roof", {})
+    all_flags = wall_flags + truss_flags
+    if any("hot-rolled" in f for f in all_flags):
+        hot_lf = 1.25 * float(roof.get("ridge_length_ft", 0.0))
+        all_flags.append(
+            f"hot-rolled allowance added: {hot_lf:.0f} LF {bom.HOT_ROLLED_PROFILE} "
+            "(estimate — PE to size actual beams/headers)")
+
     meta = {
         "project": geo.get("project", ""),
         "model": geo.get("model", ""),
         "date": geo.get("date", datetime.date.today().isoformat()),
     }
     result = bom.build_bom(wall_lf, truss_lf, plates,
-                           wall_flags + truss_flags, meta)
+                           all_flags, meta, hot_rolled_lf=hot_lf)
 
     stem = (meta["project"] or "project").replace(" ", "_").lower()
     out_dir = out_dir or os.path.join("kit_output", stem)

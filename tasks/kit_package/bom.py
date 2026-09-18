@@ -29,10 +29,21 @@ def _fmt_ft(v: float) -> str:
     return f"{whole}'-{inches}\""
 
 
+# Hot-rolled allowance: ASF added 121.7 LF of S7x15.3 (1,862 lbs) on Allen
+# for the >40 ft span condition. When the span flag trips, add an allowance
+# line ≈ ridge length x S7 plf so the ballpark isn't structurally light.
+HOT_ROLLED_PROFILE = "S7x15.3"
+
+
 def build_bom(wall_lf: dict, truss_lf: dict, plates: dict,
-              flags: list, meta: dict | None = None) -> dict:
+              flags: list, meta: dict | None = None,
+              hot_rolled_lf: float = 0.0) -> dict:
     meta = meta or {}
     tabs = {}
+
+    if hot_rolled_lf > 0:
+        wall_lf = dict(wall_lf)
+        wall_lf[HOT_ROLLED_PROFILE] = wall_lf.get(HOT_ROLLED_PROFILE, 0.0) + hot_rolled_lf
 
     def tab_from_lf(lf_map):
         rows = []

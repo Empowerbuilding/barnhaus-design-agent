@@ -21,9 +21,21 @@ import math
 from . import profiles as P
 
 TRUSS_SPACING_FT = 2.0
-WEB_FACTOR = 1.4          # calibration knob — solve against Allen live
 APEX_HEEL_PER_TRUSS = 2
 FIX_PLATES_PER_TRUSS = 4
+
+# CALIBRATED against ASF Allen production BOM (2026-09-17 live extraction):
+#   ASF truss tab: 19,855 LF / 46 trusses = 432 LF per truss = 9.32x the
+#   46.3 ft bbox span. FRAMECAD trusses use boxed/doubled chords + dense
+#   webs — textbook fink geometry (~3.4x span) is ~2.7x light. Empirical
+#   area intensity is robust to L-shaped plans:
+#     19,855 LF / (46.3 ft span x 97.3 ft ridge) = 4.41 LF per sqft plan
+# NOTE: single-point calibration (one building). Re-fit when a second
+# fabricator BOM lands; keep style-consistent (Barnhaus catalog) for now.
+TRUSS_LF_PER_SQFT_PLAN = 4.41
+
+# Legacy fink model retained for reference/sanity only
+WEB_FACTOR = 1.4
 
 
 def truss_package(roof: dict) -> tuple[dict, dict, list]:
@@ -45,22 +57,15 @@ def truss_package(roof: dict) -> tuple[dict, dict, list]:
             "— expect engineered truss or hot-rolled ridge/beam (Allen used S7x15.3)"
         )
 
-    theta = math.atan(rise12 / 12.0)
     n_trusses = math.floor(ridge / TRUSS_SPACING_FT) + 1
 
-    top_chords = span / math.cos(theta)
-    bottom = span
-    webs = WEB_FACTOR * span
-    lf_per_truss = top_chords + bottom + webs
-    truss_lf = n_trusses * lf_per_truss
-
-    # Gable end framing (studs under gable at 24" o.c., avg height = rise/2)
-    rise = (span / 2.0) * (rise12 / 12.0)
-    gable_studs = math.floor(span / 2.0) + 1
-    gable_lf = gables * gable_studs * (rise / 2.0)
+    # Empirical FRAMECAD intensity model (see calibration note above).
+    # Gable-end framing is inside the intensity factor (ASF's truss tab
+    # was a single aggregated profile including everything).
+    truss_lf = TRUSS_LF_PER_SQFT_PLAN * span * ridge
 
     profile = P.DEFAULTS["truss_member"]
-    lf = {profile: truss_lf + gable_lf}
+    lf = {profile: truss_lf}
     plates = {
         "FRAMECAD 1.15mm Apex/Heel Plate (AHCP-A2)": n_trusses * APEX_HEEL_PER_TRUSS,
         "FRAMECAD 1.15mm Fix Plate (FP-A2)": n_trusses * FIX_PLATES_PER_TRUSS,

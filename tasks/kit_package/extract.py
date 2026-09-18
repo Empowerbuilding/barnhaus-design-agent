@@ -83,12 +83,30 @@ def extract(project_name: str = "", pitch_default: float = 4.0) -> dict:
         _bb_cache[eid] = c
         return c
 
+    def _type_param(eid, names):
+        """Width/Height usually live on the TYPE for door/window families."""
+        try:
+            tp = rc.get_type_param_map(eid)
+        except Exception:
+            return None
+        if not tp:
+            return None
+        for n in names:
+            v = tp.get(n)
+            if v not in (None, "", 0):
+                return v
+        return None
+
+    skipped = []
+
     def _attach(elements, kind):
         total = len(elements)
         for i, e in enumerate(elements):
             eid = e.get("id")
-            width = e.get("width_ft") or _param(eid, "Width") or _param(eid, "Rough Width")
-            height = e.get("height_ft") or _param(eid, "Height") or _param(eid, "Rough Height")
+            width = (e.get("width_ft") or _param(eid, "Width") or _param(eid, "Rough Width")
+                     or _type_param(eid, ["Width", "Rough Width"]))
+            height = (e.get("height_ft") or _param(eid, "Height") or _param(eid, "Rough Height")
+                      or _type_param(eid, ["Height", "Rough Height"]))
             host = e.get("host_id") or e.get("host")
             target = wall_index.get(host)
             if target is None and walls:
@@ -111,12 +129,18 @@ def extract(project_name: str = "", pitch_default: float = 4.0) -> dict:
                     "height_ft": float(height or 6.8),
                     "kind": kind,
                 })
+            else:
+                skipped.append((kind, eid))
             if (i + 1) % 10 == 0 or i + 1 == total:
                 print(f"  {kind}s: {i+1}/{total}", flush=True)
 
     print(f"extracting: {len(walls)} walls, {len(doors_raw)} doors, {len(windows_raw)} windows", flush=True)
     _attach(doors_raw, "door")
     _attach(windows_raw, "window")
+    attached = sum(len(w["openings"]) for w in walls)
+    print(f"openings attached: {attached}  skipped (no width resolved): {len(skipped)}", flush=True)
+    if skipped:
+        print(f"  skipped ids: {[s[1] for s in skipped][:20]}", flush=True)
 
     # Roof: estimate span/ridge from roof bounding boxes (v1)
     roofs = rc.list_elements_by_category("Roofs")
