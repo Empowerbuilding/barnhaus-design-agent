@@ -142,21 +142,44 @@ def extract(project_name: str = "", pitch_default: float = 4.0) -> dict:
     if skipped:
         print(f"  skipped ids: {[s[1] for s in skipped][:20]}", flush=True)
 
-    # Roof: estimate span/ridge from roof bounding boxes (v1)
+    # Roofs: measure each roof mass separately (a global bbox lies badly on
+    # L/T/cross-gable plans — Titan read 71x71 square). Prefer Revit's Area
+    # parameter (true surface area) converted to plan area via slope.
+    import math as _math
     roofs = rc.list_elements_by_category("Roofs")
     span, ridge = 0.0, 0.0
+    plan_area = 0.0
+    roof_masses = []
     for r in roofs:
+        rid = r["id"]
         try:
-            bb = rc.get_element_bounding_box(r["id"])
+            bb = rc.get_element_bounding_box(rid)
             dx = bb["max"]["x"] - bb["min"]["x"]
             dy = bb["max"]["y"] - bb["min"]["y"]
-            span = max(span, min(dx, dy))
-            ridge = max(ridge, max(dx, dy))
         except Exception:
             continue
-    slope = None
-    if roofs:
-        slope = _param(roofs[0]["id"], "Slope")
+        r_slope = _param(rid, "Slope")
+        r_area = _param(rid, "Area")  # surface area, sqft
+        mass_span, mass_ridge = min(dx, dy), max(dx, dy)
+        if r_area:
+            theta = _math.atan(float(r_slope)) if r_slope else 0.0
+            mass_plan = float(r_area) * _math.cos(theta)
+        else:
+            mass_plan = dx * dy
+        # skip trivial roof scraps (porch stubs under 100 sqft still count,
+        # but sub-10 sqft crickets/eyebrows just add noise)
+        if mass_plan < 10:
+            continue
+        plan_area += mass_plan
+        span = max(span, mass_span)
+        ridge += mass_ridge          # total truss-run length across masses
+        roof_masses.append({"id": rid, "span_ft": round(mass_span, 1),
+                            "ridge_ft": round(mass_ridge, 1),
+                            "plan_area_sqft": round(mass_plan, 0),
+                            "slope": r_slope})
+    slope = roof_masses[0]["slope"] if roof_masses else None
+    print(f"roof masses: {len(roof_masses)}, plan area {plan_area:.0f} sqft, "
+          f"max span {span:.1f} ft", flush=True)
 
     geometry = {
         "project": project_name,
@@ -166,8 +189,10 @@ def extract(project_name: str = "", pitch_default: float = 4.0) -> dict:
         "roof": {
             "span_ft": round(span, 1),
             "ridge_length_ft": round(ridge, 1),
+            "plan_area_sqft": round(plan_area, 0),
             "pitch_rise_per_12": float(slope) * 12 if slope else pitch_default,
             "gable_ends": 2,
+            "masses": roof_masses,
         },
     }
     return geometry

@@ -109,6 +109,10 @@ def render_text(bom: dict) -> str:
         w("\nENGINEERING FLAGS (verify with PE):\n")
         for f in bom["flags"]:
             w(f"  ⚠ {f}\n")
+    conf = bom.get("confidence")
+    if conf:
+        from . import judgment
+        w(judgment.render(conf))
     return out.getvalue()
 
 

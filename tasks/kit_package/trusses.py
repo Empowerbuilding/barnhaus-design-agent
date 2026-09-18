@@ -62,7 +62,12 @@ def truss_package(roof: dict) -> tuple[dict, dict, list]:
     # Empirical FRAMECAD intensity model (see calibration note above).
     # Gable-end framing is inside the intensity factor (ASF's truss tab
     # was a single aggregated profile including everything).
-    truss_lf = TRUSS_LF_PER_SQFT_PLAN * span * ridge
+    # Prefer measured plan area (per-roof-mass, slope-corrected) over the
+    # span x ridge rectangle — rectangles overestimate L/cross-gable plans.
+    plan_area = float(roof.get("plan_area_sqft") or 0.0)
+    if plan_area <= 0:
+        plan_area = span * ridge
+    truss_lf = TRUSS_LF_PER_SQFT_PLAN * plan_area
 
     profile = P.DEFAULTS["truss_member"]
     lf = {profile: truss_lf}
