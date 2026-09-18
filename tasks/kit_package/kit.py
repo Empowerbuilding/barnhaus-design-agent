@@ -42,10 +42,14 @@ def run_from_geometry(geo, out_dir: str | None = None) -> dict:
     result = bom.build_bom(wall_lf, truss_lf, plates,
                            all_flags, meta, hot_rolled_lf=hot_lf)
 
+    from . import judgment
+    result["confidence"] = judgment.assess(geo, all_flags)
+
     stem = (meta["project"] or "project").replace(" ", "_").lower()
     out_dir = out_dir or os.path.join("kit_output", stem)
     paths = bom.save_all(result, out_dir)
     print(bom.render_text(result))
+    print(judgment.render(result["confidence"]))
     print("Saved:", *paths, sep="\n  ")
     return result
 
