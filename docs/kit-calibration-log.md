@@ -67,14 +67,43 @@ Changes:
 | CFS panels | 11,910 | 15,236 | -22% (openings not yet in geometry) |
 | **TOTAL** | **32,186** | **35,510** | **-9.4%** |
 
-## Round 2 — pending: re-extraction with opening type-param fix
-Expectation: 47 more openings attach → king/jack studs + cripples + lintels
-close most of the remaining panel gap. Target: within ±5% total.
+## Round 2 — live re-extraction with opening fix (2026-09-17 ~10:47pm)
+**Result: 35,274.4 lbs vs 35,510.4 = -0.66% ✅✅ (spec target was ±10%, stretch ±5%)**
+Openings: 49/49 attached, 0 skipped (type-param fallback worked).
 
-Remaining known gaps after round 2 (candidates if still short):
-- Interior stud spacing: ASF may run 16" o.c. interior (we assume 24")
-- ASF panel tab may include ceiling battens/furring in the 362-43 bucket
-- Wall-function misclassification (600 vs 362 assignment) for edge walls
+| Component | Ours | ASF | Delta |
+|---|---|---|---|
+| 362 panels | 5,397.0 | 6,370.4 | -15.3% |
+| 600 panels | 9,397.4 | 8,805.3 | +6.7% |
+| Lintels | 196.4 | 60.8 | +223% (tiny lbs; ASF buckets headers in stud profiles) |
+| Hot-rolled S7 | 1,860.9 | 1,861.8 | exact |
+| Panel tab total | 16,851.7 | 17,097.9 | **-1.4%** |
+| Trusses | 18,422.7 | 18,411.9 | **+0.06%** |
+| **TOTAL** | **35,274.4** | **35,510.4** | **-0.66%** |
+| **Ballpark price** | **$73,723.50** | **$74,215.50 (actual quote)** | **-$492** |
+
+Fastener predictions vs ASF actual: flathead 3,107 vs 3,128; XDrive 21,662
+vs 21,806 — both within 1% (ratios hold when weight is right).
+
+Known compensating error inside panel tab: 362 low / 600 high — likely
+wall-function classification pushing some interior walls to exterior profile,
+and/or ASF running 16" o.c. on some interior partitions. Net effect -1.4%,
+acceptable for quoting. Do NOT chase without a second answer key —
+refinement risk exceeds reward at this accuracy.
+
+### Status: VALIDATED for ballpark quoting on catalog-style buildings.
+Pipeline: Revit model → `run.py kit` → Manufacturing Summary + lbs + price
+in ~1 minute, matching a fabricator's production software within 1% on the
+only available ground truth.
+
+### Next steps (per spec roadmap)
+1. Run `kit` on top catalog sellers (Bastion, Apex, Titan, Spring Mountain)
+   → geometry snapshots + standing ballparks per plan
+2. ASF re-quote test: send our Allen member schedule to James Hurt, measure
+   turnaround + price vs Nov 2025 baseline (after supplier replies land)
+3. Second answer key from any new fabricator quote → re-fit 362/600 split
+4. Juston Ford red-line loop on the Allen package
+5. Panel elevation drawings + load-input sheet (package v2)
 
 ---
 
