@@ -66,29 +66,44 @@ def extract(project_name: str = "", pitch_default: float = 4.0) -> dict:
         walls.append(entry)
         wall_index[wid] = entry
 
+    # Bounding-box cache: at most ONE bridge call per element, ever.
+    # (v1 bug: nearest-wall fallback re-fetched every wall bbox per opening
+    # -> O(openings x walls) tunnel calls -> 10-min agent timeout. Fixed.)
+    _bb_cache: dict = {}
+
+    def _center(eid):
+        if eid in _bb_cache:
+            return _bb_cache[eid]
+        try:
+            bb = rc.get_element_bounding_box(eid)
+            c = ((bb["min"]["x"] + bb["max"]["x"]) / 2,
+                 (bb["min"]["y"] + bb["max"]["y"]) / 2)
+        except Exception:
+            c = None
+        _bb_cache[eid] = c
+        return c
+
     def _attach(elements, kind):
-        for e in elements:
+        total = len(elements)
+        for i, e in enumerate(elements):
             eid = e.get("id")
             width = e.get("width_ft") or _param(eid, "Width") or _param(eid, "Rough Width")
             height = e.get("height_ft") or _param(eid, "Height") or _param(eid, "Rough Height")
             host = e.get("host_id") or e.get("host")
             target = wall_index.get(host)
             if target is None and walls:
-                # fallback: nearest wall by bounding box center
-                try:
-                    bb = rc.get_element_bounding_box(eid)
-                    cx = (bb["min"]["x"] + bb["max"]["x"]) / 2
-                    cy = (bb["min"]["y"] + bb["max"]["y"]) / 2
+                c = _center(eid)
+                if c is not None:
                     best, best_d = None, 1e18
                     for wl in walls:
-                        wbb = rc.get_element_bounding_box(wl["id"])
-                        wx = (wbb["min"]["x"] + wbb["max"]["x"]) / 2
-                        wy = (wbb["min"]["y"] + wbb["max"]["y"]) / 2
-                        d = (cx - wx) ** 2 + (cy - wy) ** 2
+                        wc = _center(wl["id"])
+                        if wc is None:
+                            continue
+                        d = (c[0] - wc[0]) ** 2 + (c[1] - wc[1]) ** 2
                         if d < best_d:
                             best, best_d = wl, d
                     target = best
-                except Exception:
+                else:
                     target = walls[0]
             if target is not None and width:
                 target["openings"].append({
@@ -96,7 +111,10 @@ def extract(project_name: str = "", pitch_default: float = 4.0) -> dict:
                     "height_ft": float(height or 6.8),
                     "kind": kind,
                 })
+            if (i + 1) % 10 == 0 or i + 1 == total:
+                print(f"  {kind}s: {i+1}/{total}", flush=True)
 
+    print(f"extracting: {len(walls)} walls, {len(doors_raw)} doors, {len(windows_raw)} windows", flush=True)
     _attach(doors_raw, "door")
     _attach(windows_raw, "window")
 
