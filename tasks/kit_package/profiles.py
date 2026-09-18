@@ -22,8 +22,20 @@ MIL_THICKNESS = {
     54: 0.0566, 68: 0.0713, 97: 0.1017,
 }
 
-# Standard S162 lip length (inches)
-LIP_S162 = 0.5
+# Stiffening lip length by flange designation (inches) — SSMA Product
+# Technical Guide: S125=0.188, S137=0.375, S162=0.500, S200/S250=0.625, S350=1.0
+LIP_BY_FLANGE = {125: 0.188, 137: 0.375, 162: 0.500, 200: 0.625,
+                 250: 0.625, 300: 0.625, 350: 1.000}
+
+# Exact member dimensions (inches) — SSMA designations are nominal
+# hundredths; true dims are fractional (362 = 3-5/8", 162 = 1-5/8")
+EXACT_HUNDREDTHS = {125: 1.25, 137: 1.375, 150: 1.5, 162: 1.625, 200: 2.0,
+                    250: 2.5, 300: 3.0, 350: 3.5, 362: 3.625, 400: 4.0,
+                    550: 5.5, 600: 6.0, 800: 8.0, 1000: 10.0, 1200: 12.0}
+
+
+def _dim(code: int) -> float:
+    return EXACT_HUNDREDTHS.get(code, code / 100.0)
 
 # Empirical plf from ASF Allen BOM — always preferred when present
 EMPIRICAL_PLF = {
@@ -56,9 +68,10 @@ def parse_ssma(designation: str):
             member = "T"
         else:
             return None
-        web = int(web_raw) / 100.0       # 362 -> 3.62 (nominal 3-5/8)
-        flange = int(flange_raw) / 100.0 # 162 -> 1.62
-        return (web, flange, int(mil), int(ksi), member)
+        web = _dim(int(web_raw))         # 362 -> 3.625 (3-5/8")
+        flange_code = int(flange_raw)
+        flange = _dim(flange_code)       # 162 -> 1.625 (1-5/8")
+        return (web, flange, int(mil), int(ksi), member, flange_code)
     except (ValueError, AttributeError):
         return None
 
@@ -70,9 +83,9 @@ def plf(designation: str) -> float:
     parsed = parse_ssma(designation)
     if parsed is None:
         raise ValueError(f"Unknown profile: {designation!r} — add to EMPIRICAL_PLF")
-    web, flange, mil, _ksi, member = parsed
+    web, flange, mil, _ksi, member, flange_code = parsed
     t = MIL_THICKNESS[mil]
-    lip = LIP_S162 if member == "S" else 0.0  # track (T) has no lips
+    lip = LIP_BY_FLANGE.get(flange_code, 0.5) if member == "S" else 0.0  # track (T) has no lips
     developed = web + 2 * flange + 2 * lip
     return round(developed * t * STEEL_PLF_PER_SQIN, 4)
 

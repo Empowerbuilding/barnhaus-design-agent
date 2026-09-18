@@ -23,8 +23,10 @@ RETAIL_RATE_PER_LB = 2.09   # ASF Allen benchmark — update as quotes come in
 
 def _fmt_ft(v: float) -> str:
     whole = int(v)
-    inches = (v - whole) * 12
-    return f"{whole}'-{inches:.0f}\""
+    inches = round((v - whole) * 12)
+    if inches == 12:          # carry: 5.999 ft -> 6'-0", not 5'-12"
+        whole, inches = whole + 1, 0
+    return f"{whole}'-{inches}\""
 
 
 def build_bom(wall_lf: dict, truss_lf: dict, plates: dict,

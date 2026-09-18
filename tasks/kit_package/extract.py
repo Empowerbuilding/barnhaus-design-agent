@@ -38,7 +38,8 @@ def _is_exterior(wall: dict) -> bool:
         return False
     fn = _param(wall.get("id"), "Function")
     if fn is not None:
-        return str(fn).lower().startswith("ext") or str(fn) == "0"
+        # Revit WallFunction enum: Interior=0, Exterior=1 (Foundation=2, ...)
+        return str(fn).lower().startswith("ext") or str(fn) == "1"
     return True  # conservative default: heavier framing
 
 
