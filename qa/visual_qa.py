@@ -94,7 +94,8 @@ def export_tiles(view_id: int, out_dir: str = "exports",
 
     print(f"🖼️  Exporting view {view_id} at {EXPORT_RES}px...")
     full_path = os.path.join(out_dir, f"full_{view_id}.png")
-    saved = rc.save_view_image(view_id, full_path, resolution=EXPORT_RES)
+    saved = rc.save_view_image(view_id, full_path, resolution=EXPORT_RES,
+                               max_long_edge=None)  # native res — tiled locally below
     if not saved:
         return {"error": "export failed"}
 

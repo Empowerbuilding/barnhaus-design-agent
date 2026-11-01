@@ -96,6 +96,11 @@ def main():
             img_data = base64.b64decode(resp["result"]["image_base64"])
             with open(path, "wb") as f:
                 f.write(img_data)
+            try:
+                from core.fit_image import fit
+                fit(path)   # multi-monitor captures can exceed vision limits
+            except Exception as e:
+                print(f"⚠️ fit_image skipped: {e}")
             print(f"✅ Screen captured ({resp.get('width')}x{resp.get('height')} {resp.get('scope')}) -> {path}")
         else:
             print(f"Error capturing screen: {resp.get('error', resp)}")

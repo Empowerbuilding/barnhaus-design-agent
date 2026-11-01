@@ -569,8 +569,14 @@ def export_view_image_base64(view_id: int, resolution: int = 1500,
     return {"error": result.get("error", "unknown")}
 
 
-def save_view_image(view_id: int, out_path: str, resolution: int = 1500) -> str | None:
-    """Export a view/sheet image and save it locally. Returns local path or None."""
+def save_view_image(view_id: int, out_path: str, resolution: int = 1500,
+                    max_long_edge: int | None = 4000) -> str | None:
+    """Export a view/sheet image and save it locally. Returns local path or None.
+
+    By default the saved image is downscaled to fit vision-model input limits
+    (see core/fit_image.py) so the `image` tool never rejects it. Pass
+    max_long_edge=None to keep native resolution — ONLY for pipelines that
+    tile locally afterwards (qa/visual_qa.py does exactly this)."""
     import base64 as _b64
     data = export_view_image_base64(view_id, resolution=resolution)
     if not data.get("base64"):
@@ -578,6 +584,12 @@ def save_view_image(view_id: int, out_path: str, resolution: int = 1500) -> str 
         return None
     with open(out_path, "wb") as f:
         f.write(_b64.b64decode(data["base64"]))
+    if max_long_edge is not None:
+        try:
+            from core.fit_image import fit
+            fit(out_path, max_long_edge=max_long_edge)
+        except Exception as e:
+            print(f"⚠️  fit_image skipped: {e}")
     print(f"🖼️  Saved {data.get('view_name')} → {out_path} ({data.get('size_bytes',0)//1024} KB)")
     return out_path
 
