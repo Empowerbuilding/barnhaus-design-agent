@@ -335,6 +335,7 @@ def _verify_doubled(b, cats_before, batch_cats):
 def cmd_mirror(b, out, args):
     state = load_state(out)
     require_phase(state, "preflight_done")
+    b.doc_substring = state.get("doc") or b.doc_substring
     cats = json.load(open(os.path.join(out, "census_now.json")))["cats"]
     split = state["cats_split"]
     plane, axis = state["plane"], state["axis"]
@@ -385,6 +386,7 @@ def cmd_mirror(b, out, args):
 def cmd_delete(b, out, args):
     state = load_state(out)
     require_phase(state, "mirrors_done")
+    b.doc_substring = state.get("doc") or b.doc_substring
     cats = json.load(open(os.path.join(out, "census_now.json")))["cats"]
     split = state["cats_split"]
     baseline = {k: len(v) for k, v in cats.items()}
@@ -494,6 +496,7 @@ def _elements_by_view(b, view_id, cache):
 def cmd_annotate(b, out, args):
     state = load_state(out)
     require_phase(state, "flip_complete")
+    b.doc_substring = state.get("doc") or b.doc_substring
     plane, axis = state["plane"], state["axis"]
     ax = cross(axis)
     skips = args.skip_view or DEFAULT_SKIP_VIEWS
@@ -637,6 +640,7 @@ def cmd_verify(b, out, args):
         sys.exit(2)
     plane, axis = state["plane"], state["axis"]
     ax = cross(axis)
+    b.doc_substring = state.get("doc") or b.doc_substring
     baseline = json.load(open(os.path.join(out, "census_now.json")))["cats"]
     if not b.doc_ok(verbose=True):
         sys.exit(2)
