@@ -1,0 +1,4373 @@
+{
+ "commands": {
+  "revit.add_elements_to_system": {
+   "args": [
+    {
+     "name": "system_id",
+     "required": true
+    },
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.AddElementsToSystem",
+   "status": "parked"
+  },
+  "revit.add_schedule_field": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.AddScheduleField",
+   "status": "compiled"
+  },
+  "revit.align_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "alignment",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.AlignElements",
+   "status": "compiled"
+  },
+  "revit.analyze_element_dependencies": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.AnalyzeElementDependencies",
+   "status": "compiled"
+  },
+  "revit.analyze_model_performance": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.AnalyzeModelPerformance",
+   "status": "compiled"
+  },
+  "revit.apply_color_scheme_to_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "scheme_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteApplyColorSchemeToView",
+   "status": "compiled"
+  },
+  "revit.apply_line_load": {
+   "args": [
+    {
+     "name": "host_element_id",
+     "required": true
+    },
+    {
+     "name": "force_vector1",
+     "required": true
+    },
+    {
+     "name": "force_vector2",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.ApplyLineLoad",
+   "status": "parked"
+  },
+  "revit.apply_point_load": {
+   "args": [
+    {
+     "name": "host_element_id",
+     "required": true
+    },
+    {
+     "name": "force_vector",
+     "required": true
+    },
+    {
+     "name": "load_point",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.ApplyPointLoad",
+   "status": "parked"
+  },
+  "revit.apply_view_template": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "template_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteApplyViewTemplate",
+   "status": "compiled"
+  },
+  "revit.array_elements_linear": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "count",
+     "required": true
+    },
+    {
+     "name": "vector",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.ArrayElementsLinear",
+   "status": "compiled"
+  },
+  "revit.array_elements_radial": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "count",
+     "required": true
+    },
+    {
+     "name": "center_point",
+     "required": true
+    },
+    {
+     "name": "total_angle",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.ArrayElementsRadial",
+   "status": "compiled"
+  },
+  "revit.attach_walls_to_roof": {
+   "args": [
+    {
+     "name": "wall_ids",
+     "required": true
+    },
+    {
+     "name": "roof_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteAttachWallsToRoof",
+   "status": "compiled"
+  },
+  "revit.batch_change_type": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "new_type_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchChangeType",
+   "status": "compiled"
+  },
+  "revit.batch_copy_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "translation",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchCopyElements",
+   "status": "compiled"
+  },
+  "revit.batch_create_sheets_from_csv": {
+   "args": [
+    {
+     "name": "sheets",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteBatchCreateSheetsFromCsv",
+   "status": "compiled"
+  },
+  "revit.batch_delete_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchDeleteElements",
+   "status": "compiled"
+  },
+  "revit.batch_export_to_csv": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "parameter_names",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchExportToCSV",
+   "status": "compiled"
+  },
+  "revit.batch_isolate_in_views": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "view_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchIsolateInViews",
+   "status": "compiled"
+  },
+  "revit.batch_mirror_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "plane_origin",
+     "required": true
+    },
+    {
+     "name": "plane_normal",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchMirrorElements",
+   "status": "compiled"
+  },
+  "revit.batch_move_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "translation",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchMoveElements",
+   "status": "compiled"
+  },
+  "revit.batch_rotate_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "axis_start",
+     "required": true
+    },
+    {
+     "name": "axis_end",
+     "required": true
+    },
+    {
+     "name": "angle",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchRotateElements",
+   "status": "compiled"
+  },
+  "revit.batch_set_parameters": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "parameter_name",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Batch/BatchCommands.cs",
+   "handler": "BatchCommands.BatchSetParameters",
+   "status": "compiled"
+  },
+  "revit.begin_transaction_group": {
+   "args": [
+    {
+     "name": "group_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.BeginTransactionGroup",
+   "status": "compiled"
+  },
+  "revit.bind_link": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.BindLink",
+   "status": "compiled"
+  },
+  "revit.boolean_intersect": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.BooleanIntersect",
+   "status": "compiled"
+  },
+  "revit.boolean_subtract": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.BooleanSubtract",
+   "status": "compiled"
+  },
+  "revit.boolean_union": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.BooleanUnion",
+   "status": "compiled"
+  },
+  "revit.calculate_material_quantities": {
+   "args": [
+    {
+     "name": "category",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCalculateMaterialQuantities",
+   "status": "compiled"
+  },
+  "revit.calculate_schedule_totals": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.CalculateScheduleTotals",
+   "status": "compiled"
+  },
+  "revit.calculate_space_loads": {
+   "args": [
+    {
+     "name": "space_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.CalculateSpaceLoads",
+   "status": "parked"
+  },
+  "revit.capture_screen": {
+   "args": [
+    {
+     "name": "scope",
+     "required": false
+    },
+    {
+     "name": "max_width",
+     "required": false
+    },
+    {
+     "name": "format",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/ScreenCaptureCommands.cs",
+   "handler": "ScreenCaptureCommands.CaptureScreen",
+   "status": "compiled"
+  },
+  "revit.check_clashes": {
+   "args": [
+    {
+     "name": "category1",
+     "required": true
+    },
+    {
+     "name": "category2",
+     "required": true
+    },
+    {
+     "name": "tolerance",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCheckClashes",
+   "status": "compiled"
+  },
+  "revit.check_model_integrity": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.CheckModelIntegrity",
+   "status": "compiled"
+  },
+  "revit.checkout_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.CheckoutElements",
+   "status": "compiled"
+  },
+  "revit.clear_undo_stack": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.ClearUndoStack",
+   "status": "compiled"
+  },
+  "revit.close_document": {
+   "args": [
+    {
+     "name": "save_changes",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCloseDocument",
+   "status": "compiled"
+  },
+  "revit.commit_transaction_group": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.CommitTransactionGroup",
+   "status": "compiled"
+  },
+  "revit.connect_mep_elements": {
+   "args": [
+    {
+     "name": "element1_id",
+     "required": true
+    },
+    {
+     "name": "element2_id",
+     "required": true
+    },
+    {
+     "name": "connector1_index",
+     "required": false
+    },
+    {
+     "name": "connector2_index",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.ConnectMEPElements",
+   "status": "parked"
+  },
+  "revit.convert_to_group": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": false
+    },
+    {
+     "name": "name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteConvertToGroup",
+   "status": "compiled"
+  },
+  "revit.copy_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "vector",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCopyElement",
+   "status": "compiled"
+  },
+  "revit.create_3d_view": {
+   "args": [
+    {
+     "name": "name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreate3DView",
+   "status": "compiled"
+  },
+  "revit.create_beam": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "type_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateBeam",
+   "status": "compiled"
+  },
+  "revit.create_cable_tray": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateCableTray",
+   "status": "compiled"
+  },
+  "revit.create_ceiling_plan_view": {
+   "args": [
+    {
+     "name": "level_name",
+     "required": true
+    },
+    {
+     "name": "view_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.CreateCeilingPlanView",
+   "status": "compiled"
+  },
+  "revit.create_column": {
+   "args": [
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "type_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateColumn",
+   "status": "compiled"
+  },
+  "revit.create_conduit": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "diameter",
+     "required": false
+    },
+    {
+     "name": "conduit_type",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateConduit",
+   "status": "compiled"
+  },
+  "revit.create_curve_loop": {
+   "args": [
+    {
+     "name": "points",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CreateCurveLoop",
+   "status": "compiled"
+  },
+  "revit.create_design_option": {
+   "args": [
+    {
+     "name": "option_set_id",
+     "required": true
+    },
+    {
+     "name": "option_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.CreateDesignOption",
+   "status": "parked"
+  },
+  "revit.create_design_option_set": {
+   "args": [
+    {
+     "name": "option_set_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.CreateDesignOptionSet",
+   "status": "parked"
+  },
+  "revit.create_dimension": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "element1_id",
+     "required": true
+    },
+    {
+     "name": "element2_id",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": false
+    },
+    {
+     "name": "use_face_refs",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateDimension",
+   "status": "compiled"
+  },
+  "revit.create_direct_shape": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CreateDirectShape",
+   "status": "compiled"
+  },
+  "revit.create_duct": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "system_type",
+     "required": false
+    },
+    {
+     "name": "duct_type",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateDuct",
+   "status": "compiled"
+  },
+  "revit.create_elevation_view": {
+   "args": [
+    {
+     "name": "view_name",
+     "required": true
+    },
+    {
+     "name": "marker_point",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.CreateElevationView",
+   "status": "compiled"
+  },
+  "revit.create_floor": {
+   "args": [
+    {
+     "name": "boundary_points",
+     "required": true
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "floor_type",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateFloor",
+   "status": "compiled"
+  },
+  "revit.create_floor_plan_view": {
+   "args": [
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateFloorPlanView",
+   "status": "compiled"
+  },
+  "revit.create_foundation": {
+   "args": [
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "type_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateFoundation",
+   "status": "compiled"
+  },
+  "revit.create_grid": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateGrid",
+   "status": "compiled"
+  },
+  "revit.create_group": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateGroup",
+   "status": "compiled"
+  },
+  "revit.create_height_dimension": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": false
+    },
+    {
+     "name": "offset",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateHeightDimension",
+   "status": "compiled"
+  },
+  "revit.create_key_schedule": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.CreateKeySchedule",
+   "status": "compiled"
+  },
+  "revit.create_level": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "elevation",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateLevel",
+   "status": "compiled"
+  },
+  "revit.create_load_case": {
+   "args": [
+    {
+     "name": "case_name",
+     "required": true
+    },
+    {
+     "name": "nature_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.CreateLoadCase",
+   "status": "parked"
+  },
+  "revit.create_material": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "color",
+     "required": false
+    },
+    {
+     "name": "transparency",
+     "required": false
+    },
+    {
+     "name": "shininess",
+     "required": false
+    },
+    {
+     "name": "smoothness",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateMaterial",
+   "status": "compiled"
+  },
+  "revit.create_material_takeoff": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.CreateMaterialTakeoff",
+   "status": "compiled"
+  },
+  "revit.create_mep_system": {
+   "args": [
+    {
+     "name": "system_type",
+     "required": true
+    },
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.CreateMEPSystem",
+   "status": "parked"
+  },
+  "revit.create_new_document": {
+   "args": [
+    {
+     "name": "template_path",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateNewDocument",
+   "status": "compiled"
+  },
+  "revit.create_phase": {
+   "args": [
+    {
+     "name": "phase_name",
+     "required": true
+    },
+    {
+     "name": "after_phase_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.CreatePhase",
+   "status": "parked"
+  },
+  "revit.create_pipe": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "system_type",
+     "required": false
+    },
+    {
+     "name": "pipe_type",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreatePipe",
+   "status": "compiled"
+  },
+  "revit.create_project_parameter": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "parameter_type",
+     "required": true
+    },
+    {
+     "name": "group",
+     "required": true
+    },
+    {
+     "name": "is_instance",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateProjectParameter",
+   "status": "compiled"
+  },
+  "revit.create_railing": {
+   "args": [
+    {
+     "name": "host_element_id",
+     "required": true
+    },
+    {
+     "name": "railing_type_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Stairs/StairsCommands.cs",
+   "handler": "StairsCommands.CreateRailing",
+   "status": "parked"
+  },
+  "revit.create_revision_cloud": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateRevisionCloud",
+   "status": "compiled"
+  },
+  "revit.create_roof": {
+   "args": [
+    {
+     "name": "boundary_points",
+     "required": true
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "roof_type",
+     "required": false
+    },
+    {
+     "name": "pitch",
+     "required": false
+    },
+    {
+     "name": "slope_style",
+     "required": false
+    },
+    {
+     "name": "shed_low_edge",
+     "required": false
+    },
+    {
+     "name": "slope_edges",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateRoof",
+   "status": "compiled"
+  },
+  "revit.create_room": {
+   "args": [
+    {
+     "name": "location_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "name",
+     "required": false
+    },
+    {
+     "name": "number",
+     "required": false
+    },
+    {
+     "name": "upper_limit_level",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateRoom",
+   "status": "compiled"
+  },
+  "revit.create_room_color_scheme": {
+   "args": [
+    {
+     "name": "scheme_id",
+     "required": true
+    },
+    {
+     "name": "entries",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateRoomColorScheme",
+   "status": "compiled"
+  },
+  "revit.create_schedule": {
+   "args": [
+    {
+     "name": "category_name",
+     "required": true
+    },
+    {
+     "name": "name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateSchedule",
+   "status": "compiled"
+  },
+  "revit.create_section_view": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateSectionView",
+   "status": "compiled"
+  },
+  "revit.create_shared_parameter": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "parameter_type",
+     "required": true
+    },
+    {
+     "name": "group_name",
+     "required": true
+    },
+    {
+     "name": "categories",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateSharedParameter",
+   "status": "compiled"
+  },
+  "revit.create_sheet": {
+   "args": [
+    {
+     "name": "sheet_number",
+     "required": true
+    },
+    {
+     "name": "sheet_name",
+     "required": true
+    },
+    {
+     "name": "titleblock_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateSheet",
+   "status": "compiled"
+  },
+  "revit.create_solid_blend": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CreateSolidBlend",
+   "status": "compiled"
+  },
+  "revit.create_solid_extrusion": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    },
+    {
+     "name": "profile_points",
+     "required": true
+    },
+    {
+     "name": "height",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CreateSolidExtrusion",
+   "status": "compiled"
+  },
+  "revit.create_solid_revolution": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CreateSolidRevolution",
+   "status": "compiled"
+  },
+  "revit.create_solid_sweep": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CreateSolidSweep",
+   "status": "compiled"
+  },
+  "revit.create_space": {
+   "args": [
+    {
+     "name": "level_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.CreateSpace",
+   "status": "parked"
+  },
+  "revit.create_stairs": {
+   "args": [
+    {
+     "name": "bottom_level",
+     "required": true
+    },
+    {
+     "name": "top_level",
+     "required": true
+    },
+    {
+     "name": "origin",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "width",
+     "required": false
+    },
+    {
+     "name": "run_length",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateStairs",
+   "status": "compiled"
+  },
+  "revit.create_stairs_by_sketch": {
+   "args": [
+    {
+     "name": "base_level_id",
+     "required": true
+    },
+    {
+     "name": "top_level_id",
+     "required": true
+    },
+    {
+     "name": "stairs_type_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Stairs/StairsCommands.cs",
+   "handler": "StairsCommands.CreateStairsBySketch",
+   "status": "parked"
+  },
+  "revit.create_structural_column": {
+   "args": [
+    {
+     "name": "family_symbol_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true
+    },
+    {
+     "name": "base_level_id",
+     "required": true
+    },
+    {
+     "name": "top_level_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.CreateStructuralColumn",
+   "status": "parked"
+  },
+  "revit.create_structural_framing": {
+   "args": [
+    {
+     "name": "family_symbol_id",
+     "required": true
+    },
+    {
+     "name": "start_point",
+     "required": true
+    },
+    {
+     "name": "end_point",
+     "required": true
+    },
+    {
+     "name": "level_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.CreateStructuralFraming",
+   "status": "parked"
+  },
+  "revit.create_tag": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "view_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateTag",
+   "status": "compiled"
+  },
+  "revit.create_text_note": {
+   "args": [
+    {
+     "name": "text",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "view_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateTextNote",
+   "status": "compiled"
+  },
+  "revit.create_text_type": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateTextType",
+   "status": "compiled"
+  },
+  "revit.create_truss": {
+   "args": [
+    {
+     "name": "family_symbol_id",
+     "required": true
+    },
+    {
+     "name": "start_point",
+     "required": true
+    },
+    {
+     "name": "end_point",
+     "required": true
+    },
+    {
+     "name": "level_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.CreateTruss",
+   "status": "parked"
+  },
+  "revit.create_view_filter": {
+   "args": [
+    {
+     "name": "filter_name",
+     "required": true
+    },
+    {
+     "name": "categories",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.CreateViewFilter",
+   "status": "compiled"
+  },
+  "revit.create_wall": {
+   "args": [
+    {
+     "name": "start_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "end_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "height",
+     "required": true
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "wall_type",
+     "required": false
+    },
+    {
+     "name": "location_line",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateWall",
+   "status": "compiled"
+  },
+  "revit.create_walls": {
+   "args": [
+    {
+     "name": "walls",
+     "required": false
+    },
+    {
+     "name": "allow_fallback",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateWalls",
+   "status": "compiled"
+  },
+  "revit.create_workset": {
+   "args": [
+    {
+     "name": "name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.CreateWorkset",
+   "status": "compiled"
+  },
+  "revit.crop_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "enabled",
+     "required": false
+    },
+    {
+     "name": "crop_box",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.CropView",
+   "status": "compiled"
+  },
+  "revit.cut_geometry": {
+   "args": [
+    {
+     "name": "cutting_element_id",
+     "required": true
+    },
+    {
+     "name": "cut_element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.CutGeometry",
+   "status": "compiled"
+  },
+  "revit.delete_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteDeleteElement",
+   "status": "compiled"
+  },
+  "revit.delete_sheet": {
+   "args": [
+    {
+     "name": "sheet_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteDeleteSheet",
+   "status": "compiled"
+  },
+  "revit.diagnose_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteDiagnoseElement",
+   "status": "compiled"
+  },
+  "revit.distribute_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    },
+    {
+     "name": "direction",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.DistributeElements",
+   "status": "compiled"
+  },
+  "revit.download_family": {
+   "args": [
+    {
+     "name": "url",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Web/WebCommands.cs",
+   "handler": "WebCommands.DownloadFamily",
+   "status": "compiled"
+  },
+  "revit.duplicate_family_type": {
+   "args": [
+    {
+     "name": "type_id",
+     "required": true
+    },
+    {
+     "name": "new_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.DuplicateFamilyType",
+   "status": "compiled"
+  },
+  "revit.duplicate_sheet": {
+   "args": [
+    {
+     "name": "source_sheet_id",
+     "required": true
+    },
+    {
+     "name": "new_sheet_number",
+     "required": true
+    },
+    {
+     "name": "new_sheet_name",
+     "required": true
+    },
+    {
+     "name": "duplicate_viewports",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteDuplicateSheet",
+   "status": "compiled"
+  },
+  "revit.duplicate_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "duplicate_option",
+     "required": false
+    },
+    {
+     "name": "new_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.DuplicateView",
+   "status": "compiled"
+  },
+  "revit.edit_family": {
+   "args": [
+    {
+     "name": "family_name",
+     "required": false
+    },
+    {
+     "name": "family_symbol_id",
+     "required": false
+    },
+    {
+     "name": "family_instance_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteEditFamily",
+   "status": "compiled"
+  },
+  "revit.edit_family_text": {
+   "args": [
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "find_text",
+     "required": true
+    },
+    {
+     "name": "new_text",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteEditFamilyText",
+   "status": "compiled"
+  },
+  "revit.edit_sketch_boundary": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "boundary",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteEditSketchBoundary",
+   "status": "compiled"
+  },
+  "revit.enable_worksharing": {
+   "args": [
+    {
+     "name": "default_workset_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.EnableWorksharing",
+   "status": "compiled"
+  },
+  "revit.export_dwg_by_view": {
+   "args": [
+    {
+     "name": "view_ids",
+     "required": true
+    },
+    {
+     "name": "output_directory",
+     "required": true
+    },
+    {
+     "name": "dwg_version",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteExportDwgByView",
+   "status": "compiled"
+  },
+  "revit.export_ifc_with_settings": {
+   "args": [
+    {
+     "name": "output_path",
+     "required": true
+    },
+    {
+     "name": "ifc_version",
+     "required": false
+    },
+    {
+     "name": "export_base_quantities",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteExportIfcWithSettings",
+   "status": "compiled"
+  },
+  "revit.export_image": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "output_path",
+     "required": true
+    },
+    {
+     "name": "format",
+     "required": false
+    },
+    {
+     "name": "resolution",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteExportImage",
+   "status": "compiled"
+  },
+  "revit.export_navisworks": {
+   "args": [
+    {
+     "name": "output_path",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": false
+    },
+    {
+     "name": "export_scope",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteExportNavisworks",
+   "status": "compiled"
+  },
+  "revit.export_pdf_by_sheet_set": {
+   "args": [
+    {
+     "name": "output_path",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteExportPdf",
+   "status": "compiled"
+  },
+  "revit.export_schedule_to_csv": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "output_path",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.ExportScheduleToCSV",
+   "status": "compiled"
+  },
+  "revit.export_schedules": {
+   "args": [
+    {
+     "name": "output_path",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteExportSchedules",
+   "status": "compiled"
+  },
+  "revit.export_view_image_base64": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "resolution",
+     "required": false
+    },
+    {
+     "name": "format",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/DimensionReadCommands.cs",
+   "handler": "DimensionReadCommands.ExportViewImageBase64",
+   "status": "compiled"
+  },
+  "revit.filter_by_multiple_criteria": {
+   "args": [
+    {
+     "name": "logic",
+     "required": true
+    },
+    {
+     "name": "criteria",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterByMultipleCriteria",
+   "status": "compiled"
+  },
+  "revit.filter_elements_by_bounding_box": {
+   "args": [
+    {
+     "name": "min_point",
+     "required": true
+    },
+    {
+     "name": "max_point",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterElementsByBoundingBox",
+   "status": "compiled"
+  },
+  "revit.filter_elements_by_level": {
+   "args": [
+    {
+     "name": "level_name",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterElementsByLevel",
+   "status": "compiled"
+  },
+  "revit.filter_elements_by_parameter": {
+   "args": [
+    {
+     "name": "parameter_name",
+     "required": true
+    },
+    {
+     "name": "operator",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterElementsByParameter",
+   "status": "compiled"
+  },
+  "revit.filter_elements_by_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterElementsByView",
+   "status": "compiled"
+  },
+  "revit.filter_elements_by_workset": {
+   "args": [
+    {
+     "name": "workset_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterElementsByWorkset",
+   "status": "compiled"
+  },
+  "revit.filter_elements_intersecting": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FilterElementsIntersecting",
+   "status": "compiled"
+  },
+  "revit.find_duplicate_elements": {
+   "args": [
+    {
+     "name": "category",
+     "required": false
+    },
+    {
+     "name": "tolerance",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.FindDuplicateElements",
+   "status": "compiled"
+  },
+  "revit.find_element_intersections": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "target_category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.FindElementIntersections",
+   "status": "compiled"
+  },
+  "revit.find_elements_at_point": {
+   "args": [
+    {
+     "name": "point",
+     "required": true
+    },
+    {
+     "name": "tolerance",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FindElementsAtPoint",
+   "status": "compiled"
+  },
+  "revit.find_similar_elements": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.FindSimilarElements",
+   "status": "compiled"
+  },
+  "revit.flip_door": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteFlipDoor",
+   "status": "compiled"
+  },
+  "revit.flip_wall": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteFlipWall",
+   "status": "compiled"
+  },
+  "revit.format_schedule_field": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    },
+    {
+     "name": "heading",
+     "required": false
+    },
+    {
+     "name": "heading_orientation",
+     "required": false
+    },
+    {
+     "name": "horizontal_alignment",
+     "required": false
+    },
+    {
+     "name": "width",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.FormatScheduleField",
+   "status": "compiled"
+  },
+  "revit.get_active_view": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetActiveView",
+   "status": "compiled"
+  },
+  "revit.get_all_elements_of_type": {
+   "args": [
+    {
+     "name": "type_name",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.GetAllElementsOfType",
+   "status": "compiled"
+  },
+  "revit.get_analytical_model": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.GetAnalyticalModel",
+   "status": "parked"
+  },
+  "revit.get_categories": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetCategories",
+   "status": "compiled"
+  },
+  "revit.get_central_path": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.GetCentralPath",
+   "status": "compiled"
+  },
+  "revit.get_compound_structure": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetCompoundStructure",
+   "status": "compiled"
+  },
+  "revit.get_connector_info": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.GetConnectorInfo",
+   "status": "parked"
+  },
+  "revit.get_dependencies": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/DiagnosticCommands.cs",
+   "handler": "DiagnosticCommands.GetDependencies",
+   "status": "compiled"
+  },
+  "revit.get_dependent_elements": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.GetDependentElements",
+   "status": "compiled"
+  },
+  "revit.get_design_option_info": {
+   "args": [
+    {
+     "name": "design_option_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.GetDesignOptionInfo",
+   "status": "parked"
+  },
+  "revit.get_design_options": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetDesignOptions",
+   "status": "compiled"
+  },
+  "revit.get_document_changes": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.GetDocumentChanges",
+   "status": "compiled"
+  },
+  "revit.get_document_info": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetDocumentInfo",
+   "status": "compiled"
+  },
+  "revit.get_element_boundary": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetElementBoundary",
+   "status": "compiled"
+  },
+  "revit.get_element_bounding_box": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetElementBoundingBox",
+   "status": "compiled"
+  },
+  "revit.get_element_edges": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.GetElementEdges",
+   "status": "compiled"
+  },
+  "revit.get_element_faces": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.GetElementFaces",
+   "status": "compiled"
+  },
+  "revit.get_element_geometry": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "detail_level",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.GetElementGeometry",
+   "status": "compiled"
+  },
+  "revit.get_element_parameters": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetElementParameters",
+   "status": "compiled"
+  },
+  "revit.get_element_phase_info": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.GetElementPhaseInfo",
+   "status": "parked"
+  },
+  "revit.get_element_statistics": {
+   "args": [
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.GetElementStatistics",
+   "status": "compiled"
+  },
+  "revit.get_element_type": {
+   "args": [
+    {
+     "name": "category_name",
+     "required": true
+    },
+    {
+     "name": "family_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetElementType",
+   "status": "compiled"
+  },
+  "revit.get_element_workset": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.GetElementWorkset",
+   "status": "compiled"
+  },
+  "revit.get_elements_by_unique_id": {
+   "args": [
+    {
+     "name": "unique_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.GetElementsByUniqueId",
+   "status": "compiled"
+  },
+  "revit.get_family_category": {
+   "args": [
+    {
+     "name": "family_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.GetFamilyCategory",
+   "status": "compiled"
+  },
+  "revit.get_file_base64": {
+   "args": [
+    {
+     "name": "path",
+     "required": true
+    },
+    {
+     "name": "max_bytes",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/DimensionReadCommands.cs",
+   "handler": "DimensionReadCommands.GetFileBase64",
+   "status": "compiled"
+  },
+  "revit.get_group_members": {
+   "args": [
+    {
+     "name": "group_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetGroupMembers",
+   "status": "compiled"
+  },
+  "revit.get_hosted_elements": {
+   "args": [
+    {
+     "name": "host_element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.GetHostedElements",
+   "status": "compiled"
+  },
+  "revit.get_link_elements_advanced": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    },
+    {
+     "name": "limit",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.GetLinkElementsAdvanced",
+   "status": "compiled"
+  },
+  "revit.get_link_instances": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetLinkInstances",
+   "status": "compiled"
+  },
+  "revit.get_link_transform": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.GetLinkTransform",
+   "status": "compiled"
+  },
+  "revit.get_linked_elements": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Filtering/FilteringCommands.cs",
+   "handler": "FilteringCommands.GetLinkedElements",
+   "status": "compiled"
+  },
+  "revit.get_mep_system_info": {
+   "args": [
+    {
+     "name": "system_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.GetMEPSystemInfo",
+   "status": "parked"
+  },
+  "revit.get_mep_systems": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetMepSystems",
+   "status": "compiled"
+  },
+  "revit.get_nested_families": {
+   "args": [
+    {
+     "name": "family_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.GetNestedFamilies",
+   "status": "compiled"
+  },
+  "revit.get_parameter_value": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "parameter_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetParameterValue",
+   "status": "compiled"
+  },
+  "revit.get_phase_filters": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetPhaseFilters",
+   "status": "compiled"
+  },
+  "revit.get_phases": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetPhases",
+   "status": "compiled"
+  },
+  "revit.get_project_location": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetProjectLocation",
+   "status": "compiled"
+  },
+  "revit.get_railing_info": {
+   "args": [
+    {
+     "name": "railing_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Stairs/StairsCommands.cs",
+   "handler": "StairsCommands.GetRailingInfo",
+   "status": "parked"
+  },
+  "revit.get_recent_changes": {
+   "args": [
+    {
+     "name": "last_n",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/ChangeFeedCommands.cs",
+   "handler": "ChangeFeedCommands.GetRecentChanges",
+   "status": "compiled"
+  },
+  "revit.get_render_settings": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetRenderSettings",
+   "status": "compiled"
+  },
+  "revit.get_revision_sequences": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetRevisionSequences",
+   "status": "compiled"
+  },
+  "revit.get_room_boundary": {
+   "args": [
+    {
+     "name": "room_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetRoomBoundary",
+   "status": "compiled"
+  },
+  "revit.get_rvt_links": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetRvtLinks",
+   "status": "compiled"
+  },
+  "revit.get_schedule_data": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetScheduleData",
+   "status": "compiled"
+  },
+  "revit.get_selection": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetSelection",
+   "status": "compiled"
+  },
+  "revit.get_sheet_info": {
+   "args": [
+    {
+     "name": "sheet_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetSheetInfo",
+   "status": "compiled"
+  },
+  "revit.get_stairs_info": {
+   "args": [
+    {
+     "name": "stairs_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Stairs/StairsCommands.cs",
+   "handler": "StairsCommands.GetStairsInfo",
+   "status": "parked"
+  },
+  "revit.get_type_parameters": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetTypeParameters",
+   "status": "compiled"
+  },
+  "revit.get_undo_record": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.GetUndoRecord",
+   "status": "compiled"
+  },
+  "revit.get_view_info": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetViewInfo",
+   "status": "compiled"
+  },
+  "revit.get_view_templates": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetViewTemplates",
+   "status": "compiled"
+  },
+  "revit.get_viewports_on_sheet": {
+   "args": [
+    {
+     "name": "sheet_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetViewportsOnSheet",
+   "status": "compiled"
+  },
+  "revit.get_wall_doors": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetWallDoors",
+   "status": "compiled"
+  },
+  "revit.get_wall_orientation": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetWallOrientation",
+   "status": "compiled"
+  },
+  "revit.get_warnings": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.GetWarnings",
+   "status": "compiled"
+  },
+  "revit.get_workset_owner": {
+   "args": [
+    {
+     "name": "workset_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.GetWorksetOwner",
+   "status": "compiled"
+  },
+  "revit.get_workset_visibility": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "workset_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.GetWorksetVisibility",
+   "status": "compiled"
+  },
+  "revit.get_worksets": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteGetWorksets",
+   "status": "compiled"
+  },
+  "revit.health": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteHealth",
+   "status": "compiled"
+  },
+  "revit.hide_elements_in_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.HideElementsInView",
+   "status": "compiled"
+  },
+  "revit.import_cad": {
+   "args": [
+    {
+     "name": "cad_path",
+     "required": true
+    },
+    {
+     "name": "import_mode",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.ImportCAD",
+   "status": "compiled"
+  },
+  "revit.inspect_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/DiagnosticCommands.cs",
+   "handler": "DiagnosticCommands.InspectElement",
+   "status": "compiled"
+  },
+  "revit.inspect_roof_sketch": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/DiagnosticCommands.cs",
+   "handler": "DiagnosticCommands.InspectRoofSketch",
+   "status": "compiled"
+  },
+  "revit.invoke_method": {
+   "args": [
+    {
+     "name": "class_name",
+     "required": true
+    },
+    {
+     "name": "method_name",
+     "required": true
+    },
+    {
+     "name": "arguments",
+     "required": true
+    },
+    {
+     "name": "target_id",
+     "required": false
+    },
+    {
+     "name": "use_transaction",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteInvokeMethod",
+   "status": "compiled"
+  },
+  "revit.isolate_elements_in_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.IsolateElementsInView",
+   "status": "compiled"
+  },
+  "revit.join_geometry": {
+   "args": [
+    {
+     "name": "element1_id",
+     "required": true
+    },
+    {
+     "name": "element2_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.JoinGeometry",
+   "status": "compiled"
+  },
+  "revit.list_all_design_option_sets": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.ListAllDesignOptionSets",
+   "status": "parked"
+  },
+  "revit.list_all_phases": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.ListAllPhases",
+   "status": "parked"
+  },
+  "revit.list_color_schemes": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListColorSchemes",
+   "status": "compiled"
+  },
+  "revit.list_dimensions": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Diagnostics/DimensionReadCommands.cs",
+   "handler": "DimensionReadCommands.ListDimensions",
+   "status": "compiled"
+  },
+  "revit.list_elements_by_category": {
+   "args": [
+    {
+     "name": "category",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListElementsByCategory",
+   "status": "compiled"
+  },
+  "revit.list_families": {
+   "args": [
+    {
+     "name": "category",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListFamilies",
+   "status": "compiled"
+  },
+  "revit.list_family_instances": {
+   "args": [
+    {
+     "name": "family_id",
+     "required": true
+    },
+    {
+     "name": "limit",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.ListFamilyInstances",
+   "status": "compiled"
+  },
+  "revit.list_levels": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListLevels",
+   "status": "compiled"
+  },
+  "revit.list_local_families": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Web/WebCommands.cs",
+   "handler": "WebCommands.ListLocalFamilies",
+   "status": "compiled"
+  },
+  "revit.list_project_parameters": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListProjectParameters",
+   "status": "compiled"
+  },
+  "revit.list_shared_parameters": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListSharedParameters",
+   "status": "compiled"
+  },
+  "revit.list_sheets": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListSheets",
+   "status": "compiled"
+  },
+  "revit.list_tags_in_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListTagsInView",
+   "status": "compiled"
+  },
+  "revit.list_titleblocks": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListTitleblocks",
+   "status": "compiled"
+  },
+  "revit.list_types": {
+   "args": [
+    {
+     "name": "category",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListTypes",
+   "status": "compiled"
+  },
+  "revit.list_views": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteListViews",
+   "status": "compiled"
+  },
+  "revit.load_family": {
+   "args": [
+    {
+     "name": "family_path",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.LoadFamily",
+   "status": "compiled"
+  },
+  "revit.load_link": {
+   "args": [
+    {
+     "name": "link_path",
+     "required": true
+    },
+    {
+     "name": "absolute_path",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.LoadLink",
+   "status": "compiled"
+  },
+  "revit.manage_cad_import": {
+   "args": [
+    {
+     "name": "import_instance_id",
+     "required": true
+    },
+    {
+     "name": "action",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.ManageCADImport",
+   "status": "compiled"
+  },
+  "revit.mirror_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "plane_origin",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "plane_normal",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteMirrorElement",
+   "status": "compiled"
+  },
+  "revit.modify_stairs_run": {
+   "args": [
+    {
+     "name": "stairs_run_id",
+     "required": true
+    },
+    {
+     "name": "number_of_risers",
+     "required": false
+    },
+    {
+     "name": "run_width",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Stairs/StairsCommands.cs",
+   "handler": "StairsCommands.ModifyStairsRun",
+   "status": "parked"
+  },
+  "revit.move_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "vector",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteMoveElement",
+   "status": "compiled"
+  },
+  "revit.move_elevation_marker": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "offset_ft",
+     "required": true
+    },
+    {
+     "name": "clear_building",
+     "required": false
+    },
+    {
+     "name": "margin_ft",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteMoveElevationMarker",
+   "status": "compiled"
+  },
+  "revit.offset_curves": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "offset",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.OffsetCurves",
+   "status": "compiled"
+  },
+  "revit.open_document": {
+   "args": [
+    {
+     "name": "path",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteOpenDocument",
+   "status": "compiled"
+  },
+  "revit.pin_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePinElement",
+   "status": "compiled"
+  },
+  "revit.place_door": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "family_name",
+     "required": false
+    },
+    {
+     "name": "type_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePlaceDoor",
+   "status": "compiled"
+  },
+  "revit.place_family_instance": {
+   "args": [
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "type_name",
+     "required": true
+    },
+    {
+     "name": "level",
+     "required": true
+    },
+    {
+     "name": "rotation",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePlaceFamilyInstance",
+   "status": "compiled"
+  },
+  "revit.place_family_on_face": {
+   "args": [
+    {
+     "name": "host_element_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "type_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePlaceFamilyOnFace",
+   "status": "compiled"
+  },
+  "revit.place_family_on_host": {
+   "args": [
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "family_name",
+     "required": true
+    },
+    {
+     "name": "type_name",
+     "required": true
+    },
+    {
+     "name": "host_element_id",
+     "required": true
+    },
+    {
+     "name": "level",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePlaceFamilyOnHost",
+   "status": "compiled"
+  },
+  "revit.place_rebar": {
+   "args": [
+    {
+     "name": "host_element_id",
+     "required": true
+    },
+    {
+     "name": "rebar_bar_type_id",
+     "required": true
+    },
+    {
+     "name": "rebar_shape_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Structural/StructuralCommands.cs",
+   "handler": "StructuralCommands.PlaceRebar",
+   "status": "parked"
+  },
+  "revit.place_viewport_on_sheet": {
+   "args": [
+    {
+     "name": "sheet_id",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePlaceViewportOnSheet",
+   "status": "compiled"
+  },
+  "revit.place_window": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    },
+    {
+     "name": "location",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "family_name",
+     "required": false
+    },
+    {
+     "name": "type_name",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePlaceWindow",
+   "status": "compiled"
+  },
+  "revit.populate_titleblock": {
+   "args": [
+    {
+     "name": "sheet_id",
+     "required": true
+    },
+    {
+     "name": "parameters",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecutePopulateTitleblock",
+   "status": "compiled"
+  },
+  "revit.purge_unused_families": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.PurgeUnusedFamilies",
+   "status": "compiled"
+  },
+  "revit.raycast_debug": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "standoff",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteRaycastDebug",
+   "status": "compiled"
+  },
+  "revit.reflect_get": {
+   "args": [
+    {
+     "name": "target_id",
+     "required": true
+    },
+    {
+     "name": "property_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteReflectGet",
+   "status": "compiled"
+  },
+  "revit.reflect_set": {
+   "args": [
+    {
+     "name": "target_id",
+     "required": true
+    },
+    {
+     "name": "property_name",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteReflectSet",
+   "status": "compiled"
+  },
+  "revit.relinquish_all": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteRelinquishAll",
+   "status": "compiled"
+  },
+  "revit.reload_family": {
+   "args": [
+    {
+     "name": "family_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.ReloadFamily",
+   "status": "compiled"
+  },
+  "revit.reload_link": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.ReloadLink",
+   "status": "compiled"
+  },
+  "revit.remove_schedule_field": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.RemoveScheduleField",
+   "status": "compiled"
+  },
+  "revit.rename_family_type": {
+   "args": [
+    {
+     "name": "type_id",
+     "required": true
+    },
+    {
+     "name": "new_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.RenameFamilyType",
+   "status": "compiled"
+  },
+  "revit.rename_workset": {
+   "args": [
+    {
+     "name": "workset_id",
+     "required": true
+    },
+    {
+     "name": "new_name",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.RenameWorkset",
+   "status": "compiled"
+  },
+  "revit.render_3d_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "output_path",
+     "required": true
+    },
+    {
+     "name": "quality",
+     "required": false
+    },
+    {
+     "name": "width",
+     "required": false
+    },
+    {
+     "name": "height",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteRender3DView",
+   "status": "compiled"
+  },
+  "revit.renumber_sheets": {
+   "args": [
+    {
+     "name": "sheets",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteRenumberSheets",
+   "status": "compiled"
+  },
+  "revit.replace_family": {
+   "args": [
+    {
+     "name": "old_family_id",
+     "required": true
+    },
+    {
+     "name": "new_family_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.ReplaceFamily",
+   "status": "compiled"
+  },
+  "revit.rollback_transaction_group": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.RollbackTransactionGroup",
+   "status": "compiled"
+  },
+  "revit.rotate_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "axis_point",
+     "required": true,
+     "shape": "xyz {x,y,z}"
+    },
+    {
+     "name": "angle_radians",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteRotateElement",
+   "status": "compiled"
+  },
+  "revit.route_mep": {
+   "args": [
+    {
+     "name": "start_element_id",
+     "required": true
+    },
+    {
+     "name": "end_element_id",
+     "required": true
+    },
+    {
+     "name": "mep_type",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.RouteMEP",
+   "status": "parked"
+  },
+  "revit.save_document": {
+   "args": [
+    {
+     "name": "path",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSaveDocument",
+   "status": "compiled"
+  },
+  "revit.set_category_visibility": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "categories",
+     "required": true
+    },
+    {
+     "name": "hidden",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetCategoryVisibility",
+   "status": "compiled"
+  },
+  "revit.set_compound_structure_layers": {
+   "args": [
+    {
+     "name": "layers",
+     "required": true
+    },
+    {
+     "name": "new_type_name",
+     "required": false
+    },
+    {
+     "name": "swap_element",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetCompoundStructureLayers",
+   "status": "compiled"
+  },
+  "revit.set_detail_level": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "detail_level",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetDetailLevel",
+   "status": "compiled"
+  },
+  "revit.set_element_design_option": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "design_option_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.SetElementDesignOption",
+   "status": "parked"
+  },
+  "revit.set_element_material": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "material_name",
+     "required": true
+    },
+    {
+     "name": "face_index",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetElementMaterial",
+   "status": "compiled"
+  },
+  "revit.set_element_phase": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "phase_created_id",
+     "required": false
+    },
+    {
+     "name": "phase_demolished_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Phasing/PhasingCommands.cs",
+   "handler": "PhasingCommands.SetElementPhase",
+   "status": "parked"
+  },
+  "revit.set_element_workset": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "workset_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.SetElementWorkset",
+   "status": "compiled"
+  },
+  "revit.set_failure_handling_options": {
+   "args": [
+    {
+     "name": "continue_on_failure",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Transactions/TransactionCommands.cs",
+   "handler": "TransactionCommands.SetFailureHandlingOptions",
+   "status": "compiled"
+  },
+  "revit.set_family_type_parameter": {
+   "args": [
+    {
+     "name": "type_id",
+     "required": true
+    },
+    {
+     "name": "parameter_name",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.SetFamilyTypeParameter",
+   "status": "compiled"
+  },
+  "revit.set_link_visibility": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "visible",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.SetLinkVisibility",
+   "status": "compiled"
+  },
+  "revit.set_mep_flow": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "flow",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.SetMEPFlow",
+   "status": "parked"
+  },
+  "revit.set_parameter_value": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "parameter_name",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetParameterValue",
+   "status": "compiled"
+  },
+  "revit.set_schedule_filter": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    },
+    {
+     "name": "filter_type",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.SetScheduleFilter",
+   "status": "compiled"
+  },
+  "revit.set_schedule_grouping": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    },
+    {
+     "name": "show_header",
+     "required": false
+    },
+    {
+     "name": "show_footer",
+     "required": false
+    },
+    {
+     "name": "show_blank_line",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.SetScheduleGrouping",
+   "status": "compiled"
+  },
+  "revit.set_schedule_sorting": {
+   "args": [
+    {
+     "name": "schedule_id",
+     "required": true
+    },
+    {
+     "name": "field_name",
+     "required": true
+    },
+    {
+     "name": "ascending",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Schedules/ScheduleCommands.cs",
+   "handler": "ScheduleCommands.SetScheduleSorting",
+   "status": "compiled"
+  },
+  "revit.set_selection": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetSelection",
+   "status": "compiled"
+  },
+  "revit.set_stairs_path": {
+   "args": [
+    {
+     "name": "stairs_id",
+     "required": true
+    },
+    {
+     "name": "path_points",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/Stairs/StairsCommands.cs",
+   "handler": "StairsCommands.SetStairsPath",
+   "status": "parked"
+  },
+  "revit.set_tag_head_position": {
+   "args": [
+    {
+     "name": "tag_id",
+     "required": true
+    },
+    {
+     "name": "x",
+     "required": true
+    },
+    {
+     "name": "y",
+     "required": true
+    },
+    {
+     "name": "z",
+     "required": true
+    },
+    {
+     "name": "leader",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetTagHeadPosition",
+   "status": "compiled"
+  },
+  "revit.set_type_parameter": {
+   "args": [
+    {
+     "name": "type_id",
+     "required": true
+    },
+    {
+     "name": "parameter_name",
+     "required": true
+    },
+    {
+     "name": "value",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetTypeParameter",
+   "status": "compiled"
+  },
+  "revit.set_view_crop": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "crop_active",
+     "required": false
+    },
+    {
+     "name": "crop_visible",
+     "required": false
+    },
+    {
+     "name": "auto_fit",
+     "required": false
+    },
+    {
+     "name": "padding",
+     "required": false
+    },
+    {
+     "name": "min_x",
+     "required": false
+    },
+    {
+     "name": "min_y",
+     "required": false
+    },
+    {
+     "name": "max_x",
+     "required": false
+    },
+    {
+     "name": "max_y",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetViewCrop",
+   "status": "compiled"
+  },
+  "revit.set_view_range": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "top_offset",
+     "required": false
+    },
+    {
+     "name": "cut_offset",
+     "required": false
+    },
+    {
+     "name": "bottom_offset",
+     "required": false
+    },
+    {
+     "name": "depth_offset",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetViewRange",
+   "status": "compiled"
+  },
+  "revit.set_view_scale": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "scale",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetViewScale",
+   "status": "compiled"
+  },
+  "revit.set_view_template": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "template_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.SetViewTemplate",
+   "status": "compiled"
+  },
+  "revit.set_view_underlay": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetViewUnderlay",
+   "status": "compiled"
+  },
+  "revit.set_view_visibility": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "category",
+     "required": true
+    },
+    {
+     "name": "visible",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.SetViewVisibility",
+   "status": "compiled"
+  },
+  "revit.set_viewport_center": {
+   "args": [
+    {
+     "name": "viewport_id",
+     "required": true
+    },
+    {
+     "name": "x",
+     "required": true
+    },
+    {
+     "name": "y",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetViewportCenter",
+   "status": "compiled"
+  },
+  "revit.set_viewport_label": {
+   "args": [
+    {
+     "name": "viewport_id",
+     "required": true
+    },
+    {
+     "name": "line_length_ft",
+     "required": false
+    },
+    {
+     "name": "offset_x",
+     "required": false
+    },
+    {
+     "name": "offset_y",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetViewportLabel",
+   "status": "compiled"
+  },
+  "revit.set_wall_height": {
+   "args": [
+    {
+     "name": "wall_id",
+     "required": true
+    },
+    {
+     "name": "height",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSetWallHeight",
+   "status": "compiled"
+  },
+  "revit.set_workset_visibility": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "workset_id",
+     "required": true
+    },
+    {
+     "name": "visible",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Worksharing/WorksharingCommands.cs",
+   "handler": "WorksharingCommands.SetWorksetVisibility",
+   "status": "compiled"
+  },
+  "revit.size_mep_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "size",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Specialized/MEP/MEPCommands.cs",
+   "handler": "MEPCommands.SizeMEPElement",
+   "status": "parked"
+  },
+  "revit.swap_family_type": {
+   "args": [
+    {
+     "name": "instance_ids",
+     "required": true
+    },
+    {
+     "name": "new_type_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.SwapFamilyType",
+   "status": "compiled"
+  },
+  "revit.sync_to_central": {
+   "args": [
+    {
+     "name": "comment",
+     "required": false
+    },
+    {
+     "name": "relinquish",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteSyncToCentral",
+   "status": "compiled"
+  },
+  "revit.tag_all_in_view": {
+   "args": [
+    {
+     "name": "category",
+     "required": true
+    },
+    {
+     "name": "exterior_only",
+     "required": false
+    },
+    {
+     "name": "view_id",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteTagAllInView",
+   "status": "compiled"
+  },
+  "revit.tag_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": false
+    },
+    {
+     "name": "leader",
+     "required": false
+    },
+    {
+     "name": "offset",
+     "required": false
+    },
+    {
+     "name": "orientation",
+     "required": false
+    },
+    {
+     "name": "x",
+     "required": false
+    },
+    {
+     "name": "y",
+     "required": false
+    },
+    {
+     "name": "z",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteTagElement",
+   "status": "compiled"
+  },
+  "revit.tag_visible_in_view": {
+   "args": [
+    {
+     "name": "category",
+     "required": true
+    },
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "exterior_only",
+     "required": false
+    },
+    {
+     "name": "visible_only",
+     "required": false
+    },
+    {
+     "name": "row",
+     "required": false
+    },
+    {
+     "name": "min_samples",
+     "required": false
+    },
+    {
+     "name": "row_offset",
+     "required": false
+    },
+    {
+     "name": "min_spacing",
+     "required": false
+    },
+    {
+     "name": "facing_threshold",
+     "required": false
+    },
+    {
+     "name": "ignore_categories",
+     "required": false
+    },
+    {
+     "name": "plane_tolerance",
+     "required": false
+    },
+    {
+     "name": "strict",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteTagVisibleInView",
+   "status": "compiled"
+  },
+  "revit.transfer_standards": {
+   "args": [
+    {
+     "name": "source_document_path",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Families/FamilyCommands.cs",
+   "handler": "FamilyCommands.TransferStandards",
+   "status": "compiled"
+  },
+  "revit.try_delete": {
+   "args": [],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Web/WebCommands.cs",
+   "handler": "DiagnosticCommands.TryDelete",
+   "status": "compiled"
+  },
+  "revit.ungroup": {
+   "args": [
+    {
+     "name": "group_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteUngroup",
+   "status": "compiled"
+  },
+  "revit.unhide_elements_in_view": {
+   "args": [
+    {
+     "name": "view_id",
+     "required": true
+    },
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Core/Views/ViewManagementCommands.cs",
+   "handler": "ViewManagementCommands.UnhideElementsInView",
+   "status": "compiled"
+  },
+  "revit.unjoin_geometry": {
+   "args": [
+    {
+     "name": "element1_id",
+     "required": true
+    },
+    {
+     "name": "element2_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Geometry/GeometryCommands.cs",
+   "handler": "GeometryCommands.UnjoinGeometry",
+   "status": "compiled"
+  },
+  "revit.unload_link": {
+   "args": [
+    {
+     "name": "link_instance_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Advanced/Links/LinkCommands.cs",
+   "handler": "LinkCommands.UnloadLink",
+   "status": "compiled"
+  },
+  "revit.unpin_element": {
+   "args": [
+    {
+     "name": "element_id",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteUnpinElement",
+   "status": "compiled"
+  },
+  "revit.update_room_color_scheme": {
+   "args": [
+    {
+     "name": "scheme_id",
+     "required": true
+    },
+    {
+     "name": "entries",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateRoomColorScheme",
+   "status": "compiled"
+  },
+  "revit.validate_elements": {
+   "args": [
+    {
+     "name": "element_ids",
+     "required": true
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Commands/Enhancements/Analysis/AnalysisCommands.cs",
+   "handler": "AnalysisCommands.ValidateElements",
+   "status": "compiled"
+  }
+ },
+ "counts": {
+  "compiled": 261,
+  "parked": 33,
+  "total": 294,
+  "with_args": 245
+ },
+ "generated": "2026-11-04 23:43 UTC",
+ "revit_bridge_commit": "728108a"
+}

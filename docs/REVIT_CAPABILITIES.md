@@ -19,12 +19,35 @@ core.revit_client.list_tools()  → same thing from python
   **without** a `build` field = pre-2026-09-14 DLL → tell the user to run UpdateBridge.bat.
 - `BRIDGE_COMMANDS.md` + `tools.json` in the revit-bridge repo are CI-generated from
   source on every push — they describe the **latest build**, not what a user has installed.
+- **Payload schemas** (arg names, required flags, parked status) live HERE:
+  `docs/bridge_schemas.json` + `bridge.py doc <cmd>` — never grep the DLL source for
+  an arg name. Full reference incl. gotchas: `docs/BRIDGE_API.md`.
 
 ## Rule 1 — All dispatch names use the `revit.` prefix
 
 The bridge keys on `revit.*`. `core/revit_client.py::call()` auto-prefixes since
 2026-09-14, and new DLLs normalize server-side too — but write the prefix explicitly
 anyway. Older installed DLLs return "Unknown tool" for bare names.
+
+## Rule 1b — Payload schemas: `bridge.py doc`, not the C# source
+
+Every command's arg names are extracted from source into `docs/bridge_schemas.json`
+(294 commands: 261 compiled + 33 parked, arg names + required flags). Lookup is one
+offline command — grepping `BridgeCommandFactory.cs` for schemas burned ~15 execs on
+a single 2026-11-04 countertop task; that failure mode is banned.
+
+```
+bridge.py doc place_family_instance      # args + required flags, offline
+bridge.py call revit.get_document_info   # one call, URL auto-resolved
+bridge.py call revit.list_elements_by_category '{"category":"Casework"}'
+bridge.py script batch_task.py           # N calls in ONE exec (batching rule)
+```
+
+`bridge.py` (repo root) wraps `core/revit_client` — no more env/sys.path/import
+heredocs per call. URL resolution: `--url` > `$REVIT_BRIDGE_URL` >
+`bridge_sessions.json` (`--channel`, default blueprint-mitch) > localhost:3000.
+Gotchas, verified payloads, and the lookup order: **`docs/BRIDGE_API.md`** — read it
+before your first bridge session after pulling this.
 
 ## Rule 2 — Compiled ≠ proven
 
