@@ -1146,6 +1146,25 @@
    "handler": "ExecuteCreateRoof",
    "status": "compiled"
   },
+  "revit.create_roof_fascia": {
+   "args": [
+    {
+     "name": "roof_id",
+     "required": true
+    },
+    {
+     "name": "fascia_type_name",
+     "required": false
+    },
+    {
+     "name": "edge_filter",
+     "required": false
+    }
+   ],
+   "file": "packages/revit-bridge-addin/src/Bridge/BridgeCommandFactory.cs",
+   "handler": "ExecuteCreateRoofFascia",
+   "status": "compiled"
+  },
   "revit.create_room": {
    "args": [
     {
@@ -4363,11 +4382,11 @@
   }
  },
  "counts": {
-  "compiled": 261,
+  "compiled": 262,
   "parked": 33,
-  "total": 294,
-  "with_args": 245
+  "total": 295,
+  "with_args": 246
  },
- "generated": "2026-11-04 23:43 UTC",
- "revit_bridge_commit": "728108a"
+ "generated": "2026-11-05 07:14 UTC",
+ "revit_bridge_commit": "5dc86e1"
 }

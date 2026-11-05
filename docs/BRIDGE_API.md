@@ -77,6 +77,7 @@ bridge.py script batch_task.py                   # many calls in ONE exec (see b
 | `download_family` | `*url` | pulls an .rfa from the web into the project |
 | `create_solid_extrusion` | `*name`, `*profile_points`, `*height` | freeform DirectShape solid |
 | `create_walls` | `walls[]` `{start,end,wall_type_name,level_name,height_ft,base_offset_ft,structural}`, `allow_fallback` | batch; strict name resolution; per-item errors + available_* lists. Docs: revit-bridge/docs/create-walls.md |
+| `create_roof_fascia` | `*roof_id`, `fascia_type_name` (default: first loaded), `edge_filter` (`all` default \| `horizontal` = eaves only \| `sloped` = rakes) | NATIVE parametric fascia (HostedSweep) — follows the roof when it edits. Edges auto-picked from the roof's bottom faces (eaves+rakes, ridge excluded). Needs a fascia family loaded; errors list available types, `revit.load_family` fixes it. Per-edge results. **Requires DLL build 234a085+ (2026-11-05)** |
 | `create_material` | `*name`, `color` `{"r":..,"g":..,"b":..}`, `transparency`, `shininess`, `smoothness` | |
 | `create_level` / `create_floor` / `place_room` | see `bridge.py doc` | |
 
