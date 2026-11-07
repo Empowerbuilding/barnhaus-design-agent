@@ -41,6 +41,12 @@ _FLOOR_MOUNTED = re.compile(
     r"toilet|vanity|range|cooktop|refrig|fridge|dishwasher|washer|dryer|bathtub|tub",
     re.IGNORECASE,
 )
+# Wall/ceiling-mounted items whose names contain floor-mount keywords
+# ("Cabinet OVER TOILET", "RANGE Hood") must not be flagged as floating.
+_WALL_MOUNTED = re.compile(
+    r"over|wall|upper|hood|shelf|shelve|mirror|med cabinet|hung",
+    re.IGNORECASE,
+)
 # Sink-ish plumbing fixtures (seating check applies)
 _SINK = re.compile(r"sink|basin|lavatory|bowl", re.IGNORECASE)
 # Counter-ish casework/furniture (thin-ish slab at counter height)
@@ -304,7 +310,7 @@ def _check_ceiling_boundaries(elements, rooms):
         elif spanning > 1:
             issues.append({
                 "type": "ceiling_spans_rooms",
-                "severity": "consider",
+                "severity": "fyi",
                 "element_id": ce["id"],
                 "message": f"Ceiling {ce['id']} spans {spanning} rooms. "
                            f"Intentional for open plan; if not, split at the wall.",
@@ -350,8 +356,11 @@ def _check_floor_mounted(elements, levels):
         if el["category"] not in ("Plumbing Fixtures", "Casework", "Specialty Equipment",
                                   "Furniture", "Generic Models"):
             continue
-        if not _FLOOR_MOUNTED.search(f"{el['family']} {el['type']}"):
+        label = f"{el['family']} {el['type']}"
+        if not _FLOOR_MOUNTED.search(label):
             continue
+        if _WALL_MOUNTED.search(label):
+            continue  # wall/ceiling-mounted (e.g. "Cabinet Over Toilet", "Range Hood")
         if not el["bbox"]:
             continue
         min_z = el["bbox"]["min"]["z"]
