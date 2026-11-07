@@ -221,7 +221,9 @@ def _check_sink_seating(elements):
     top (seated), not sunken deep and not floating above it."""
     sinks = [e for e in elements if e["category"] == "Plumbing Fixtures"
              and _SINK.search(f"{e['family']} {e['type']} {e['name']}")]
-    counters = [e for e in elements if e["category"] in ("Casework", "Furniture")
+    counters = [e for e in elements if e["category"] in ("Casework", "Furniture",
+                                                          "Specialty Equipment",
+                                                          "Generic Models")
                 and _COUNTER.search(f"{e['family']} {e['type']} {e['name']}")]
     # Fall back: any casework slab whose bbox height is counter-ish (2–4.5 ft)
     # when no explicit counter names exist.
@@ -299,12 +301,18 @@ def _check_ceiling_boundaries(elements, rooms):
                     and rb["min"]["y"] <= cy <= rb["max"]["y"]):
                 inside_any = True
         if room_bbs and not inside_any:
+            # Crosses a wall (overlaps a room but center outside) = likely wrong
+            # boundary -> fix. Fully clear of all rooms = porch/overhang -> fyi.
+            overlaps_room = any((_xy_overlap(ce["bbox"], rb) or 0) > 0.05 for rb in room_bbs)
             issues.append({
                 "type": "ceiling_outside_rooms",
-                "severity": "fix",
+                "severity": "fix" if overlaps_room else "fyi",
                 "element_id": ce["id"],
-                "message": f"Ceiling {ce['id']} center is not inside any room — boundary "
-                           f"likely wrong. Check the room/ceiling polygon.",
+                "message": (f"Ceiling {ce['id']} center is not inside any room but overlaps one — "
+                            f"boundary likely crosses a wall. Check the room/ceiling polygon."
+                            if overlaps_room else
+                            f"Ceiling {ce['id']} is outside all rooms — porch/overhang? Confirm "
+                            f"intentional."),
                 "auto_fixable": False,
             })
         elif spanning > 1:
@@ -334,7 +342,9 @@ def _check_duplicates(elements):
                 a, b = els[i], els[j]
                 ax, ay = _center_xy(a["bbox"])
                 bx, by = _center_xy(b["bbox"])
-                if abs(ax - bx) < 0.15 and abs(ay - by) < 0.15:
+                az = (a["bbox"]["min"]["z"] + a["bbox"]["max"]["z"]) / 2.0
+                bz = (b["bbox"]["min"]["z"] + b["bbox"]["max"]["z"]) / 2.0
+                if abs(ax - bx) < 0.15 and abs(ay - by) < 0.15 and abs(az - bz) < 0.5:
                     issues.append({
                         "type": "duplicate_placement",
                         "severity": "fix",
