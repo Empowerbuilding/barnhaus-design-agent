@@ -221,15 +221,20 @@ def _check_sink_seating(elements):
     top (seated), not sunken deep and not floating above it."""
     sinks = [e for e in elements if e["category"] == "Plumbing Fixtures"
              and _SINK.search(f"{e['family']} {e['type']} {e['name']}")]
-    counters = [e for e in elements if e["category"] in ("Casework", "Furniture",
+    # Counter candidates, in priority order:
+    #   a) name-matched counters (any category, any height)
+    #   b) thin slabs (0.1–0.8 ft tall) in placement categories — geometry, not
+    #      names, because Barnhaus counters are named "Walnut Block", "Quartz", etc.
+    name_matched = [e for e in elements if e["category"] in ("Casework", "Furniture",
+                                                             "Specialty Equipment",
+                                                             "Generic Models")
+                    and _COUNTER.search(f"{e['family']} {e['type']} {e['name']}")]
+    slab_like = [e for e in elements if e["category"] in ("Casework", "Furniture",
                                                           "Specialty Equipment",
                                                           "Generic Models")
-                and _COUNTER.search(f"{e['family']} {e['type']} {e['name']}")]
-    # Fall back: any casework slab whose bbox height is counter-ish (2–4.5 ft)
-    # when no explicit counter names exist.
-    if not counters:
-        counters = [e for e in elements if e["category"] == "Casework" and e["bbox"]
-                    and 1.5 <= (e["bbox"]["max"]["z"] - e["bbox"]["min"]["z"]) <= 4.5]
+                 and e["bbox"]
+                 and 0.1 <= (e["bbox"]["max"]["z"] - e["bbox"]["min"]["z"]) <= 0.8]
+    counters = name_matched + [e for e in slab_like if e not in name_matched]
 
     issues = []
     for s in sinks:
@@ -259,17 +264,18 @@ def _check_sink_seating(elements):
         c = best[1]
         counter_top = c["bbox"]["max"]["z"]
         bowl_bottom = s["bbox"]["min"]["z"]
-        sink_top = s["bbox"]["max"]["z"]
-        if bowl_bottom < counter_top - 0.35:
+        sink_top = s["bbox"]["max"]["z"]  # rim, or faucet tip if integrated
+        # Seated = counter top cuts through the sink's z-range: bowl below
+        # (undermounts hang 6-10in below by design), rim/faucet at-or-above.
+        if sink_top < counter_top - 0.2:
             issues.append({
                 "type": "sink_sunken",
                 "severity": "fix",
                 "element_id": s["id"],
-                "message": f"Sink {s['id']} is SUNKEN: bowl bottom "
-                           f"{bowl_bottom:.2f} vs counter top {counter_top:.2f} "
-                           f"({counter_top - bowl_bottom:.2f} ft below). Likely set off the "
-                           f"family bbox top (faucet tip), not the rim. Re-seat on counter "
-                           f"top minus rim depth.",
+                "message": f"Sink {s['id']} is SUNKEN: even its top ({sink_top:.2f}) is "
+                           f"{counter_top - sink_top:.2f} ft below counter {c['id']} top "
+                           f"({counter_top:.2f}). The whole fixture dropped — likely set off "
+                           f"the family bbox top (faucet tip), not the rim. Re-seat.",
                 "auto_fixable": False,
             })
         elif bowl_bottom > counter_top + 0.15:
