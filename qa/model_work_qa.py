@@ -235,14 +235,17 @@ def _check_sink_seating(elements):
     for s in sinks:
         if not s["bbox"]:
             continue
-        best = None  # (overlap_frac, counter)
+        best = None   # (overlap_frac, counter) — largest single, for the z-check
+        covered = 0.0  # union coverage across ALL overlapping counters
         for c in counters:
             if not c["bbox"]:
                 continue
             ov = _xy_overlap(s["bbox"], c["bbox"])
-            if ov and (best is None or ov > best[0]):
-                best = (ov, c)
-        if best is None or best[0] < 0.5:
+            if ov and ov > 0.05:
+                covered += ov
+                if best is None or ov > best[0]:
+                    best = (ov, c)
+        if best is None or covered < 0.5:
             issues.append({
                 "type": "sink_no_counter",
                 "severity": "fix",
