@@ -79,6 +79,49 @@ def main():
         report = run_qa(state, auto_fix=auto_fix)
         save_report(report)
 
+    elif cmd == "qa-model":
+        # Post-placement QA gate (model-work): Component-First discipline, sink
+        # seating, ceiling boundaries, duplicates, floating fixtures.
+        # --since-mins N  scope to elements added/modified in the last N minutes
+        #                    (change feed; falls back to full scan if unreachable)
+        # Exit code 1 when any 'fix' findings — gate semantics for the runner.
+        import json as _json
+        from qa.model_work_qa import run_model_work_qa
+        only_ids = None
+        if "--since-mins" in flags:
+            try:
+                mins = int(flags[flags.index("--since-mins") + 1])
+            except (ValueError, IndexError):
+                mins = 60
+            from core.revit_client import call as _call
+            try:
+                resp = _call("revit.get_recent_changes", {"last_n": 200})
+                if resp.get("success"):
+                    import time as _time
+                    cutoff = _time.time() - mins * 60
+                    only_ids = set()
+                    for ch in resp.get("changes", []):
+                        ts = ch.get("timestamp", "")
+                        try:
+                            if ts and _time.mktime(_time.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")) < cutoff:
+                                continue
+                        except ValueError:
+                            pass
+                        only_ids.update(ch.get("added", []))
+                        only_ids.update(ch.get("modified", []))
+                    print(f"Scoped to {len(only_ids)} changed elements (last {mins} min)")
+                    if not only_ids:
+                        print("No recent changes in window — nothing to gate. ✅")
+                        sys.exit(0)
+            except Exception as e:
+                print(f"(change feed unavailable: {e} — running full placement scan)")
+        report = run_model_work_qa(element_ids=only_ids)
+        with open("model_qa_report.json", "w") as f:
+            _json.dump(report, f, indent=2)
+        print("💾 Report saved to model_qa_report.json")
+        if report["fix"]:
+            sys.exit(1)
+
 
 
     elif cmd == "look":
