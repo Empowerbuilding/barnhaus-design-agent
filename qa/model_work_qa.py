@@ -306,7 +306,7 @@ def _check_ceiling_boundaries(elements, rooms):
                 "type": "ceiling_spans_rooms",
                 "severity": "consider",
                 "element_id": ce["id"],
-                "message": f"Ceiling {ce['id']} spans {spaning} rooms. "
+                "message": f"Ceiling {ce['id']} spans {spanning} rooms. "
                            f"Intentional for open plan; if not, split at the wall.",
                 "auto_fixable": False,
             })
