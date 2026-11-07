@@ -32,7 +32,9 @@ ALERT_CHANNEL = "tony-alerts"
 ORG_ID = "1c466ccb-ef35-4ba4-bf00-5fcabf20edec"
 ENV_FILE = "/root/design-brain/env.sh"
 PROJECTS_DIR = "/home/node/.openclaw/workspace/projects"
-STALL_MIN_MINUTES = 45  # floor for stall detection regardless of est_minutes
+STALL_MIN_MINUTES = 45   # hard ceiling floor regardless of est_minutes
+IDLE_MIN_MINUTES = 10    # no gateway activity at all -> re-brief after this
+ORPHAN_MIN_MINUTES = 30  # gateway alive but phase unsignaled -> re-brief after this
 
 
 def log(msg):
@@ -149,6 +151,20 @@ def read_signals(name, offset):
     return lines, len(data)
 
 
+def recent_gateway_activity(minutes=6):
+    """True if the gateway dispatched/responded anything recently (any channel).
+    Proxy for 'the system is alive' — used to distinguish a dead turn from
+    active work before re-briefing."""
+    try:
+        out = subprocess.run(
+            ["docker", "logs", CONTAINER, "--since", f"{minutes}m"],
+            capture_output=True, text=True, timeout=20)
+        blob = (out.stdout or "") + (out.stderr or "")
+        return ("Dispatching" in blob) or ("Response written" in blob)
+    except Exception:
+        return True  # can't tell — be conservative, assume active
+
+
 def phase_states(state, name, wo):
     """Merge runner state with work order phases (runner state wins)."""
     proj = state["projects"].setdefault(name, {"offset": 0, "phases": {}})
@@ -262,7 +278,12 @@ def process_project(key, state, name, wo):
             log(f"{name}: dispatched {pid} ({ph['title']})")
             break
 
-    # 4) Stall detection on dispatched phases
+    # 4) Activity-aware stall detection on dispatched phases.
+    #    - dead system (no gateway activity): re-brief after IDLE_MIN
+    #    - alive but phase orphaned (activity, no signal): re-brief after ORPHAN_MIN
+    #    - hard ceiling stays at the old 2x-est window
+    #    - max 2 briefs, then blocked + alert
+    system_alive = recent_gateway_activity()
     for ph in wo["phases"]:
         pid = ph["id"]
         st = proj["phases"][pid]
@@ -270,24 +291,30 @@ def process_project(key, state, name, wo):
             continue
         est = max(int(ph.get("est_minutes", 30)), 10)
         age_min = (now - st.get("dispatched_at", now)) / 60.0
-        if age_min > max(2 * est, STALL_MIN_MINUTES):
+        idle_dead = (not system_alive) and age_min > IDLE_MIN_MINUTES
+        orphaned = system_alive and age_min > ORPHAN_MIN_MINUTES
+        hard_ceiling = age_min > max(2 * est, STALL_MIN_MINUTES)
+        if idle_dead or orphaned or hard_ceiling:
+            why = ("no-gateway-activity" if idle_dead else
+                   "orphaned (activity but no signal)" if orphaned else "hard ceiling")
             briefs = st.get("briefs", 1)
             if briefs < 2:
                 portal_post(key, CHANNEL, brief(name, wo, ph), wake=True)
                 st["briefs"] = briefs + 1
                 st["dispatched_at"] = now
-                log(f"{name}: {pid} stalled {age_min:.0f}min — re-briefed (attempt 2)")
+                log(f"{name}: {pid} stalled {age_min:.0f}min ({why}) — re-briefed "
+                    f"(attempt {briefs + 1})")
                 portal_post(key, ALERT_CHANNEL,
                             f"⚠️ Blueprint runner: {name} {pid} stalled at "
-                            f"{age_min:.0f} min — re-briefing once", wake=False)
+                            f"{age_min:.0f} min — {why} — re-briefing", wake=False)
             else:
                 st.update({"status": "blocked",
-                           "note": f"stalled, no signal after 2 briefs "
+                           "note": f"stalled ({why}), no signal after 2 briefs "
                                    f"({age_min:.0f} min)"})
-                log(f"{name}: {pid} marked blocked (stalled twice)")
+                log(f"{name}: {pid} marked blocked (stalled twice, {why})")
                 portal_post(key, ALERT_CHANNEL,
-                            f"🚫 Blueprint runner: {name} {pid} BLOCKED — stalled, "
-                            f"no signal after 2 briefs", wake=True)
+                            f"🚫 Blueprint runner: {name} {pid} BLOCKED — stalled "
+                            f"({why}), no signal after 2 briefs", wake=True)
 
     # 5) Terminal check — all phases done/blocked/awaiting_decision
     terminal = all(s["status"] in ("done", "blocked", "awaiting_decision")
