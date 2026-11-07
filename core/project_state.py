@@ -182,25 +182,38 @@ def _scan_rooms(state: dict):
     raw = rc.call("revit.list_elements_by_category", {"category": "Rooms"})
     raw_list = raw.get("result", {}).get("elements", []) if raw.get("success") else []
 
+    # ONE call for name/area/level/bbox of every room (was 4 calls per room).
+    info = {e["id"]: e for e in rc.get_elements_info(
+        element_ids=[r.get("id") for r in raw_list],
+        parameters=["Name", "Area", "Level"], include_location=False)}
+
     rooms = []
     for r in raw_list:
         eid = r.get("id")
-        # Get clean name and area
-        name_res = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Name"})
-        area_res  = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Area"})
-        level_res = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Level"})
-        bb_res    = rc.call("revit.get_element_bounding_box", {"element_id": eid})
-
-        name  = (name_res.get("result") or {}).get("value") or r.get("name", "")
-        level = (level_res.get("result") or {}).get("value") or ""
+        ei = info.get(eid)
+        if ei is None:  # old DLL fallback — per-element path
+            name_res = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Name"})
+            area_res  = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Area"})
+            level_res = rc.call("revit.get_parameter_value", {"element_id": eid, "parameter_name": "Level"})
+            bb_res    = rc.call("revit.get_element_bounding_box", {"element_id": eid})
+            name  = (name_res.get("result") or {}).get("value") or r.get("name", "")
+            level = (level_res.get("result") or {}).get("value") or ""
+            area_raw = (area_res.get("result") or {}).get("value", 0)
+            bb_raw = bb_res.get("result", {}) if bb_res.get("success") else {}
+        else:
+            prm = ei.get("params") or {}
+            name  = (prm.get("Name") or {}).get("value") or r.get("name", "")
+            level = (prm.get("Level") or {}).get("display") or ei.get("level") or ""
+            area_raw = (prm.get("Area") or {}).get("value", 0)
+            bb_raw = ei.get("bbox") or {}
         try:
-            area_sf = round(float((area_res.get("result") or {}).get("value", 0)), 1)
-        except:
+            area_sf = round(float(area_raw or 0), 1)
+        except Exception:
             area_sf = 0
 
         bbox = None
-        if bb_res.get("success") and bb_res.get("result", {}).get("has_bbox"):
-            bbox = bb_res["result"]
+        if bb_raw.get("has_bbox"):
+            bbox = {"min": bb_raw["min"], "max": bb_raw["max"], "has_bbox": True}
             dx = abs(bbox["max"]["x"] - bbox["min"]["x"])
             dy = abs(bbox["max"]["y"] - bbox["min"]["y"])
             bbox["width_ft"]  = round(min(dx, dy), 2)

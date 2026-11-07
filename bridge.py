@@ -19,7 +19,9 @@ Usage:
   bridge.py doc <command>                           # payload schema (local JSON)
   bridge.py call <tool> ['{"json":"payload"}']      # one bridge call
   bridge.py call <tool> --arg k=v --arg k2='["a"]'  # scalar sugar (v = JSON or string)
-  bridge.py script <file.py>                        # batch: file runs with rc + call in scope
+  bridge.py script <file.py> [--dry-run]            # batch: file runs with rc, call, batch, bboxes, info in scope
+  bridge.py batch <cmds.json> [--group] [--stop]    # N sub-commands in ONE round trip (revit.batch_execute)
+  (call/batch: stdout capped at --max-chars 4000; --out <file> keeps the full JSON out of context)
 
 Examples:
   bridge.py health
@@ -182,20 +184,54 @@ def build_payload(positional, kv_pairs):
     return payload
 
 
+def emit(obj, max_chars, out_file=None):
+    """Context hygiene: big results go to a file, stdout gets a capped view."""
+    text = json.dumps(obj, default=str)
+    if out_file:
+        with open(out_file, "w") as fh:
+            fh.write(text)
+        print(f"[wrote {len(text)} chars -> {out_file}]", file=sys.stderr)
+    if max_chars and len(text) > max_chars:
+        print(text[:max_chars] + f" ...[truncated {len(text) - max_chars} chars; "
+              f"use --full or --out <file>]")
+    else:
+        print(text)
+
+
 def cmd_call(a):
     tool = norm_tool(a["tool"])
     payload = build_payload(a.get("payload"), a.get("arg"))
     res = a["rc"].call(tool, payload)
     shown = res if a["full"] else {k: res.get(k) for k in
                                    ("success", "result", "error")}
-    print(json.dumps(shown, default=str))
+    emit(shown, 0 if a["full"] else a["max_chars"], a.get("out"))
+    return 0 if res.get("success") else 1
+
+
+def cmd_batch(a):
+    """bridge.py batch <commands.json> [--group] [--stop]  — one round trip."""
+    with open(a["file"]) as fh:
+        cmds = json.load(fh)
+    if isinstance(cmds, dict):
+        cmds = cmds.get("commands", [])
+    res = a["rc"].batch_execute(cmds, stop_on_error=a["stop"],
+                                transaction_group=a["group"])
+    summary = {k: res.get(k) for k in ("success", "ok", "failed", "error", "rolled_back")}
+    summary["errors"] = [r for r in res.get("results", []) if r.get("status") != "ok"][:20]
+    emit(summary, a["max_chars"], a.get("out") )
+    if a.get("out"):
+        emit(res, 0, a["out"])
     return 0 if res.get("success") else 1
 
 
 def cmd_script(a):
     with open(a["file"]) as fh:
         code = fh.read()
-    scope = {"rc": a["rc"], "call": a["rc"].call,
+    if a.get("dry_run"):
+        a["rc"].DRY_RUN = True
+        print("[DRY RUN — no bridge writes]", file=sys.stderr)
+    scope = {"rc": a["rc"], "call": a["rc"].call, "batch": a["rc"].batch_execute,
+             "bboxes": a["rc"].get_bboxes, "info": a["rc"].get_elements_info,
              "health": a["rc"].health_check, "json": json, "os": os}
     exec(compile(code, a["file"], "exec"), scope)  # noqa: S102
     return 0
@@ -218,8 +254,17 @@ def main():
     p.add_argument("payload", nargs="?", default=None,
                    help="JSON object string")
     p.add_argument("--arg", action="append", metavar="k=v")
-    p.add_argument("--full", action="store_true", help="print raw response")
+    p.add_argument("--full", action="store_true", help="print raw response, uncapped")
+    p.add_argument("--max-chars", type=int, default=4000,
+                   help="cap stdout (default 4000); full result via --out")
+    p.add_argument("--out", help="write full JSON result to this file")
+    p = sub.add_parser("batch"); p.add_argument("file", help="JSON list of {tool,payload}")
+    p.add_argument("--group", action="store_true", help="one TransactionGroup (no save inside)")
+    p.add_argument("--stop", action="store_true", help="stop on first error")
+    p.add_argument("--max-chars", type=int, default=4000)
+    p.add_argument("--out", help="write full results JSON here")
     p = sub.add_parser("script"); p.add_argument("file")
+    p.add_argument("--dry-run", action="store_true", help="rc.DRY_RUN=True: print calls, touch nothing")
 
     a = vars(ap.parse_args())
     if a["cmd"] in ("find", "doc"):
@@ -230,7 +275,8 @@ def main():
         print(f"[bridge: {src} {url}]", file=sys.stderr)
 
     fn = {"health": cmd_health, "tools": cmd_tools, "find": cmd_find,
-          "doc": cmd_doc, "call": cmd_call, "script": cmd_script}[a["cmd"]]
+          "doc": cmd_doc, "call": cmd_call, "batch": cmd_batch,
+          "script": cmd_script}[a["cmd"]]
     sys.exit(fn(a))
 
 

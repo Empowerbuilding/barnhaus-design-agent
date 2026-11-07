@@ -106,8 +106,12 @@ def _scan_category(category, only_ids=None):
             "family": fam or "",
             "type": typ or "",
             "name": name or "",
-            "bbox": _get_bbox(eid),
+            "bbox": None,
         })
+    # ONE bbox call for the whole category (falls back per-element on old DLL)
+    boxes = rc.get_bboxes([e["id"] for e in out]) if out else {}
+    for e in out:
+        e["bbox"] = boxes.get(e["id"])
     return out
 
 

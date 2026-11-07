@@ -10,12 +10,18 @@ import requests
 import json
 import time
 import os
+import uuid
 from core.constants import WALL, LEVEL, FACE_TO_ROT, WALL_FACE_TO_FRONT
 
 BRIDGE_URL    = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/execute"
 HEALTH_URL    = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/health"
 TOOLS_URL     = os.environ.get("REVIT_BRIDGE_URL", "http://localhost:3000") + "/tools"
-REQUEST_TIMEOUT = 30  # seconds
+# MUST be >= the bridge's CommandQueue timeout (90 s). If the client gives up
+# first, the command STILL RUNS in Revit and a retry duplicates the element.
+REQUEST_TIMEOUT = 95  # seconds
+
+# Keep-alive session: ~130 ms -> ~70 ms per call through the Cloudflare tunnel.
+_SESSION = requests.Session()
 
 DRY_RUN = False  # Set True to preview without touching Revit
 
@@ -39,7 +45,9 @@ def call(tool: str, payload: dict) -> dict:
         print(f"[DRY RUN] {tool}: {json.dumps(payload, indent=2)}")
         return {"success": True, "dry_run": True}
 
-    req_id = f"{tool}_{int(time.time() * 1000)}"
+    # uuid, not ms-timestamp: two same-tool calls in one ms collided in the
+    # bridge's pending dict and one silently timed out.
+    req_id = f"{tool}_{uuid.uuid4().hex[:12]}"
     body = {
         "request_id": req_id,
         "tool": tool,
@@ -47,7 +55,7 @@ def call(tool: str, payload: dict) -> dict:
     }
 
     try:
-        r = requests.post(BRIDGE_URL, json=body, timeout=REQUEST_TIMEOUT)
+        r = _SESSION.post(BRIDGE_URL, json=body, timeout=REQUEST_TIMEOUT)
         r.raise_for_status()
         raw = r.json()
         status  = (raw.get("Status") or raw.get("status") or "").lower()
@@ -65,14 +73,20 @@ def call(tool: str, payload: dict) -> dict:
         return {"success": False, "error": str(e)}
 
 
-def health_check() -> bool:
-    """Returns True if bridge is healthy."""
+_HEALTH_CACHE = {"t": 0.0, "ok": False}
+
+
+def health_check(max_age: float = 60.0) -> bool:
+    """Returns True if bridge is healthy. Cached for max_age seconds (0 = force)."""
+    if max_age and time.time() - _HEALTH_CACHE["t"] < max_age and _HEALTH_CACHE["ok"]:
+        return True
     try:
-        r = requests.get(HEALTH_URL, timeout=5)
+        r = _SESSION.get(HEALTH_URL, timeout=5)
         data = r.json()
         if data.get("status") == "healthy":
             build = data.get("build", "pre-catalog build (run UpdateBridge.bat)")
             print(f"✅ Bridge healthy — Revit {data.get('revit_version')}, doc: {data.get('active_document')}, build: {build}")
+            _HEALTH_CACHE.update(t=time.time(), ok=True)
             return True
         print(f"⚠️  Bridge unhealthy: {data}")
         return False
@@ -652,3 +666,81 @@ def inspect_element(element_id: int) -> dict:
     if result.get("success"):
         return result.get("result", result)
     return {"error": result.get("error", "unknown")}
+
+
+# ─────────────────────────────────────────────
+# BULK / ROUND-TRIP KILLERS (bridge build >= 5a34eed, 2026-11-07)
+# Each falls back to the per-element path on an old DLL.
+# ─────────────────────────────────────────────
+
+def batch_execute(commands: list, stop_on_error: bool = False,
+                  transaction_group: bool = False, max_seconds: float = 75) -> dict:
+    """Run [{tool, payload}, ...] in ONE bridge call / ONE Revit idle slot.
+
+    Auto-resumes if the bridge truncates at its time budget, so any length of
+    list is safe. Returns {ok, failed, results:[{index,tool,status,result|error}]}.
+    Do NOT put revit.save_document inside a transaction_group batch.
+    """
+    all_results, ok, failed, start = [], 0, 0, 0
+    while start < len(commands):
+        chunk = commands[start:start + 500]
+        res = call("revit.batch_execute", {
+            "commands": chunk, "stop_on_error": stop_on_error,
+            "transaction_group": transaction_group, "max_seconds": max_seconds,
+        })
+        if not res.get("success"):
+            return {"success": False, "error": res.get("error"), "results": all_results,
+                    "ok": ok, "failed": failed, "next_index": start}
+        r = res["result"]
+        for item in r.get("results", []):
+            item["index"] += start
+        all_results += r.get("results", [])
+        ok += r.get("ok", 0); failed += r.get("failed", 0)
+        if r.get("aborted"):
+            return {"success": False, "error": "stopped on error", "results": all_results,
+                    "ok": ok, "failed": failed, "rolled_back": r.get("rolled_back")}
+        start += max(1, r.get("next_index", len(chunk))) if r.get("truncated") else len(chunk)
+    return {"success": failed == 0, "ok": ok, "failed": failed, "results": all_results}
+
+
+def get_bboxes(element_ids: list, view_id: int = None) -> dict:
+    """{id: bbox_or_None} for many ids in one call (falls back per-element)."""
+    ids = [int(i) for i in element_ids]
+    out = {}
+    payload = {"element_ids": ids}
+    if view_id is not None:
+        payload["view_id"] = view_id
+    res = call("revit.get_element_bounding_boxes", payload)
+    if res.get("success"):
+        for b in (res.get("result") or {}).get("boxes", []):
+            out[b["element_id"]] = b if b.get("has_bbox") else None
+        return out
+    for i in ids:  # old DLL fallback
+        bb = get_element_bounding_box(i)
+        out[i] = bb if bb.get("has_bbox") else None
+    return out
+
+
+def get_elements_info(element_ids: list = None, category: str = None,
+                      parameters: list = None, include_bbox: bool = True,
+                      include_location: bool = True, view_id: int = None,
+                      limit: int = 2000) -> list:
+    """One call: id/category/family/type/level/location/bbox + named params
+    (instance first, then type; each {value, display}) for an id list OR a
+    whole category. Returns [] on failure (caller decides on fallback)."""
+    payload = {"include_bbox": include_bbox, "include_location": include_location,
+               "limit": limit}
+    if element_ids:
+        payload["element_ids"] = [int(i) for i in element_ids]
+    elif category:
+        payload["category"] = category
+    else:
+        return []
+    if parameters:
+        payload["parameters"] = parameters
+    if view_id is not None:
+        payload["view_id"] = view_id
+    res = call("revit.get_elements_info", payload)
+    if res.get("success"):
+        return (res.get("result") or {}).get("elements", [])
+    return []
