@@ -13,7 +13,9 @@ Usage:
     python3 run.py electrical        # Run electrical plan (A108)
     python3 run.py plumbing          # Run plumbing plan (A109)
     python3 run.py all               # Full run: scan → qa → draft1 → draft2 → draft3
-    python3 run.py qa-marks          # Window/Door Type Mark QA — marks vs actual dimensions
+    python3 run.py qa-marks [--cached] [--max-age-mins N]
+                                     # Window/Door Type Mark QA on the OPEN document — marks vs actual dimensions
+                                     # (live read; --cached = recent scan of the same document only)
     python3 run.py qa-electrical     # Electrical fixture label QA — flag blank Type Marks
     python3 run.py read-dims [kw]    # READ existing dimensions (optionally filter views/sheets by keyword)
     python3 run.py assemble-sheets   # Match views → empty sheets (dry run; add --apply to place)
@@ -277,14 +279,32 @@ def main():
         print("\n✅ Full run complete.")
 
     elif cmd == "qa-marks":
-        from qa.opening_marks_qa import run_opening_marks_qa
+        # Reports on the OPEN document only (flag 54, 2026-11-11). It used to load
+        # project_state.json from the current folder, whatever document that scan
+        # was of, and so reported on another project's openings.
+        #   default            read the doors and windows of the open model live
+        #                      (no project scan, no write)
+        #   --cached           use project_state.json, but only when it is a scan of
+        #                      the document that is open AND was taken in the last
+        #                      10 minutes; otherwise it is refused and the open
+        #                      model is read live
+        #   --max-age-mins N   the age limit for --cached
+        # Exit 2 when the open model cannot be read (never a clean result).
+        from qa.opening_marks_qa import (run_opening_marks_qa, state_for_open_document,
+                                         OpenModelReadError, CACHE_MAX_AGE_MIN)
+        max_age = CACHE_MAX_AGE_MIN
+        if "--max-age-mins" in flags:
+            try:
+                max_age = float(flags[flags.index("--max-age-mins") + 1])
+            except (ValueError, IndexError):
+                print("--max-age-mins needs a number of minutes, e.g. --max-age-mins 5")
+                sys.exit(2)
         try:
-            state = load_state()
-        except FileNotFoundError:
-            state = scan_project()
-        if state.get("doors") and "type_mark" not in state["doors"][0]:
-            print("  State predates type_mark capture — rescanning...")
-            state = scan_project()
+            state = state_for_open_document(use_cache="--cached" in flags, max_age_min=max_age)
+        except OpenModelReadError as e:
+            print(f"❌ qa-marks could not read the open model: {e}")
+            print("   NOTHING CHECKED. This is not a result on any document.")
+            sys.exit(2)
         run_opening_marks_qa(state)
 
     elif cmd == "qa-electrical":
