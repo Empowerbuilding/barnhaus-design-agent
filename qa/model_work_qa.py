@@ -111,9 +111,15 @@ def _lookup_ids(ids):
         eid = _el_field(el, "id", "element_id", "Id")
         if eid is None:
             continue
+        cat = _el_field(el, "category", "Category") or "Uncategorised"
+        cls = str(_el_field(el, "class", "class_name") or "")
+        # a TYPE (a duplicated wall type, a family symbol) is not an element in the model:
+        # it has no geometry of its own and is named as a type, never checked as a wall
+        if cls.endswith("Type") or cls in ("FamilySymbol", "Material"):
+            cat = cat + " (type)" if cls != "Material" else "Materials"
         out.append({
             "id": eid,
-            "category": _el_field(el, "category", "Category") or "Uncategorised",
+            "category": cat,
             "family": _el_field(el, "family", "family_name", "Family") or "",
             "type": _el_field(el, "type", "type_name", "Type") or "",
             "name": _el_field(el, "name", "Name") or "",
