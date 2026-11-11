@@ -34,6 +34,9 @@ PLACEMENT_CATEGORIES = [
     "Specialty Equipment",
     "Ceilings",
     "Generic Models",
+    # openings (2026-11-11): a phase that places doors / windows must have them scanned
+    "Doors",
+    "Windows",
 ]
 
 # Floor-mounted fixture families (bbox min.z must sit near a level)
@@ -370,6 +373,43 @@ def _check_duplicates(elements):
     return issues
 
 
+def _check_openings(elements):
+    """A door or window that was 'placed' but has no geometry: the bridge can return
+    an id for an opening that did not cut its host (an id can be returned for nothing)."""
+    issues = []
+    for el in elements:
+        if el["category"] not in ("Doors", "Windows") or el["bbox"]:
+            continue
+        issues.append({
+            "type": "opening_without_geometry",
+            "severity": "fix",
+            "element_id": el["id"],
+            "category": el["category"],
+            "message": f"{el['category'][:-1]} {el['id']} ('{(el['family'] + ' ' + el['type']).strip()}') has no "
+                       f"bounding box: it is not in the model as geometry. Re-place it.",
+            "auto_fixable": False,
+        })
+    return issues
+
+
+def _check_coverage(elements, must_cover):
+    """A write phase names the ids it created or changed. Each one must have been scanned;
+    an id the gate never looked at is a FAIL, not a silent pass."""
+    if not must_cover:
+        return [], None
+    scanned = {e["id"] for e in elements}
+    missing = sorted(set(must_cover) - scanned)
+    issues = [{
+        "type": "not_covered",
+        "severity": "fix",
+        "element_id": i,
+        "message": f"Element {i} was written by this phase but the gate did not scan it "
+                   f"(not in the model, or not in a category the gate looks at).",
+        "auto_fixable": False,
+    } for i in missing]
+    return issues, {"required": sorted(set(must_cover)), "covered": sorted(set(must_cover) & scanned), "missing": missing}
+
+
 def _check_floor_mounted(elements, levels):
     """Floor-mounted fixtures must sit near a level elevation (not floating)."""
     if not levels:
@@ -405,11 +445,13 @@ def _check_floor_mounted(elements, levels):
 # RUNNER
 # ─────────────────────────────────────────────
 
-def run_model_work_qa(element_ids=None, categories=None):
+def run_model_work_qa(element_ids=None, categories=None, must_cover=None):
     """Scan placement categories and run all model-work checks.
 
     element_ids: optional set/list — scope to these ids (e.g. from the change
                  feed). None = full placement scan.
+    must_cover:  optional ids a write phase created or changed. Any of them that
+                 was not scanned is a 'fix' finding (gate FAIL).
     Returns report dict; report["fix"] non-empty = gate FAIL.
     """
     cats = categories or PLACEMENT_CATEGORIES
@@ -431,6 +473,9 @@ def run_model_work_qa(element_ids=None, categories=None):
     all_issues += _check_ceiling_boundaries(elements, rooms)
     all_issues += _check_duplicates(elements)
     all_issues += _check_floor_mounted(elements, levels)
+    all_issues += _check_openings(elements)
+    cov_issues, coverage = _check_coverage(elements, must_cover)
+    all_issues += cov_issues
 
     # Dedupe (type + message prefix)
     seen, deduped = set(), []
@@ -440,8 +485,14 @@ def run_model_work_qa(element_ids=None, categories=None):
             seen.add(key)
             deduped.append(i)
 
+    by_cat = {}
+    for e in elements:
+        by_cat[e["category"]] = by_cat.get(e["category"], 0) + 1
     report = {
         "scanned": len(elements),
+        "scanned_by_category": by_cat,
+        "scanned_ids": sorted(e["id"] for e in elements),
+        "must_cover": coverage,
         "total": len(deduped),
         "fix": [i for i in deduped if i["severity"] == "fix"],
         "consider": [i for i in deduped if i["severity"] == "consider"],
@@ -453,6 +504,10 @@ def run_model_work_qa(element_ids=None, categories=None):
 
 def _print(report):
     print("─" * 50)
+    cov = report.get("must_cover")
+    if cov:
+        print(f"Coverage: {len(cov['covered'])} of {len(cov['required'])} element(s) this phase wrote were scanned"
+              + (f" — NOT scanned: {cov['missing']}" if cov["missing"] else ""))
     if report["total"] == 0:
         print(f"✅ Model-work QA CLEAN ({report['scanned']} elements scanned)")
         return

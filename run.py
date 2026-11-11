@@ -84,10 +84,20 @@ def main():
         # seating, ceiling boundaries, duplicates, floating fixtures.
         # --since-mins N  scope to elements added/modified in the last N minutes
         #                    (change feed; falls back to full scan if unreachable)
+        # --must-cover a,b  element ids a write phase created or changed: the gate
+        #                    FAILS unless every one of them was scanned (a gate that
+        #                    looks at nothing must not read as clean)
         # Exit code 1 when any 'fix' findings — gate semantics for the runner.
         import json as _json
         from qa.model_work_qa import run_model_work_qa
         only_ids = None
+        must_cover = None
+        if "--must-cover" in flags:
+            try:
+                must_cover = {int(x) for x in flags[flags.index("--must-cover") + 1].split(",") if x.strip()}
+            except (ValueError, IndexError):
+                print("--must-cover needs a comma list of element ids, e.g. --must-cover 1235377,1235380")
+                sys.exit(2)
         if "--since-mins" in flags:
             try:
                 mins = int(flags[flags.index("--since-mins") + 1])
@@ -97,25 +107,36 @@ def main():
             try:
                 resp = _call("revit.get_recent_changes", {"last_n": 200})
                 if resp.get("success"):
-                    import time as _time
+                    import time as _time, calendar as _calendar
                     cutoff = _time.time() - mins * 60
                     only_ids = set()
-                    for ch in resp.get("changes", []):
+                    # The client wraps the bridge answer: the feed is under result.changes.
+                    # (It was read from the top level, which is always empty: every scoped
+                    # run said "0 changed elements" and passed without looking at anything.)
+                    _res = resp.get("result") if isinstance(resp.get("result"), dict) else {}
+                    changes = _res.get("changes") or resp.get("changes") or []
+                    in_window = 0
+                    for ch in changes:
                         ts = ch.get("timestamp", "")
                         try:
-                            if ts and _time.mktime(_time.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")) < cutoff:
+                            # feed timestamps are UTC ("...Z"): timegm, not mktime (local time)
+                            if ts and _calendar.timegm(_time.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")) < cutoff:
                                 continue
                         except ValueError:
                             pass
+                        in_window += 1
                         only_ids.update(ch.get("added", []))
                         only_ids.update(ch.get("modified", []))
+                    print(f"Change feed: {len(changes)} entries read, {in_window} in the last {mins} min")
+                    if must_cover:
+                        only_ids |= must_cover
                     print(f"Scoped to {len(only_ids)} changed elements (last {mins} min)")
                     if not only_ids:
                         print("No recent changes in window — nothing to gate. ✅")
                         sys.exit(0)
             except Exception as e:
                 print(f"(change feed unavailable: {e} — running full placement scan)")
-        report = run_model_work_qa(element_ids=only_ids)
+        report = run_model_work_qa(element_ids=only_ids, must_cover=must_cover)
         with open("model_qa_report.json", "w") as f:
             _json.dump(report, f, indent=2)
         print("💾 Report saved to model_qa_report.json")
