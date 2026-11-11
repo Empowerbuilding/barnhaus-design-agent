@@ -136,6 +136,11 @@ def read_signals(name, offset):
     if raw is None:
         return [], offset
     data = raw.encode()
+    if len(data) < offset:
+        # the signals file is SHORTER than what was already read: it was replaced or
+        # truncated. Its old content is gone, so read it from the start.
+        log(f"{name}: phase_signals.jsonl shrank ({len(data)} < {offset}) — reading from the start")
+        offset = 0
     if len(data) <= offset:
         return [], offset
     new = data[offset:].decode(errors="replace")
@@ -165,9 +170,64 @@ def recent_gateway_activity(minutes=6):
         return True  # can't tell — be conservative, assume active
 
 
+def order_key(wo):
+    """Identity of ONE compiled work order: when it was compiled (+ its fingerprint when
+    it has one). A recompile, or a different order written to the same file, has another
+    key. Hand-written orders without compiled_at fall back to their phase list."""
+    ca = str(wo.get("compiled_at") or "").strip()
+    if ca and not ca.startswith("..."):
+        return ca + "|" + str(wo.get("fingerprint") or "")
+    return "phases:" + ",".join(f"{p.get('id')}={p.get('title')}" for p in wo.get("phases", []))
+
+
+def _iso_epoch(s):
+    """'2026-11-11T19:57:04Z' -> epoch seconds (UTC). None when it does not parse."""
+    import calendar
+    try:
+        return calendar.timegm(time.strptime(str(s)[:19], "%Y-%m-%dT%H:%M:%S"))
+    except (ValueError, TypeError):
+        return None
+
+
+def start_new_order_if_any(name, wo, proj):
+    """A project folder that FINISHED one work order becomes dispatchable again when a
+    different work order appears in it (intake order, then build orders; 2D then 3D).
+
+    Only a FINISHED folder is reset. While an order is running, a recompile keeps the
+    phase statuses by id exactly as before (amendment mid-run), and a blocked phase is
+    still re-queued with a 'pending' signal. Returns True when a new run was started.
+    """
+    key = order_key(wo)
+    old = proj.get("order_key")
+    if old == key:
+        return False
+    if not proj.get("finished"):
+        proj["order_key"] = key          # first sight, or a recompile mid-run: unchanged behaviour
+        return False
+    if old is None:
+        # state written before order keys existed: it is a new order only if it was
+        # compiled AFTER everything the finished run did (else: the same order, keep it finished)
+        compiled = _iso_epoch(wo.get("compiled_at"))
+        last = max([s.get("dispatched_at") or 0 for s in proj["phases"].values()] + [0])
+        if compiled is None or compiled <= last:
+            proj["order_key"] = key
+            return False
+    proj.setdefault("history", []).append({
+        "order_key": old, "closed_at": time.time(),
+        "phases": {p: s.get("status") for p, s in proj["phases"].items()}})
+    proj["history"] = proj["history"][-10:]
+    proj["phases"] = {}
+    proj["finished"] = False
+    proj["order_key"] = key
+    log(f"{name}: NEW work order in a finished folder (was {old}, now {key}) — "
+        f"phase states reset, {len(wo.get('phases', []))} phase(s) pending")
+    return True
+
+
 def phase_states(state, name, wo):
     """Merge runner state with work order phases (runner state wins)."""
     proj = state["projects"].setdefault(name, {"offset": 0, "phases": {}})
+    start_new_order_if_any(name, wo, proj)
     for ph in wo["phases"]:
         pid = ph["id"]
         proj["phases"].setdefault(pid, {"status": "pending"})
@@ -224,7 +284,10 @@ def summarize(key, name, wo, proj):
         msg += "\n🚫 Blocked:\n" + "\n".join(f"  • {p}: {n}" for p, n in blocked)
     if decisions:
         msg += "\n❓ Awaiting your decision:\n" + "\n".join(f"  • {p}: {n}" for p, n in decisions)
-    msg += f"\nDetails: projects/{name}/ · backups in workspace/backups/{name}/"
+    # Backups are file copies on the user's machine (the Projects\\_backups folder next to
+    # the .rvt); each phase names its own in the note of its signal line.
+    msg += (f"\nDetails: projects/{name}/ · backups: named in each phase's signal note "
+            f"(projects/{name}/phase_signals.jsonl)")
     portal_post(key, CHANNEL, msg, wake=True)
     log(f"{name}: summary posted ({len(done)} done, {len(blocked)} blocked, "
         f"{len(decisions)} decisions)")
