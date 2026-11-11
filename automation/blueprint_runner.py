@@ -189,6 +189,14 @@ def brief(name, wo, phase):
         v.append("qa-model gate REQUIRED")
     if verify.get("vision"):
         v.append(f"vision check: {verify['vision']}")
+    # Typed work orders (schema work-order/2.0, compiler v2) keep each phase's brief in a
+    # file: projects/<name>/briefs/<phase_id>.md, named on the phase as brief_path
+    # (workspace-relative). Additive: a phase without brief_path gets exactly the old message.
+    brief_path = phase.get("brief_path")
+    brief_line = ""
+    if isinstance(brief_path, str) and brief_path.strip():
+        brief_line = (f"\nBrief file: {brief_path.strip()} — read it from disk FIRST; it is the "
+                      f"full brief for this phase (work items, targets, checks in force, signal line).")
     return (
         f"▶️ RUNNER — execute phase {phase['id']} of work order "
         f"projects/{name}/work_order.json (\"{phase['title']}\").\n"
@@ -196,6 +204,7 @@ def brief(name, wo, phase):
         f"work order first, execute the phase, run the QA gate, SAVE, take the "
         f"phase backup, append your signal to projects/{name}/phase_signals.jsonl, "
         f"then post the PHASE_DONE card."
+        + brief_line
         + (f"\nVerification: {'; '.join(v)}." if v else "")
         + (f"\nDecision points in this phase: use the documented default and flag."
            if any(d.get("phase") == phase["id"] for d in wo.get("decision_points", []))
