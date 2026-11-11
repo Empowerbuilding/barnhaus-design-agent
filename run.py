@@ -13,6 +13,8 @@ Usage:
     python3 run.py electrical        # Run electrical plan (A108)
     python3 run.py plumbing          # Run plumbing plan (A109)
     python3 run.py all               # Full run: scan → qa → draft1 → draft2 → draft3
+    python3 run.py qa-model [--since-mins N] [--must-cover id,id] [--sheet-snapshot f | --sheets-since f [--expect-sheets N] [--expect-viewports N]]
+                                     # QA gate after a write phase: names what it looked at; fails when it did not look at what the phase wrote
     python3 run.py qa-marks [--cached] [--max-age-mins N]
                                      # Window/Door Type Mark QA on the OPEN document — marks vs actual dimensions
                                      # (live read; --cached = recent scan of the same document only)
@@ -88,12 +90,42 @@ def main():
         #                    (change feed; falls back to full scan if unreachable)
         # --must-cover a,b  element ids a write phase created or changed: the gate
         #                    FAILS unless every one of them was scanned (a gate that
-        #                    looks at nothing must not read as clean)
+        #                    looks at nothing must not read as clean). Walls, floors,
+        #                    roofs and site are scanned too; an id in no scanned category
+        #                    is read by id and named with its real category.
+        # Sheet phases (sheets and viewports are counted before and after):
+        # --sheet-snapshot <file>  BEFORE the phase writes: save the sheets and viewport
+        #                    ids of the open document, then exit
+        # --sheets-since <file>    compare the model with that snapshot: sheets and
+        #                    viewports created, by id; --expect-sheets N and
+        #                    --expect-viewports N fail the gate on a different count
         # Exit code 1 when any 'fix' findings — gate semantics for the runner.
+        # Exit code 2 when the gate could not look (bad flags, unreadable model, a
+        # snapshot of another document).
         import json as _json
         from qa.model_work_qa import run_model_work_qa
         only_ids = None
         must_cover = None
+
+        def _flag_value(name):
+            try:
+                v = flags[flags.index(name) + 1]
+            except IndexError:
+                v = None
+            if v is None or v.startswith("--"):
+                print(f"{name} needs a value")
+                sys.exit(2)
+            return v
+
+        if "--sheet-snapshot" in flags:
+            from qa import sheet_work_qa as _sq
+            _path = _flag_value("--sheet-snapshot")
+            try:
+                _sq.print_snapshot(_sq.take_snapshot(_path), _path)
+            except _sq.SheetReadError as e:
+                print(f"❌ Sheet snapshot NOT taken: {e}")
+                sys.exit(2)
+            sys.exit(0)
         if "--must-cover" in flags:
             try:
                 must_cover = {int(x) for x in flags[flags.index("--must-cover") + 1].split(",") if x.strip()}
@@ -133,16 +165,46 @@ def main():
                     if must_cover:
                         only_ids |= must_cover
                     print(f"Scoped to {len(only_ids)} changed elements (last {mins} min)")
-                    if not only_ids:
+                    if not only_ids and "--sheets-since" not in flags:
                         print("No recent changes in window — nothing to gate. ✅")
                         sys.exit(0)
             except Exception as e:
                 print(f"(change feed unavailable: {e} — running full placement scan)")
-        report = run_model_work_qa(element_ids=only_ids, must_cover=must_cover)
+        sheet_report = None
+        if "--sheets-since" in flags:
+            from qa import sheet_work_qa as _sq
+            _expect = {}
+            for _name in ("--expect-sheets", "--expect-viewports"):
+                if _name in flags:
+                    try:
+                        _expect[_name] = int(_flag_value(_name))
+                    except ValueError:
+                        print(f"{_name} needs a whole number")
+                        sys.exit(2)
+            try:
+                sheet_report = _sq.compare(_sq.load_snapshot(_flag_value("--sheets-since")), must_cover=must_cover,
+                                           expect_sheets=_expect.get("--expect-sheets"),
+                                           expect_viewports=_expect.get("--expect-viewports"))
+            except _sq.SheetReadError as e:
+                print(f"❌ Sheet QA could NOT look: {e}")
+                sys.exit(2)
+            _sq.print_report(sheet_report)
+            if must_cover:
+                # the ids that are sheets or viewports are covered here; the rest go to the element gate
+                must_cover = (must_cover - set(sheet_report["covered_ids"])) or None
+                if only_ids is not None:
+                    only_ids -= set(sheet_report["covered_ids"])
+        if sheet_report is not None and not must_cover and "--since-mins" not in flags:
+            print("Element gate not run: this call names sheets and viewports only.")
+            report = {"scanned": 0, "total": 0, "fix": [], "consider": [], "fyi": [], "not_run": True}
+        else:
+            report = run_model_work_qa(element_ids=only_ids, must_cover=must_cover)
+        if sheet_report is not None:
+            report["sheets"] = sheet_report
         with open("model_qa_report.json", "w") as f:
             _json.dump(report, f, indent=2)
         print("💾 Report saved to model_qa_report.json")
-        if report["fix"]:
+        if report["fix"] or (sheet_report is not None and sheet_report["fix"]):
             sys.exit(1)
 
 
