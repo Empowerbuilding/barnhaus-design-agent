@@ -36,6 +36,58 @@ STALL_MIN_MINUTES = 45   # hard ceiling floor regardless of est_minutes
 IDLE_MIN_MINUTES = 10    # no gateway activity at all -> re-brief after this
 ORPHAN_MIN_MINUTES = 30  # gateway alive but phase unsignaled -> re-brief after this
 
+# ---- token telemetry, filled from OUTSIDE the turn (M2 condition 3, 2026-11-11) ----
+# The agent cannot read its own token use from inside a turn. The gateway writes one
+# "model.completed" event per run into the trajectory store, at the END of the run,
+# with data.usage {input, output, cacheRead, cacheWrite, total}. After a phase signals,
+# the runner sums those events for the run(s) that STARTED between the phase's dispatch
+# and its signal, and appends one line to projects/<name>/phase_usage.jsonl.
+# (The signal file itself is not rewritten: the runner reads it by byte offset.)
+USAGE_SESSION_KEY = "agent:main:portal:channel:blueprint-mitch"
+USAGE_DB = "/home/node/.openclaw/agents/main/agent/openclaw-agent.sqlite"
+USAGE_START_SLACK_S = 10      # the run may start a moment before the runner stamps dispatched_at
+USAGE_GIVE_UP_MINUTES = 30    # no finished run found this long after the signal -> record that, stop trying
+# Runs inside the container (python3 -, args: start_ms end_ms session_key db_path). Read-only.
+USAGE_SCRIPT = r"""
+import json, sqlite3, sys
+start_ms, end_ms, key, db = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3], sys.argv[4]
+out = {"ok": False, "runs": 0, "complete": False}
+try:
+    c = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=10)
+    like = '%"sessionKey":"' + key + '"%'
+    # runs of this session that have an event inside the window
+    cand = [r[0] for r in c.execute(
+        "select distinct run_id from trajectory_runtime_events where created_at between ? and ? and event_json like ?",
+        (start_ms, end_ms, like))]
+    runs = []
+    for rid in cand:
+        first = c.execute("select min(created_at) from trajectory_runtime_events where run_id = ?", (rid,)).fetchone()[0]
+        if first is not None and start_ms <= first <= end_ms:      # the run STARTED in the window
+            runs.append(rid)
+    tot = {"input": 0, "output": 0, "cache_read": 0, "cache_write": 0, "total": 0}
+    calls = 0; models = set(); done = 0
+    for rid in runs:
+        got = False
+        for (ej,) in c.execute(
+                "select event_json from trajectory_runtime_events where run_id = ? and event_json like ?",
+                (rid, '%"type":"model.completed"%')):
+            e = json.loads(ej)
+            if e.get("type") != "model.completed" or e.get("sessionKey") != key:
+                continue
+            u = (e.get("data") or {}).get("usage") or {}
+            tot["input"] += int(u.get("input") or 0); tot["output"] += int(u.get("output") or 0)
+            tot["cache_read"] += int(u.get("cacheRead") or 0); tot["cache_write"] += int(u.get("cacheWrite") or 0)
+            tot["total"] += int(u.get("total") or 0)
+            calls += 1; got = True
+            if e.get("modelId"): models.add(e["modelId"])
+        done += 1 if got else 0
+    out = {"ok": True, "runs": len(runs), "runs_completed": done, "complete": bool(runs) and done == len(runs),
+           "model_completed_events": calls, "models": sorted(models), "usage": tot, "run_ids": runs[:8]}
+except Exception as e:
+    out = {"ok": False, "error": str(e)[:200], "runs": 0, "complete": False}
+print(json.dumps(out))
+"""
+
 
 def log(msg):
     ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -83,6 +135,76 @@ def docker_read(path):
         return out.stdout
     except Exception:
         return None
+
+
+def query_usage(start_epoch, end_epoch):
+    """Sum model.completed usage for the session's run(s) that started in [start, end].
+    -> dict from USAGE_SCRIPT, or None when the container could not be asked."""
+    try:
+        out = subprocess.run(
+            ["docker", "exec", "-i", CONTAINER, "python3", "-",
+             str(int(start_epoch * 1000)), str(int(end_epoch * 1000)), USAGE_SESSION_KEY, USAGE_DB],
+            input=USAGE_SCRIPT, capture_output=True, text=True, timeout=40)
+        if out.returncode != 0:
+            return None
+        return json.loads(out.stdout.strip().splitlines()[-1])
+    except Exception:
+        return None
+
+
+def docker_append(path, line):
+    """Append one line to a file in the blueprint container. True when it was written."""
+    try:
+        out = subprocess.run(
+            ["docker", "exec", "-i", CONTAINER, "sh", "-c", 'cat >> "$1"', "sh", path],
+            input=line.rstrip("\n") + "\n", capture_output=True, text=True, timeout=15)
+        return out.returncode == 0
+    except Exception:
+        return False
+
+
+def _iso(epoch):
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(epoch))
+
+
+def fill_usage(name, proj):
+    """Token telemetry for phases that have signalled (see the block at the top).
+    One line per phase goes to projects/<name>/phase_usage.jsonl; the signal file is untouched.
+    The gateway writes the usage when the run ENDS, which is after the signal line, so a
+    phase is retried on later passes until its run is complete (or USAGE_GIVE_UP_MINUTES)."""
+    now = time.time()
+    for pid, st in proj.get("phases", {}).items():
+        if "usage" in st or st.get("signal_epoch") is None:
+            continue
+        start = st.get("first_dispatched_at") or st.get("dispatched_at")
+        if not start:
+            continue
+        sig_at = st["signal_epoch"]
+        res = query_usage(start - USAGE_START_SLACK_S, sig_at)
+        rec = None
+        if res and res.get("ok") and res.get("complete"):
+            u = res.get("usage") or {}
+            rec = {"llm_tokens": u.get("total"), "llm": dict(u, runs=res.get("runs"),
+                                                             model_completed_events=res.get("model_completed_events"),
+                                                             models=res.get("models", [])),
+                   "note": ("usage of the run(s) of this session that STARTED between dispatch and signal; "
+                            "a human message handled inside that window is counted too"
+                            + ("; %d runs (re-brief or an interleaved message)" % res["runs"] if (res.get("runs") or 0) > 1 else ""))}
+        elif now - sig_at > USAGE_GIVE_UP_MINUTES * 60:
+            why = ("the trajectory store could not be read" if not res or not res.get("ok")
+                   else "no run of the session started between dispatch and signal" if not res.get("runs")
+                   else "the run has no model.completed event")
+            rec = {"llm_tokens": None, "llm": None,
+                   "note": f"not filled: {why} ({USAGE_GIVE_UP_MINUTES} min after the signal)"
+                           + (f": {res.get('error')}" if res and res.get("error") else "")}
+        if rec is None:
+            continue                      # run not finished yet: try again on the next pass
+        rec = dict({"phase": pid, "order_key": proj.get("order_key"), "dispatched_at": _iso(start),
+                    "signal_at": _iso(sig_at), "filled_at": _iso(now), "filled_by": "blueprint_runner (host)"}, **rec)
+        if docker_append(f"{PROJECTS_DIR}/{name}/phase_usage.jsonl", json.dumps(rec)):
+            st["usage"] = {"llm_tokens": rec["llm_tokens"], "filled_at": rec["filled_at"]}
+            log(f"{name}: usage {pid} -> {rec['llm_tokens']} tokens ({rec['note'][:60]})")
+        # not written: leave it for the next pass
 
 
 def find_work_orders():
@@ -294,6 +416,13 @@ def summarize(key, name, wo, proj):
 
 
 def process_project(key, state, name, wo):
+    # token telemetry first: it must also run for a folder that is already finished,
+    # and before a new order resets the phase states
+    if name in state["projects"]:
+        try:
+            fill_usage(name, state["projects"][name])
+        except Exception as e:
+            log(f"{name}: usage fill failed (ignored): {e}")
     proj = phase_states(state, name, wo)
 
     # Gate: never dispatch without explicit Mitch approval recorded in the file
@@ -316,6 +445,10 @@ def process_project(key, state, name, wo):
             was = proj["phases"][pid]["status"]
             proj["phases"][pid].update({"status": status, "note": note,
                                         "at": sig.get("at", "")})
+            if status in ("done", "blocked", "awaiting_decision"):
+                # when the phase signalled: the end of the window for the token telemetry
+                proj["phases"][pid]["signal_epoch"] = _iso_epoch(sig.get("at")) or time.time()
+                proj["phases"][pid].pop("usage", None)
             log(f"{name}: signal {pid} {was} -> {status} {('(' + note + ')') if note else ''}")
             if status == "blocked":
                 portal_post(key, ALERT_CHANNEL,
@@ -346,7 +479,10 @@ def process_project(key, state, name, wo):
             if not deps_done(wo, proj, ph):
                 continue
             portal_post(key, CHANNEL, brief(name, wo, ph), wake=True)
-            st.update({"status": "dispatched", "dispatched_at": now, "briefs": 1})
+            st.update({"status": "dispatched", "dispatched_at": now, "briefs": 1,
+                       "first_dispatched_at": now})
+            st.pop("signal_epoch", None)
+            st.pop("usage", None)
             log(f"{name}: dispatched {pid} ({ph['title']})")
             break
 
