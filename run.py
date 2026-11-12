@@ -201,6 +201,14 @@ def main():
             report = run_model_work_qa(element_ids=only_ids, must_cover=must_cover)
         if sheet_report is not None:
             report["sheets"] = sheet_report
+        # which document, when, and whether the whole model was looked at (read by automation/checks_final.py);
+        # a stamp that cannot be written never changes the gate
+        try:
+            from qa.report_stamp import stamp_model_report
+            stamp_model_report(report, full=(only_ids is None and must_cover is None and sheet_report is None
+                                             and "--must-cover" not in flags and "--since-mins" not in flags), flags=flags)
+        except Exception as _e:
+            print(f"(report not stamped: {_e})")
         with open("model_qa_report.json", "w") as f:
             _json.dump(report, f, indent=2)
         print("💾 Report saved to model_qa_report.json")
@@ -367,7 +375,17 @@ def main():
             print(f"❌ qa-marks could not read the open model: {e}")
             print("   NOTHING CHECKED. This is not a result on any document.")
             sys.exit(2)
-        run_opening_marks_qa(state)
+        _issues = run_opening_marks_qa(state)
+        # the same result as a file, with the document and the time (read by automation/checks_final.py);
+        # a file that cannot be written never changes what was printed
+        try:
+            import json as _json
+            from qa.report_stamp import marks_report, MARKS_REPORT_FILE
+            with open(MARKS_REPORT_FILE, "w") as f:
+                _json.dump(marks_report(state, _issues), f, indent=2)
+            print(f"💾 Report saved to {MARKS_REPORT_FILE}")
+        except Exception as _e:
+            print(f"(marks report not saved: {_e})")
 
     elif cmd == "qa-electrical":
         from qa.electrical_qa import run_electrical_qa
