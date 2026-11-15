@@ -57,6 +57,7 @@ ORPHAN_MIN_MINUTES = 30  # gateway alive but phase unsignaled -> re-brief after 
 #      no re-brief. Stale / missing / unreadable / other phase: the rules above, unchanged.
 #   2. Right before a re-brief (or a stall-block) is posted, the signal file is read
 #      again. A signal for that phase is processed as a signal; nothing is posted.
+ORDER_STOP_FILE = "ORDER_STOPPED.json"   # in the project folder: the owner stopped this order -> never dispatch it
 HEARTBEAT_FILE = "phase_heartbeat.json"
 HEARTBEAT_FRESH_MINUTES = 12     # heartbeat younger than this -> phase alive, no re-brief
 HEARTBEAT_BEAT_EVERY_MINUTES = 8  # what the brief asks of the agent (must stay below the line above)
@@ -845,6 +846,37 @@ def apply_signals(key, name, proj, lines):
     return requeued
 
 
+def order_stop(name, wo):
+    """Is the work order in this folder stopped by its owner?
+    projects/<name>/ORDER_STOPPED.json is written by automation/order_stop.py in the workspace, on a
+    person's word. It names the order it stops ("order_key", same value as order_key(wo)).
+    -> None                      no marker, or a marker for ANOTHER order (a later order in the folder runs)
+    -> {"key", "why", "other"}   "other" True = marker for another order (not a stop, the caller logs it once)
+    A marker that cannot be read, is not JSON or names no order stops whatever is in the folder: fail closed.
+    Never raises."""
+    path = f"{PROJECTS_DIR}/{name}/{ORDER_STOP_FILE}"
+    try:
+        raw = docker_read(path)
+    except Exception as e:
+        return {"key": "unreadable", "why": f"the stop marker could not be read ({type(e).__name__})", "other": False}
+    if not raw or not raw.strip():
+        return None
+    try:
+        mk = json.loads(raw)
+        if not isinstance(mk, dict):
+            raise ValueError("not an object")
+    except Exception:
+        return {"key": "invalid", "why": "the stop marker is not valid JSON; treated as a stop", "other": False}
+    want = str(mk.get("order_key") or "").strip()
+    who = str(mk.get("stopped_by") or "owner")[:80]
+    at = str(mk.get("at") or "")[:40]
+    if not want:
+        return {"key": "any", "why": f"stopped by {who} {at} (the marker names no order: it stops any order here)".strip(), "other": False}
+    if want != order_key(wo):
+        return {"key": want, "why": f"a stop marker for another order ({want[:60]}) is in the folder", "other": True}
+    return {"key": want, "why": f"stopped by {who} {at}".strip(), "other": False}
+
+
 def process_project(key, state, name, wo):
     # token telemetry first: it must also run for a folder that is already finished,
     # and before a new order resets the phase states
@@ -858,6 +890,23 @@ def process_project(key, state, name, wo):
     # Gate: never dispatch without explicit Mitch approval recorded in the file
     if not wo.get("approved"):
         return
+
+    # Gate: an order its owner stopped is never dispatched or re-briefed, whatever the state says.
+    # Removing the marker (a person's go, automation/order_stop.py clear) is what lets it run again.
+    stop = order_stop(name, wo)
+    if stop and not stop["other"]:
+        if proj.get("stopped_key") != stop["key"]:
+            proj["stopped_key"] = stop["key"]
+            proj["stopped"] = stop["why"]
+            log(f"{name}: work order STOPPED BY OWNER ({stop['why']}) - no dispatch and no re-brief "
+                f"while {ORDER_STOP_FILE} is in the folder")
+        return
+    if stop and stop["other"] and proj.get("stop_marker_other") != stop["key"]:
+        proj["stop_marker_other"] = stop["key"]
+        log(f"{name}: {stop['why']}; it does not stop this order")
+    if proj.pop("stopped_key", None) is not None:
+        proj.pop("stopped", None)
+        log(f"{name}: the stop marker for this order is gone - dispatch is open again")
 
     # Mark completed-and-summarized orders as finished — but a re-queue
     # signal ("pending") must re-engage, so this check happens AFTER signals.
