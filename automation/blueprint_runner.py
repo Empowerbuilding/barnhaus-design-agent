@@ -9,6 +9,14 @@ Runs on the DO host (cron */2, flock'd). Orchestrates approved work orders:
     Blueprint per the Phase Execution Contract in AGENTS.md)
   - Stop conditions: blocked / decision signals, stalls (alert + one re-brief),
     save failures (hard stop)
+  - Re-brief guard (2026-11-15): a phase that looks stalled is NOT re-briefed while
+    projects/<name>/phase_heartbeat.json shows it alive, and the signal file is read
+    again right before any re-brief or stall-block is posted (see rebrief_decision)
+  - Phase pack (2026-11-15): right before every dispatch (first brief and re-brief) the
+    phase pack is built in the container (automation/phase_pack.py); with a pack the
+    dispatch message names the pack as the phase's input, without one it is the brief
+    text as before (see build_pack, dispatch_text). The phase class of the work order
+    goes into the state, the log and the message (see model_class_for)
   - Posts the summary card when all phases reach a terminal state
 
 NEVER talks to Revit or the bridge. Only portal messages + container files.
@@ -35,6 +43,59 @@ PROJECTS_DIR = "/home/node/.openclaw/workspace/projects"
 STALL_MIN_MINUTES = 45   # hard ceiling floor regardless of est_minutes
 IDLE_MIN_MINUTES = 10    # no gateway activity at all -> re-brief after this
 ORPHAN_MIN_MINUTES = 30  # gateway alive but phase unsignaled -> re-brief after this
+
+# ---- re-brief guard (fix list item 12, 2026-11-15) ----
+# Seen on 2026-11-14/15 (D0, D1, P5-105, P5-104): a phase that ran longer than the stall
+# rules above was briefed a second time although it was working, and the second brief
+# reached the agent right after its done line. Two guards, both decided in the pure
+# function rebrief_decision():
+#   1. In-flight marker. Blueprint writes projects/<name>/phase_heartbeat.json
+#      {"phase", "at" (UTC ISO), "step"} at phase start and during long steps
+#      (workspace tool: automation/phase_heartbeat.py). A heartbeat for the dispatched
+#      phase younger than HEARTBEAT_FRESH_MINUTES = the phase is alive: no re-brief, the
+#      phase is watched as "done-pending". Alive past the ceiling below: ONE alert, still
+#      no re-brief. Stale / missing / unreadable / other phase: the rules above, unchanged.
+#   2. Right before a re-brief (or a stall-block) is posted, the signal file is read
+#      again. A signal for that phase is processed as a signal; nothing is posted.
+HEARTBEAT_FILE = "phase_heartbeat.json"
+HEARTBEAT_FRESH_MINUTES = 12     # heartbeat younger than this -> phase alive, no re-brief
+HEARTBEAT_BEAT_EVERY_MINUTES = 8  # what the brief asks of the agent (must stay below the line above)
+HEARTBEAT_SKEW_SECONDS = 120     # tolerated: heartbeat stamped this much ahead of the runner clock,
+                                 # or this much before the first brief of the phase
+ALIVE_CEILING_FACTOR = 3         # alive phase: one alert once it has run longer than
+ALIVE_CEILING_MIN_MINUTES = 120  #   max(ALIVE_CEILING_FACTOR x est_minutes, this many minutes)
+SIGNAL_STATUSES = ("done", "blocked", "awaiting_decision", "pending")
+
+# ---- phase pack, phase class, fresh session (second pass, 2026-11-15) ----
+# Right before EVERY dispatch of a phase (first brief and re-brief) the runner builds the
+# phase pack in the container:
+#     python3 automation/phase_pack.py --project <folder name> --phase <id> --write
+# It writes projects/<folder>/briefs/<id>.pack.md: one self-contained input for the phase
+# (brief, work order slice, lessons that apply, state, open items, recipes). Its State part
+# is as of the minute it is built, which is why it is built here and not at compile time.
+#   - command ended with exit 0 AND the file is there afterwards: the dispatch message
+#     names the pack as the input of the phase (pack_brief).
+#   - command failed, did not end in time, or the file is not there: the dispatch message
+#     is the brief text as before (brief) and the reason goes to the log.
+# A failed pack never stops a dispatch.
+WORKSPACE_DIR = PROJECTS_DIR.rsplit("/", 1)[0]
+PACK_TOOL = WORKSPACE_DIR + "/automation/phase_pack.py"
+PACK_TIMEOUT_SECONDS = 60        # the tool took well under a second on a 470 KB work order
+# Phase class. A newly compiled work order carries on each phase "phase_class"
+# ("judgment" | "mechanical") and "phase_class_reason". Missing or unknown = "judgment".
+PHASE_CLASSES = ("judgment", "mechanical")
+DEFAULT_PHASE_CLASS = "judgment"
+PHASE_CLASS_REASON_CUT = 200     # characters of the reason kept in state, log and message
+# Model per phase class. LEFT EMPTY ON PURPOSE. The person who owns the gateway fills it,
+# for example {"judgment": "<model id>", "mechanical": "<model id>"}, and wires the session
+# model pinning on the gateway side. The runner has NO pinning mechanism. With this map
+# empty the runner behaves exactly as without it. With an entry for the class of a phase,
+# the runner only writes that model id into the phase state ("model_wanted") and the log
+# line; it does not change which model runs the phase.
+MODEL_BY_CLASS = {}
+# The sentence a dispatch message carries when a pack exists. The runner does not create
+# sessions: a new session per dispatch is the gateway owner's side.
+FRESH_SESSION_NOTE = "This phase is meant to start in a fresh session with only this pack."
 
 # ---- token telemetry, filled from OUTSIDE the turn (M2 condition 3, 2026-11-11) ----
 # The agent cannot read its own token use from inside a turn. The gateway writes one
@@ -391,6 +452,220 @@ def brief(name, wo, phase):
         + (f"\nDecision points in this phase: use the documented default and flag."
            if any(d.get("phase") == phase["id"] for d in wo.get("decision_points", []))
            else "")
+        + (f"\nHeartbeat: run python3 automation/phase_heartbeat.py beat {name} {phase['id']} "
+           f"\"<step>\" at phase start and again before and after each long step, at least "
+           f"every {HEARTBEAT_BEAT_EVERY_MINUTES} minutes. The runner does not re-brief a phase "
+           f"whose heartbeat is younger than {HEARTBEAT_FRESH_MINUTES} minutes.")
+    )
+
+
+def model_class_for(phase):
+    """Phase class of ONE phase dict of a work order: "judgment" or "mechanical".
+    A missing or unknown value (and a phase that is not a dict) is "judgment"."""
+    value = phase.get("phase_class") if isinstance(phase, dict) else None
+    if isinstance(value, str) and value in PHASE_CLASSES:
+        return value
+    return DEFAULT_PHASE_CLASS
+
+
+def phase_class_is_set(phase):
+    """True when the work order names a class the runner knows on this phase."""
+    value = phase.get("phase_class") if isinstance(phase, dict) else None
+    return isinstance(value, str) and value in PHASE_CLASSES
+
+
+def phase_class_reason_for(phase):
+    """Why the phase has the class model_class_for() gives: the reason of the work order
+    when the class is set there, else what the runner found instead. One line, cut."""
+    value = phase.get("phase_class") if isinstance(phase, dict) else None
+    if value is None or value == "":
+        return (f"no phase_class on this phase in the work order; "
+                f"{DEFAULT_PHASE_CLASS} is the default")
+    if not phase_class_is_set(phase):
+        return (f"phase_class {str(value)[:40]!r} in the work order is not a class the "
+                f"runner knows; {DEFAULT_PHASE_CLASS} is the default")
+    reason = phase.get("phase_class_reason")
+    if isinstance(reason, str) and reason.strip():
+        return " ".join(reason.split())[:PHASE_CLASS_REASON_CUT]
+    return "the work order gives no reason"
+
+
+def phase_class_line(phase):
+    """The ONE line a dispatch message carries about the class (same form as in the brief file)."""
+    return f"Phase class: {model_class_for(phase)} ({phase_class_reason_for(phase)})"
+
+
+def model_for_class(phase_class):
+    """Model id the gateway owner put into MODEL_BY_CLASS for this class; None while the
+    map is empty. The runner only records it; it pins nothing."""
+    model = MODEL_BY_CLASS.get(phase_class)
+    return str(model) if model else None
+
+
+def fresh_session_note():
+    """The sentence a dispatch message carries when a pack exists."""
+    return FRESH_SESSION_NOTE
+
+
+def pack_rel_path(name, pid):
+    """Where phase_pack.py --write puts the pack, relative to the workspace."""
+    return f"projects/{name}/briefs/{pid}.pack.md"
+
+
+def pack_command(name, pid):
+    """The command that builds the pack of one phase, run in the container."""
+    return ["docker", "exec", CONTAINER, "python3", PACK_TOOL,
+            "--project", str(name), "--phase", str(pid), "--write"]
+
+
+def run_pack_command(name, pid):
+    """Run pack_command() in the container. -> (exit code, last line the tool printed).
+    Exit code None = the command could not be run or did not end in time. Never raises."""
+    try:
+        out = subprocess.run(pack_command(name, pid), capture_output=True, text=True,
+                             timeout=PACK_TIMEOUT_SECONDS)
+    except Exception as e:
+        return None, f"{type(e).__name__}: {e}"[:200]
+    said = ((out.stderr or "").strip() or (out.stdout or "").strip()).splitlines()
+    return out.returncode, (said[-1].strip()[:200] if said else "")
+
+
+def build_pack(name, pid):
+    """Build the pack of one phase and check that the file is there afterwards.
+    -> {"ok": bool, "path": workspace-relative pack path, "why": reason when not ok}.
+    Never raises: every failure is a reason, and the caller dispatches without a pack."""
+    rel = pack_rel_path(name, pid)
+    try:
+        code, said = run_pack_command(name, pid)
+        if code is None:
+            why = f"the pack command could not be run or did not end ({said})"
+        elif code != 0:
+            why = f"the pack command ended with exit {code}" + (f" ({said})" if said else "")
+        else:
+            raw = docker_read(f"{WORKSPACE_DIR}/{rel}")
+            if raw is None:
+                why = f"the pack command ended with exit 0 but {rel} is not there"
+            elif not raw.strip():
+                why = f"the pack command ended with exit 0 but {rel} is empty"
+            else:
+                return {"ok": True, "path": rel, "why": ""}
+    except Exception as e:
+        why = f"the pack step raised {type(e).__name__}: {e}"[:240]
+    return {"ok": False, "path": rel, "why": why}
+
+
+def prepare_dispatch(name, phase):
+    """Right before a dispatch (first brief or re-brief): build the pack, read the class.
+    -> {"pack": pack path or None, "pack_why": reason when there is no pack,
+        "phase_class", "phase_class_reason", "model_wanted" (None while MODEL_BY_CLASS is empty)}.
+    A pack that was not built is logged here with its reason. Never raises."""
+    pid = phase.get("id") if isinstance(phase, dict) else None
+    built = build_pack(name, pid)
+    if not built["ok"]:
+        log(f"{name}: {pid} pack not built: {built['why']}. Without a pack the dispatch "
+            f"message is the brief text as before.")
+    cls = model_class_for(phase)
+    return {"pack": built["path"] if built["ok"] else None,
+            "pack_why": "" if built["ok"] else built["why"],
+            "phase_class": cls, "phase_class_reason": phase_class_reason_for(phase),
+            "model_wanted": model_for_class(cls)}
+
+
+def record_dispatch(st, prep):
+    """Write what prepare_dispatch() found into the runner state of the phase."""
+    st["phase_class"] = prep["phase_class"]
+    st["phase_class_reason"] = prep["phase_class_reason"]
+    for k, v in (("pack", prep.get("pack")), ("pack_note", prep.get("pack_why")),
+                 ("model_wanted", prep.get("model_wanted"))):
+        if v:
+            st[k] = v
+        else:
+            st.pop(k, None)
+
+
+def dispatch_note(prep):
+    """The part of a dispatch log line about class, model map and pack."""
+    note = f"class {prep['phase_class']} ({prep['phase_class_reason']})"
+    if prep.get("model_wanted"):
+        note += f"; MODEL_BY_CLASS names {prep['model_wanted']}, the runner does not pin it"
+    if prep.get("pack"):
+        return note + f"; pack {prep['pack']}"
+    return note + "; no pack, brief text as before"
+
+
+def pack_brief(name, wo, phase, pack_path):
+    """Text of a dispatch when the pack was built: the pack is the input of the phase.
+    Kept from brief(), same words: the first line (phase id, work order, title), the
+    signal file, the QA gate, the Verification line, the decision line, the Heartbeat line.
+    Left out: "read RESUME.md + the work order first" and the Brief file line (the pack
+    holds the brief)."""
+    verify = phase.get("verify", {})
+    v = []
+    if verify.get("qa_model"):
+        v.append("qa-model gate REQUIRED")
+    if verify.get("vision"):
+        v.append(f"vision check: {verify['vision']}")
+    return (
+        f"▶️ RUNNER — execute phase {phase['id']} of work order "
+        f"projects/{name}/work_order.json (\"{phase['title']}\").\n"
+        f"Your input is {pack_path}. Read it first. Do not open work_order.json or "
+        f"RESUME.md whole: the pack holds the brief, the work order slice, the lessons "
+        f"that apply, the state, the open items and the recipes for this phase. The runner "
+        f"built it right before this message; its State part is as of that minute.\n"
+        f"{fresh_session_note()}\n"
+        f"{phase_class_line(phase)}\n"
+        f"Follow the Phase Execution Contract in AGENTS.md: execute the phase, run the QA "
+        f"gate, SAVE, take the phase backup, append your signal to "
+        f"projects/{name}/phase_signals.jsonl, then post the PHASE_DONE card."
+        + (f"\nVerification: {'; '.join(v)}." if v else "")
+        + (f"\nDecision points in this phase: use the documented default and flag."
+           if any(d.get("phase") == phase["id"] for d in wo.get("decision_points", []))
+           else "")
+        + (f"\nHeartbeat: run python3 automation/phase_heartbeat.py beat {name} {phase['id']} "
+           f"\"<step>\" at phase start and again before and after each long step, at least "
+           f"every {HEARTBEAT_BEAT_EVERY_MINUTES} minutes. The runner does not re-brief a phase "
+           f"whose heartbeat is younger than {HEARTBEAT_FRESH_MINUTES} minutes.")
+    )
+
+
+def dispatch_text(name, wo, phase, prep=None):
+    """Text of a first brief. With a pack: pack_brief(). Without one: brief(), word for
+    word as before, plus ONE last line with the phase class when the work order names a
+    class on the phase (a work order without classes gets exactly the old text)."""
+    if prep and prep.get("pack"):
+        return pack_brief(name, wo, phase, prep["pack"])
+    text = brief(name, wo, phase)
+    if prep is not None and phase_class_is_set(phase):
+        text += "\n" + phase_class_line(phase)
+    return text
+
+
+def rebrief(name, wo, phase, st, decision, prep=None):
+    """Text of a RE-brief: says that it is one, and what to read before doing anything.
+    The first brief of the phase follows it unchanged. With a pack (prep from
+    prepare_dispatch) the pack message follows instead, and RESUME.md is not read whole."""
+    pid = phase["id"]
+    first = st.get("first_dispatched_at") or st.get("dispatched_at")
+    since = _iso(first) if first else "the first brief of this phase"
+    sig = f"projects/{name}/phase_signals.jsonl"
+    return (
+        f"🔁 RUNNER RE-BRIEF — phase {pid} of work order projects/{name}/work_order.json. "
+        f"This is a re-brief, not a new phase: the runner read no signal for {pid} in "
+        f"{decision.get('age_min', 0):.0f} min ({decision.get('why') or 'stalled'}; "
+        f"{decision.get('heartbeat_note') or 'heartbeat not read'}).\n"
+        f"FIRST read {sig}. If it holds a valid done, blocked or awaiting_decision line for "
+        f"{pid} with \"at\" later than {since} (the first brief of this phase): the phase is "
+        f"closed. Do no work and append no second line; the runner reads that line on its "
+        f"next pass. Reply in one line.\n"
+        + (f"If there is no such line: see what already landed before you write anything "
+           f"(in RESUME.md read only the part about {pid}, do not open the file whole), do "
+           f"not redo it, finish what is left, then append the signal.\n"
+           f"The brief follows. Its pack was built for this re-brief.\n\n"
+           if prep and prep.get("pack") else
+           f"If there is no such line: read RESUME.md to see what already landed, do not redo "
+           f"it, finish what is left, then append the signal.\n"
+           f"The first brief follows.\n\n")
+        + dispatch_text(name, wo, phase, prep)
     )
 
 
@@ -415,6 +690,161 @@ def summarize(key, name, wo, proj):
         f"{len(decisions)} decisions)")
 
 
+def read_heartbeat(name):
+    """projects/<name>/phase_heartbeat.json (written by automation/phase_heartbeat.py).
+    -> the parsed JSON value; None when the file is missing or the container could not
+    be asked; the string "unreadable" when the file is there but is not JSON."""
+    raw = docker_read(f"{PROJECTS_DIR}/{name}/{HEARTBEAT_FILE}")
+    if raw is None:
+        return None
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return "unreadable"
+
+
+def rebrief_constants():
+    """The constants the stall / re-brief decision uses, read from the module at call time."""
+    return {"STALL_MIN_MINUTES": STALL_MIN_MINUTES, "IDLE_MIN_MINUTES": IDLE_MIN_MINUTES,
+            "ORPHAN_MIN_MINUTES": ORPHAN_MIN_MINUTES,
+            "HEARTBEAT_FRESH_MINUTES": HEARTBEAT_FRESH_MINUTES,
+            "HEARTBEAT_SKEW_SECONDS": HEARTBEAT_SKEW_SECONDS,
+            "ALIVE_CEILING_FACTOR": ALIVE_CEILING_FACTOR,
+            "ALIVE_CEILING_MIN_MINUTES": ALIVE_CEILING_MIN_MINUTES}
+
+
+def stall_reason(age_min, est, system_alive, consts=None):
+    """The stall rules as they were before 2026-11-15, unchanged. Pure.
+    age_min: minutes since the last brief of the phase. -> reason text, None = not stalled."""
+    c = consts or rebrief_constants()
+    idle_dead = (not system_alive) and age_min > c["IDLE_MIN_MINUTES"]
+    orphaned = system_alive and age_min > c["ORPHAN_MIN_MINUTES"]
+    hard_ceiling = age_min > max(2 * est, c["STALL_MIN_MINUTES"])
+    if idle_dead:
+        return "no-gateway-activity"
+    if orphaned:
+        return "orphaned (activity but no signal)"
+    if hard_ceiling:
+        return "hard ceiling"
+    return None
+
+
+def heartbeat_state(now, pid, st, heartbeat, consts=None):
+    """Classify the heartbeat for the dispatched phase pid. Pure.
+    -> (state, age_min or None, note for people). Only state "fresh" means alive; every
+    other state (missing, unreadable, other-phase, future, before-brief, stale) does not."""
+    c = consts or rebrief_constants()
+    if heartbeat is None:
+        return "missing", None, "no heartbeat file"
+    if not isinstance(heartbeat, dict):
+        return "unreadable", None, "heartbeat file not readable"
+    if str(heartbeat.get("phase", "")) != str(pid):
+        return ("other-phase", None,
+                "heartbeat is for another phase (%s)" % str(heartbeat.get("phase", "?"))[:40])
+    at = _iso_epoch(heartbeat.get("at"))
+    if at is None:
+        return "unreadable", None, "heartbeat has no readable time"
+    age_min = (now - at) / 60.0
+    skew = c["HEARTBEAT_SKEW_SECONDS"]
+    if now - at < -skew:
+        return "future", age_min, "heartbeat time is %.0f min ahead of the runner clock" % -age_min
+    first = st.get("first_dispatched_at") or st.get("dispatched_at")
+    if first and at < first - skew:
+        return "before-brief", age_min, "heartbeat is older than the first brief of this phase"
+    if age_min <= c["HEARTBEAT_FRESH_MINUTES"]:
+        return "fresh", age_min, "heartbeat %.0f min old" % max(age_min, 0)
+    return "stale", age_min, "heartbeat stale, %.0f min old" % age_min
+
+
+def rebrief_decision(now, pid, st, est, system_alive, signals=(), heartbeat=None, consts=None):
+    """What to do about ONE dispatched phase. Pure: no I/O, no clock, nothing is changed.
+
+    now          epoch seconds
+    pid, st      phase id and its runner state (status, dispatched_at, first_dispatched_at,
+                 briefs, alive_alerted)
+    est          est_minutes of the phase, as process_project clamps it (at least 10)
+    system_alive result of recent_gateway_activity()
+    signals      signal lines read from the file AFTER the pass consumed its signals
+                 (the re-read right before posting); () when none were read
+    heartbeat    value of read_heartbeat(): dict, None (missing) or "unreadable"
+    consts       overrides for rebrief_constants() (tests)
+
+    -> dict with "action", one of
+       "wait"          not dispatched, or not stalled by the old rules: do nothing
+       "signal"        a signal for this phase is in the file: process it, post nothing
+       "done-pending"  stalled by the old rules but the heartbeat is fresh: alive, no re-brief
+       "alert-alive"   as done-pending, and past the alive ceiling for the first time: one alert
+       "rebrief"       stalled, not alive, first brief only so far: post the re-brief
+       "block"         stalled, not alive, already briefed twice: mark blocked
+       plus why, age_min (since the last brief), run_min (since the first brief),
+       heartbeat (state), heartbeat_age_min, heartbeat_note, alive_ceiling_min, signal.
+    """
+    c = dict(rebrief_constants())
+    c.update(consts or {})
+    out = {"action": "wait", "why": "", "age_min": 0.0, "run_min": 0.0,
+           "heartbeat": "not-checked", "heartbeat_age_min": None, "heartbeat_note": "",
+           "alive_ceiling_min": None, "signal": None}
+    if st.get("status") != "dispatched":
+        out["why"] = "phase is not dispatched"
+        return out
+    age_min = (now - st.get("dispatched_at", now)) / 60.0
+    first = st.get("first_dispatched_at") or st.get("dispatched_at") or now
+    out["age_min"] = age_min
+    out["run_min"] = (now - first) / 60.0
+    why = stall_reason(age_min, est, system_alive, c)
+    out["why"] = why or ""
+    for sig in signals or ():
+        if (isinstance(sig, dict) and str(sig.get("phase", "")) == str(pid)
+                and sig.get("status") in SIGNAL_STATUSES):
+            out["action"] = "signal"
+            out["signal"] = sig.get("status")      # the last one wins, as when signals are applied
+    if out["action"] == "signal":
+        return out
+    if not why:
+        return out
+    hb_state, hb_age, hb_note = heartbeat_state(now, pid, st, heartbeat, c)
+    out.update({"heartbeat": hb_state, "heartbeat_age_min": hb_age, "heartbeat_note": hb_note})
+    if hb_state == "fresh":
+        ceiling = max(c["ALIVE_CEILING_FACTOR"] * est, c["ALIVE_CEILING_MIN_MINUTES"])
+        out["alive_ceiling_min"] = ceiling
+        if out["run_min"] > ceiling and not st.get("alive_alerted"):
+            out["action"] = "alert-alive"
+        else:
+            out["action"] = "done-pending"
+        return out
+    out["action"] = "rebrief" if st.get("briefs", 1) < 2 else "block"
+    return out
+
+
+def apply_signals(key, name, proj, lines):
+    """Apply signal lines (already read from the file) to the phase states.
+    -> True when a blocked / awaiting_decision phase was re-queued with 'pending'."""
+    requeued = False
+    for sig in lines:
+        pid = str(sig.get("phase", ""))
+        status = sig.get("status", "")
+        if pid not in proj["phases"]:
+            continue
+        note = sig.get("note", "")
+        if status in ("done", "blocked", "awaiting_decision", "pending"):
+            was = proj["phases"][pid]["status"]
+            proj["phases"][pid].update({"status": status, "note": note,
+                                        "at": sig.get("at", "")})
+            proj["phases"][pid].pop("watch", None)
+            if status in ("done", "blocked", "awaiting_decision"):
+                # when the phase signalled: the end of the window for the token telemetry
+                proj["phases"][pid]["signal_epoch"] = _iso_epoch(sig.get("at")) or time.time()
+                proj["phases"][pid].pop("usage", None)
+            log(f"{name}: signal {pid} {was} -> {status} {('(' + note + ')') if note else ''}")
+            if status == "blocked":
+                portal_post(key, ALERT_CHANNEL,
+                            f"🚫 Blueprint runner: {name} phase {pid} BLOCKED — {note}",
+                            wake=True)
+            if status == "pending" and was in ("blocked", "awaiting_decision"):
+                requeued = True
+    return requeued
+
+
 def process_project(key, state, name, wo):
     # token telemetry first: it must also run for a folder that is already finished,
     # and before a new order resets the phase states
@@ -434,28 +864,7 @@ def process_project(key, state, name, wo):
     # 1) Consume new signals
     lines, new_off = read_signals(name, proj.get("offset", 0))
     proj["offset"] = new_off
-    requeued = False
-    for sig in lines:
-        pid = str(sig.get("phase", ""))
-        status = sig.get("status", "")
-        if pid not in proj["phases"]:
-            continue
-        note = sig.get("note", "")
-        if status in ("done", "blocked", "awaiting_decision", "pending"):
-            was = proj["phases"][pid]["status"]
-            proj["phases"][pid].update({"status": status, "note": note,
-                                        "at": sig.get("at", "")})
-            if status in ("done", "blocked", "awaiting_decision"):
-                # when the phase signalled: the end of the window for the token telemetry
-                proj["phases"][pid]["signal_epoch"] = _iso_epoch(sig.get("at")) or time.time()
-                proj["phases"][pid].pop("usage", None)
-            log(f"{name}: signal {pid} {was} -> {status} {('(' + note + ')') if note else ''}")
-            if status == "blocked":
-                portal_post(key, ALERT_CHANNEL,
-                            f"🚫 Blueprint runner: {name} phase {pid} BLOCKED — {note}",
-                            wake=True)
-            if status == "pending" and was in ("blocked", "awaiting_decision"):
-                requeued = True
+    requeued = apply_signals(key, name, proj, lines)
 
     # 2) Finished check (after signals so re-queues re-engage)
     if proj.get("finished"):
@@ -478,12 +887,17 @@ def process_project(key, state, name, wo):
                 continue
             if not deps_done(wo, proj, ph):
                 continue
-            portal_post(key, CHANNEL, brief(name, wo, ph), wake=True)
+            # pack + class right before the dispatch; a failed pack = the old brief text
+            prep = prepare_dispatch(name, ph)
+            portal_post(key, CHANNEL, dispatch_text(name, wo, ph, prep), wake=True)
             st.update({"status": "dispatched", "dispatched_at": now, "briefs": 1,
                        "first_dispatched_at": now})
             st.pop("signal_epoch", None)
             st.pop("usage", None)
-            log(f"{name}: dispatched {pid} ({ph['title']})")
+            for k in ("watch", "alive_alerted", "heartbeat_at"):
+                st.pop(k, None)
+            record_dispatch(st, prep)
+            log(f"{name}: dispatched {pid} ({ph['title']}) — {dispatch_note(prep)}")
             break
 
     # 4) Activity-aware stall detection on dispatched phases.
@@ -491,6 +905,11 @@ def process_project(key, state, name, wo):
     #    - alive but phase orphaned (activity, no signal): re-brief after ORPHAN_MIN
     #    - hard ceiling stays at the old 2x-est window
     #    - max 2 briefs, then blocked + alert
+    #    Re-brief guard (2026-11-15), only for a phase the rules above call stalled:
+    #    - fresh heartbeat for the phase: alive, watched as "done-pending", no re-brief;
+    #      past the alive ceiling: ONE alert, still no re-brief
+    #    - the signal file is read AGAIN right before a re-brief or a stall-block is
+    #      posted; a signal for the phase is processed and nothing is posted
     system_alive = recent_gateway_activity()
     for ph in wo["phases"]:
         pid = ph["id"]
@@ -499,30 +918,68 @@ def process_project(key, state, name, wo):
             continue
         est = max(int(ph.get("est_minutes", 30)), 10)
         age_min = (now - st.get("dispatched_at", now)) / 60.0
-        idle_dead = (not system_alive) and age_min > IDLE_MIN_MINUTES
-        orphaned = system_alive and age_min > ORPHAN_MIN_MINUTES
-        hard_ceiling = age_min > max(2 * est, STALL_MIN_MINUTES)
-        if idle_dead or orphaned or hard_ceiling:
-            why = ("no-gateway-activity" if idle_dead else
-                   "orphaned (activity but no signal)" if orphaned else "hard ceiling")
+        if not stall_reason(age_min, est, system_alive):
+            continue
+        hb = read_heartbeat(name)
+        # A re-brief gets a pack too. It is built BEFORE the signal re-read (decided on
+        # what is known so far), so that the re-read stays the last thing before the post.
+        prep = None
+        if rebrief_decision(now, pid, st, est, system_alive, (), hb)["action"] == "rebrief":
+            prep = prepare_dispatch(name, ph)
+        fresh, new_off = read_signals(name, proj.get("offset", 0))
+        proj["offset"] = new_off
+        d = rebrief_decision(now, pid, st, est, system_alive, fresh, hb)
+        if fresh:
+            apply_signals(key, name, proj, fresh)
+        why = d["why"]
+        hb_note = d["heartbeat_note"]
+        step = str(hb.get("step", ""))[:80] if isinstance(hb, dict) else ""
+        if d["action"] == "signal":
+            log(f"{name}: {pid} looked stalled at {age_min:.0f}min ({why}) but a "
+                f"'{d['signal']}' signal was in the file on the re-read — processed, "
+                f"nothing posted")
+        elif d["action"] in ("done-pending", "alert-alive"):
+            if st.get("watch") != "done-pending":
+                log(f"{name}: {pid} no signal after {age_min:.0f}min ({why}) but "
+                    f"{hb_note} (step: {step or 'not given'}) — alive, done-pending, "
+                    f"no re-brief")
+            st["watch"] = "done-pending"
+            st["heartbeat_at"] = str(hb.get("at", ""))[:25]
+            if d["action"] == "alert-alive":
+                portal_post(key, ALERT_CHANNEL,
+                            f"⏳ Blueprint runner: {name} {pid} has run "
+                            f"{d['run_min']:.0f} min since its first brief, past the "
+                            f"ceiling of {d['alive_ceiling_min']:.0f} min (est {est} min). "
+                            f"Its {hb_note} (step: {step or 'not given'}), so the phase "
+                            f"is treated as alive and is NOT re-briefed. This alert is "
+                            f"sent once for this dispatch. Someone should look.",
+                            wake=True)
+                st["alive_alerted"] = True
+                log(f"{name}: {pid} alive past the ceiling ({d['run_min']:.0f} > "
+                    f"{d['alive_ceiling_min']:.0f} min) — alerted once, no re-brief")
+        elif d["action"] == "rebrief":
             briefs = st.get("briefs", 1)
-            if briefs < 2:
-                portal_post(key, CHANNEL, brief(name, wo, ph), wake=True)
-                st["briefs"] = briefs + 1
-                st["dispatched_at"] = now
-                log(f"{name}: {pid} stalled {age_min:.0f}min ({why}) — re-briefed "
-                    f"(attempt {briefs + 1})")
-                portal_post(key, ALERT_CHANNEL,
-                            f"⚠️ Blueprint runner: {name} {pid} stalled at "
-                            f"{age_min:.0f} min — {why} — re-briefing", wake=False)
-            else:
-                st.update({"status": "blocked",
-                           "note": f"stalled ({why}), no signal after 2 briefs "
-                                   f"({age_min:.0f} min)"})
-                log(f"{name}: {pid} marked blocked (stalled twice, {why})")
-                portal_post(key, ALERT_CHANNEL,
-                            f"🚫 Blueprint runner: {name} {pid} BLOCKED — stalled "
-                            f"({why}), no signal after 2 briefs", wake=True)
+            if prep is None:              # not expected: same inputs as the decision above
+                prep = prepare_dispatch(name, ph)
+            portal_post(key, CHANNEL, rebrief(name, wo, ph, st, d, prep), wake=True)
+            st["briefs"] = briefs + 1
+            st["dispatched_at"] = now
+            st.pop("watch", None)
+            record_dispatch(st, prep)
+            log(f"{name}: {pid} stalled {age_min:.0f}min ({why}; {hb_note}) — re-briefed "
+                f"(attempt {briefs + 1}) — {dispatch_note(prep)}")
+            portal_post(key, ALERT_CHANNEL,
+                        f"⚠️ Blueprint runner: {name} {pid} stalled at "
+                        f"{age_min:.0f} min — {why} — {hb_note} — re-briefing", wake=False)
+        elif d["action"] == "block":
+            st.update({"status": "blocked",
+                       "note": f"stalled ({why}), no signal after 2 briefs "
+                               f"({age_min:.0f} min)"})
+            st.pop("watch", None)
+            log(f"{name}: {pid} marked blocked (stalled twice, {why}; {hb_note})")
+            portal_post(key, ALERT_CHANNEL,
+                        f"🚫 Blueprint runner: {name} {pid} BLOCKED — stalled "
+                        f"({why}), no signal after 2 briefs", wake=True)
 
     # 5) Terminal check — all phases done/blocked/awaiting_decision
     terminal = all(s["status"] in ("done", "blocked", "awaiting_decision")

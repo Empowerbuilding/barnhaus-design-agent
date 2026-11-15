@@ -67,6 +67,10 @@ def _is_systematically_named(label):
     parts = re.split(r"—|\s-\s", label)
     return len([p for p in parts if p.strip()]) >= 3
 _DEFAULT_NAME = re.compile(r"^\s*(direct ?shape|generic model|family|element)?\s*\d*\s*$", re.IGNORECASE)
+# The naming discipline is for DirectShapes only. A family instance is named by its family.
+# The category list gives no class and, for Specialty Equipment, no family (name = type
+# name), so the class and the family are read by id for these two categories (2026-11-15).
+_NAMING_CATEGORIES = ("Specialty Equipment", "Generic Models")
 
 # ─────────────────────────────────────────────
 # SCAN
@@ -125,8 +129,51 @@ def _lookup_ids(ids):
             "name": _el_field(el, "name", "Name") or "",
             "bbox": _norm_bbox(el.get("bbox")),
             "looked_up": True,
+            "class": _short_class(cls),
+            "family_read": str(_el_field(el, "family", "family_name", "Family") or ""),
         })
     return out
+
+
+def _short_class(value):
+    """'Autodesk.Revit.DB.DirectShape' or 'DirectShape' -> 'DirectShape'. '' = not read."""
+    return str(value or "").strip().split(".")[-1]
+
+
+def _read_classes(elements):
+    """Read the class (DirectShape, FamilyInstance) and the family name of the Specialty
+    Equipment and Generic Models elements in scope: ONE read by id. Sets el['class'] and
+    el['family_read']; el['family'] is left as the category list gave it, so the other
+    checks see what they saw before. An element the read did not return, or returned
+    without a class, keeps class '' = not read. Returns {"asked", "read"}, or None when
+    nothing in scope needs it (then no call is made)."""
+    want = [e for e in elements
+            if e["category"] in _NAMING_CATEGORIES and not _short_class(e.get("class"))]
+    if not want:
+        return None
+    ids = [e["id"] for e in want]
+    try:
+        raw = rc.get_elements_info(ids, include_bbox=False, include_location=False,
+                                   limit=max(2000, len(ids)))
+    except Exception:
+        raw = []
+    by_id = {}
+    for row in raw or []:
+        if not isinstance(row, dict):
+            continue
+        rid = _el_field(row, "id", "element_id", "Id")
+        if rid is not None:
+            by_id[str(rid)] = row
+    read = 0
+    for e in want:
+        row = by_id.get(str(e["id"]))
+        cls = _short_class(_el_field(row, "class", "class_name")) if row else ""
+        if not cls:
+            continue
+        e["class"] = cls
+        e["family_read"] = str(_el_field(row, "family", "family_name", "Family") or "")
+        read += 1
+    return {"asked": len(want), "read": read}
 
 
 def _scan_category(category, only_ids=None, context=None):
@@ -245,32 +292,114 @@ def _center_xy(bbox):
 # CHECKS
 # ─────────────────────────────────────────────
 
+def _naming_label(el):
+    """What to call the element in a finding. A DirectShape, or an element whose class was
+    not read: its own name (then type, then family). Anything else (a family instance):
+    family + type."""
+    cls = _short_class(el.get("class"))
+    if cls and cls.lower() != "directshape":
+        fam = el.get("family_read") or el["family"]
+        typ = el["type"] or el["name"]
+        return f"{fam} {typ}".strip() if fam != typ else str(fam)
+    return el["name"] or el["type"] or el["family"]
+
+
 def _check_naming_discipline(elements):
     """Component-First doctrine: no bare/unnamed Specialty Equipment or
-    Generic-Model DirectShapes. Systematic names have the 3+ part pattern."""
+    Generic-Model DirectShapes. Systematic names have the 3+ part pattern.
+
+    The discipline is for DirectShapes ONLY (class read by id, see _read_classes):
+      DirectShape      empty or default name -> unnamed_element (fix);
+                       Specialty Equipment without the systematic name ->
+                       bare_specialty_equipment (consider).
+      family instance  named by its family: no finding for a short type name ('24"', '36').
+                       Only a family AND a type that both still have default names
+                       ('Family1') -> unnamed_element (fix).
+      class not read   cannot tell a DirectShape from a family instance: the finding says
+                       so (fyi). It never says "is a DirectShape" and never fails the gate.
+    """
     issues = []
     for el in elements:
-        if el["category"] not in ("Specialty Equipment", "Generic Models"):
+        cat = el["category"]
+        if cat not in _NAMING_CATEGORIES:
             continue
-        label = el["name"] or el["type"] or el["family"]
-        if not label or _DEFAULT_NAME.match(label):
+        cls = _short_class(el.get("class"))
+        own = el["name"] or el["type"] or el["family"]     # what the category list gave
+        unnamed = (not own) or bool(_DEFAULT_NAME.match(own))
+        label = _naming_label(el)
+
+        if not cls:
+            if unnamed:
+                issues.append({
+                    "type": "naming_class_not_read",
+                    "severity": "fyi",
+                    "element_id": el["id"],
+                    "category": cat,
+                    "message": f"{cat} {el['id']} has an empty or default name ('{own}'). "
+                               f"Class not read: cannot tell a DirectShape from a family "
+                               f"instance. The name was not judged.",
+                    "auto_fixable": False,
+                })
+            elif "specialty" in cat.lower() and not _is_systematically_named(own):
+                issues.append({
+                    "type": "naming_class_not_read",
+                    "severity": "fyi",
+                    "element_id": el["id"],
+                    "category": cat,
+                    "message": f"Specialty Equipment {el['id']} ('{own}') has no systematic "
+                               f"name. Class not read: cannot tell a DirectShape from a "
+                               f"family instance. The naming discipline was not checked.",
+                    "auto_fixable": False,
+                })
+            continue
+
+        if cls.lower() != "directshape":
+            # a family instance (or any other class that is not a DirectShape): named by
+            # its family. A short type name is not a finding.
+            if not unnamed:
+                continue
+            fam = el.get("family_read") or el["family"]
+            if not fam:
+                issues.append({
+                    "type": "naming_family_not_read",
+                    "severity": "fyi",
+                    "element_id": el["id"],
+                    "category": cat,
+                    "message": f"{cat} {el['id']} ('{label}') is a {cls}, not a DirectShape. "
+                               f"Its family name was not read. The name was not judged.",
+                    "auto_fixable": False,
+                })
+            elif _DEFAULT_NAME.match(fam):
+                issues.append({
+                    "type": "unnamed_element",
+                    "severity": "fix",
+                    "element_id": el["id"],
+                    "category": cat,
+                    "message": f"{cat} {el['id']} is a {cls} whose family and type both still "
+                               f"have default names (family '{fam}', type '{own}'). "
+                               f"Rename the family.",
+                    "auto_fixable": False,
+                })
+            continue
+
+        if unnamed:
             issues.append({
                 "type": "unnamed_element",
                 "severity": "fix",
                 "element_id": el["id"],
-                "category": el["category"],
-                "message": f"{el['category']} {el['id']} has no systematic name "
-                           f"(family='{el['family']}', type='{el['type']}'). "
+                "category": cat,
+                "message": f"{cat} {el['id']} is a DirectShape and has no systematic name "
+                           f"(name='{el['name']}', type='{el['type']}'). "
                            f"Rebuild as family, or name it "
                            f"'<Category> — <Item> — <Location> — <Finish>'.",
                 "auto_fixable": False,
             })
-        elif "specialty" in el["category"].lower() and not _is_systematically_named(label):
+        elif "specialty" in cat.lower() and not _is_systematically_named(label):
             issues.append({
                 "type": "bare_specialty_equipment",
                 "severity": "consider",
                 "element_id": el["id"],
-                "category": el["category"],
+                "category": cat,
                 "message": f"Specialty Equipment {el['id']} ('{label}') is a DirectShape "
                            f"outside the naming discipline. Confirm category + shared "
                            f"params are right (schedules/takeoffs key off these).",
@@ -566,6 +695,12 @@ def run_model_work_qa(element_ids=None, categories=None, must_cover=None):
                 print(f"  by id: {e['id']} is in {e['category']}")
             elements += found
 
+    # class + family of the Specialty Equipment / Generic Models in scope (naming discipline)
+    class_read = _read_classes(elements)
+    if class_read:
+        print(f"  class read for {class_read['read']} of {class_read['asked']} "
+              f"Specialty Equipment / Generic Models element(s)")
+
     levels = _scan_levels()
     rooms = _scan_rooms()
 
@@ -597,6 +732,7 @@ def run_model_work_qa(element_ids=None, categories=None, must_cover=None):
         "categories_scanned": cats,
         "compared_with_existing": len(context or []),
         "must_cover": coverage,
+        "naming_class_read": class_read,
         "total": len(deduped),
         "fix": [i for i in deduped if i["severity"] == "fix"],
         "consider": [i for i in deduped if i["severity"] == "consider"],
