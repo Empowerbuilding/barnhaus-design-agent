@@ -528,15 +528,27 @@ def _check_ceiling_boundaries(elements, rooms):
     return issues
 
 
+# Views are left out of the double-placement rule (Tony's ruling, blueprint-mitch 2026-11-16 02:43Z).
+# The box the bridge gives for a view is in that view's own crop coordinates (a section) or is the
+# same default outline for every copy of a 3D view: it is not a place in the model. Two wall
+# elevations of one room, or two 3D views of one room, came out as "share a bbox center, delete one"
+# on every room sheet of Synatschk P11. The rule is for duplicate MODEL placements; for every other
+# category it is unchanged. Comparing views by model origin and direction is a later pass.
+VIEW_CATEGORIES = ("Views", "Sheets")
+
+
 def _check_duplicates(elements, context=None):
     """Same category + same type + bbox centers within 0.15 ft = double-placed.
     context: elements of the same categories that are NOT in scope (already in the model).
-    A pair is reported when at least one of the two is in scope."""
+    A pair is reported when at least one of the two is in scope.
+    Elements of a view category (VIEW_CATEGORIES) are not compared."""
     issues = []
     by_key = {}
     in_scope = {el["id"] for el in elements}
     for el in list(elements) + list(context or []):
         if not el["bbox"]:
+            continue
+        if el["category"] in VIEW_CATEGORIES:
             continue
         key = (el["category"], el["family"], el["type"])
         by_key.setdefault(key, []).append(el)
