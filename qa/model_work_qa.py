@@ -537,8 +537,25 @@ def _check_ceiling_boundaries(elements, rooms):
 VIEW_CATEGORIES = ("Views", "Sheets")
 
 
+# A pair is a double placement only when the two boxes really share space (Tony's ruling, blueprint-mitch
+# 2026-11-17 08:33Z, on Blueprint's report of 06:12Z): more than DUP_MIN_OVERLAP_FT of overlap in ALL three
+# directions, on top of the same-type and centre gates. Stacked double top plates (0.0 overlap in height),
+# studs side by side and the plies of a built-up beam touch but do not overlap: intended construction, not
+# duplicates. Found on Banks - Engineering, where every such pair was reported "delete one".
+DUP_MIN_OVERLAP_FT = 0.01
+
+
+def _boxes_overlap(a, b, min_ft=DUP_MIN_OVERLAP_FT):
+    """True when boxes a and b overlap by more than min_ft along x, y and z."""
+    for ax in ("x", "y", "z"):
+        if min(a["max"][ax], b["max"][ax]) - max(a["min"][ax], b["min"][ax]) <= min_ft:
+            return False
+    return True
+
+
 def _check_duplicates(elements, context=None):
-    """Same category + same type + bbox centers within 0.15 ft = double-placed.
+    """Same category + same type + bbox centers within 0.15 ft + boxes that overlap in all three
+    directions (_boxes_overlap) = double-placed.
     context: elements of the same categories that are NOT in scope (already in the model).
     A pair is reported when at least one of the two is in scope.
     Elements of a view category (VIEW_CATEGORIES) are not compared."""
@@ -564,14 +581,15 @@ def _check_duplicates(elements, context=None):
                 bx, by = _center_xy(b["bbox"])
                 az = (a["bbox"]["min"]["z"] + a["bbox"]["max"]["z"]) / 2.0
                 bz = (b["bbox"]["min"]["z"] + b["bbox"]["max"]["z"]) / 2.0
-                if abs(ax - bx) < 0.15 and abs(ay - by) < 0.15 and abs(az - bz) < 0.5:
+                if (abs(ax - bx) < 0.15 and abs(ay - by) < 0.15 and abs(az - bz) < 0.5
+                        and _boxes_overlap(a["bbox"], b["bbox"])):
                     issues.append({
                         "type": "duplicate_placement",
                         "severity": "fix",
                         "element_id": b["id"],
                         "message": f"Possible double-place: {cat} '{fam} {typ}' ids "
                                    f"{a['id']} and {b['id']} share a bbox center "
-                                   f"(within 0.15 ft). Delete one.",
+                                   f"(within 0.15 ft) and their boxes overlap. Delete one.",
                         "auto_fixable": False,
                     })
     return issues
