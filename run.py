@@ -456,6 +456,12 @@ def main():
         from qa.dims_qa import run as dims_qa
         dims_qa(flags[0] if flags else None)
 
+    elif cmd == "qa-overlaps":
+        from qa.sheet_overlap_qa import run_sheet_overlap_qa
+        issues = run_sheet_overlap_qa(flags[0] if flags else None)
+        if issues:
+            sys.exit(1)
+
     elif cmd == "review":
         from tasks.review import run_review
         run_review(visual="--visual" in flags,

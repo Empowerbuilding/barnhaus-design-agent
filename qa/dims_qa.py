@@ -100,11 +100,28 @@ def run(keyword: str = None) -> list:
     targets = {}
     for kw in keywords:
         targets.update(_matching_view_ids(kw))
-    if not targets:
-        print("   No matching views.")
-        return []
 
     all_issues = []
+
+    # 0. Sheet-level page/viewport overlap check on full review (lesson 965f5d1e)
+    if keyword is None:
+        try:
+            from qa.sheet_overlap_qa import run_sheet_overlap_qa
+            ov_issues = run_sheet_overlap_qa(quiet=True)
+            if ov_issues:
+                print(f"   ⚠️  {len(ov_issues)} sheet overlap/bounds issue(s) found across populated sheets")
+                all_issues.extend(ov_issues)
+        except Exception as e:
+            print(f"   ⚠️  sheet overlap check skipped: {e}")
+
+    if not targets:
+        if not all_issues:
+            print("   No matching views.")
+        else:
+            for i in all_issues:
+                print(f"   ⚠️  {i['message']}")
+        return all_issues
+
     stats = {}
     for view_id, label in targets.items():
         issues = _check_view(view_id, label, stats=stats)

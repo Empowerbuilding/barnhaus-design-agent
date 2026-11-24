@@ -46,7 +46,10 @@ NORMAL, do not report them. Report ONLY clear quality problems visible within th
    nothing, tags detached from their element, empty tags (?? or blank)
 4. drafting_glitch — floating/orphaned elements, broken linework, hatch spilling outside
    boundaries, duplicated overlapping text
-5. layout — views/schedules colliding with the title block or bleeding off the sheet
+5. layout — views/schedules colliding with the title block or bleeding off the sheet, OR
+   ANY page-level overlap between separate views/insets/annotations (e.g. floor-plan
+   exterior dimensions, witness lines, callouts, or view titles running into or
+   overlapping an Area Map / Area Plan inset, adjacent elevation, or schedule)
 
 Respond with ONLY a JSON array (no prose). Each finding:
 {"type": "<category>", "severity": "error|warning", "description": "<specific, mention
@@ -57,9 +60,12 @@ If the tile is clean, respond with []"""
 
 OVERVIEW_QA_PROMPT = """This is a full sheet overview from a residential construction set
 (downscaled — small text is expected to be unreadable, do NOT report illegible text).
-Assess ONLY sheet-level layout: views placed crooked or colliding, huge empty regions on
-a sheet that should be full, schedule/view overlapping the title block, missing title
-block fields (blank sheet name/number), duplicated views.
+Assess ONLY sheet-level layout and page overlaps: nothing may overlap on a page — report
+views/insets placed crooked or colliding, exterior dimension strings or witness lines from
+a floor plan overlapping or crossing into an Area Map / Area Plan inset or adjacent view,
+stacked elevations bleeding into each other or across view titles, schedule/view
+overlapping the title block or page border, huge empty regions on a sheet that should be
+full, missing title block fields (blank sheet name/number), or duplicated views.
 Respond with ONLY a JSON array like:
 [{"type": "layout", "severity": "error|warning", "description": "...", "location": "..."}]
 If clean, respond with []"""
