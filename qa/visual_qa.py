@@ -43,7 +43,9 @@ NORMAL, do not report them. Report ONLY clear quality problems visible within th
    legible is NOT a finding — construction drawings routinely have text over geometry
 2. illegible — text that is garbled, colliding, or unreadable (NOT text cut by tile edge)
 3. bad_annotation — grid lines running through grid-bubble letters, leaders pointing at
-   nothing, tags detached from their element, empty tags (?? or blank)
+   nothing, tags detached from their element, empty tags (?? or blank), OR straggler /
+   unreferenced elevation pins, section heads, or callout markers left visible on
+   presentation/study floor plans or straddling crop/page borders
 4. drafting_glitch — floating/orphaned elements, broken linework, hatch spilling outside
    boundaries, duplicated overlapping text
 5. layout — views/schedules colliding with the title block or bleeding off the sheet, OR
